@@ -1,6 +1,6 @@
 ﻿namespace Phase18AlternativeFarms.Models;
 
-public class CropProgressionPlanDocument : IFarmDocument, IFarmDocumentFactory<CropProgressionPlanDocument>
+public class CropProgressionPlanDocument : IFarmDocumentModel, IFarmDocumentFactory<CropProgressionPlanDocument>
 {
     required public FarmKey Farm { get; set; }
     // Total capacity that *exists* (even if locked)

@@ -1,4 +1,4 @@
-﻿namespace Phase18AlternativeFarms.DataAccess;
+﻿namespace Phase01AlternativeFarms.Services.Core;
 public interface IFarmDocumentFactory<TDocument>
     where TDocument : IFarmDocumentModel
 {

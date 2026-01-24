@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public class WorkerInstanceDocument : IFarmDocument
+public class WorkerInstanceDocument : IFarmDocumentModel
 {
     required public FarmKey Farm { get; set; }
     required public BasicList<UnlockModel> Workers { get; set; } = [];

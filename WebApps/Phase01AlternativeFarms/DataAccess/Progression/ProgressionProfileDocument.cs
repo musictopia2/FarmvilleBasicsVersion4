@@ -1,5 +1,5 @@
 ﻿namespace Phase01AlternativeFarms.DataAccess.Progression;
-public class ProgressionProfileDocument
+public class ProgressionProfileDocument : IFarmDocumentModel, IFarmDocumentFactory<ProgressionProfileDocument>
 {
     required public FarmKey Farm { get; set; }
     // Player-facing
@@ -7,4 +7,11 @@ public class ProgressionProfileDocument
     // Internal counter for THIS level (player sees as progress bar value) (used so it can figure out the progress)
     public int PointsThisLevel { get; set; } = 0;
     public bool CompletedGame { get; set; } //if you are at the highest level and completed it and no more left, then you completed the game.
+    public static ProgressionProfileDocument CreateEmpty(FarmKey farm)
+    {
+        return new()
+        {
+            Farm = farm
+        };
+    }
 }

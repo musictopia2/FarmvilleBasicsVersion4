@@ -1,6 +1,13 @@
 ﻿namespace Phase01AlternativeFarms.DataAccess.Progression;
-public class AnimalProgressionPlanDocument : IFarmDocument //repeat for others for future understanding.
+public class AnimalProgressionPlanDocument : IFarmDocumentModel, IFarmDocumentFactory<AnimalProgressionPlanDocument>
 {
     required public FarmKey Farm { get; set; }
     public BasicList<ItemUnlockRule> UnlockRules { get; set; } = [];
+    public static AnimalProgressionPlanDocument CreateEmpty(FarmKey farm)
+    {
+        return new()
+        {
+            Farm = farm
+        };
+    }
 }

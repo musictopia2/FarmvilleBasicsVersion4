@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public class InventoryStorageUpgradePlanDocument : IFarmDocument, IFarmDocumentFactory<InventoryStorageUpgradePlanDocument>
+public class InventoryStorageUpgradePlanDocument : IFarmDocumentModel, IFarmDocumentFactory<InventoryStorageUpgradePlanDocument>
 {
     required public FarmKey Farm { get; init; }
     public BasicList<UpgradeTier> SiloUpgrades { get; init; } = [];

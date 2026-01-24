@@ -4,7 +4,7 @@ internal static class FarmHelperClass
 
 
     public static BasicList<TDocument> CreateDocumentsForCoins<TDocument>(Func<FarmKey, TDocument> factory)
-        where TDocument : IFarmDocument
+        where TDocument : IFarmDocumentModel
         {
             BasicList<TDocument> output = [];
             foreach (var farm in GetAllCoinFarms())

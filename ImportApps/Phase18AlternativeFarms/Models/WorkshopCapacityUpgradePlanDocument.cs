@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public class WorkshopCapacityUpgradePlanDocument : IFarmDocument
+public class WorkshopCapacityUpgradePlanDocument : IFarmDocumentModel
 {
     required public FarmKey Farm { get; init; }
     required public string WorkshopName { get; init; }

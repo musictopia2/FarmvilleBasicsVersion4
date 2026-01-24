@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public class WorkshopProgressionPlanDocument : IFarmDocument, IFarmDocumentFactory<WorkshopProgressionPlanDocument>
+public class WorkshopProgressionPlanDocument : IFarmDocumentModel, IFarmDocumentFactory<WorkshopProgressionPlanDocument>
 {
     required public FarmKey Farm { get; set; }
     public BasicList<ItemUnlockRule> UnlockRules { get; set; } = [];

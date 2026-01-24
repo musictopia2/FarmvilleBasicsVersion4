@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public class ProgressionProfileDocument : IFarmDocument, IFarmDocumentFactory<ProgressionProfileDocument>
+public class ProgressionProfileDocument : IFarmDocumentModel, IFarmDocumentFactory<ProgressionProfileDocument>
 {
     required public FarmKey Farm { get; set; }
     // Player-facing

@@ -14,7 +14,7 @@ public static class FarmExtensions
         public bool IsBaseline => farm.IsMain || farm.IsCooperative;
     }
     extension<T>(IFarmDocumentFactory<T>)
-         where T : IFarmDocument, IFarmDocumentFactory<T>
+         where T : IFarmDocumentModel, IFarmDocumentFactory<T>
     {
         public static BasicList<T> PopulateEmptyForCoins()
         {

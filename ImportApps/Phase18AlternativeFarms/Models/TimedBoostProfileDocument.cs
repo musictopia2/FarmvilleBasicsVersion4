@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public sealed class TimedBoostProfileDocument : IFarmDocument, IFarmDocumentFactory<TimedBoostProfileDocument>
+public sealed class TimedBoostProfileDocument : IFarmDocumentModel, IFarmDocumentFactory<TimedBoostProfileDocument>
 {
     public required FarmKey Farm { get; set; }
 

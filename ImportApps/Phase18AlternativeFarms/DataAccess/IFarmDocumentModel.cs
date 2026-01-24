@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.DataAccess;
-public interface IFarmDocument
+public interface IFarmDocumentModel
 {
     FarmKey Farm { get; }
 }

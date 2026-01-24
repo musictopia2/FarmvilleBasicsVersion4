@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public class LevelProgressionPlanDocument : IFarmDocument, IFarmDocumentFactory<LevelProgressionPlanDocument>
+public class LevelProgressionPlanDocument : IFarmDocumentModel, IFarmDocumentFactory<LevelProgressionPlanDocument>
 {
     required public FarmKey Farm { get; init; }
 

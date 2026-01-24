@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public class QuestProfileDocument : IFarmDocument
+public class QuestProfileDocument : IFarmDocumentModel
 {
     required public FarmKey Farm { get; init; }
     public BasicList<QuestInstanceModel> Quests { get; set; } = []; //must be blank since its resetting.
