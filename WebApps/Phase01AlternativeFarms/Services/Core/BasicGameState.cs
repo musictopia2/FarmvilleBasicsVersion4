@@ -33,7 +33,8 @@ public class BasicGameState : IGameTimer
     InstantUnlimitedManager instantUnlimitedManager,
     TimedBoostManager timedBoostManager,
     OutputAugmentationManager outputAugmentationManager,
-    RentalManager rentalManager
+    RentalManager rentalManager,
+    FarmKey farm
 )
     {
         _inventory = inventory;
@@ -69,6 +70,7 @@ public class BasicGameState : IGameTimer
         _timedBoostManager = timedBoostManager;
         _outputAugmentationManager = outputAugmentationManager;
         _rentalManager = rentalManager;
+        _farm = farm;
         _container = new MainFarmContainer
         {
             InventoryManager = inventory,
@@ -87,6 +89,7 @@ public class BasicGameState : IGameTimer
             ItemManager = itemManager,
             OutputAugmentationManager = outputAugmentationManager,
             RentalManager = rentalManager,
+            FarmKey = farm
         };
     }
     readonly MainFarmContainer _container;
@@ -123,7 +126,7 @@ public class BasicGameState : IGameTimer
     private readonly TimedBoostManager _timedBoostManager;
     private readonly OutputAugmentationManager _outputAugmentationManager;
     private readonly RentalManager _rentalManager;
-    private FarmKey? _farm;
+    private FarmKey _farm;
     FarmKey? IGameTimer.FarmKey => _farm;
     MainFarmContainer IGameTimer.FarmContainer
     {
@@ -135,11 +138,15 @@ public class BasicGameState : IGameTimer
     private bool _init = false;
     async Task IGameTimer.SetThemeContextAsync(FarmKey farm)
     {
+        if (farm.Equals(_farm) == false)
+        {
+            throw new CustomBasicException("I think must be same farm");
+        }
         if (string.IsNullOrWhiteSpace(farm.PlayerName) || string.IsNullOrWhiteSpace(farm.Theme))
         {
             throw new CustomBasicException("Must specify player and farm themes now");
         }
-        _farm = farm;
+        _farm = farm; //hopefully no problem resetting here (?)
         CatalogServicesContext catalogContext = _catalogFactory.GetCatalogServices(farm);
         await _catalogManager.SetCatalogStyleContextAsync(catalogContext, farm); //must be loaded first now.
         IInventoryRepository init = _startFactory.GetInventoryServices(farm);

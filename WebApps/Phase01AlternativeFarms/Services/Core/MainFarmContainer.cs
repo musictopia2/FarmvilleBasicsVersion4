@@ -1,6 +1,7 @@
 ﻿namespace Phase01AlternativeFarms.Services.Core;
 public class MainFarmContainer
 {
+    required public FarmKey FarmKey { get; set; }
     required public CropManager CropManager { get; set; }
     required public TreeManager TreeManager { get; set; }
     required public InventoryManager InventoryManager { get; set; }

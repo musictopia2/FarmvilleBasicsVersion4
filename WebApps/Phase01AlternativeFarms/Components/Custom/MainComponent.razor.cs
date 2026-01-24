@@ -9,14 +9,7 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     ) : IDisposable
 {
 
-    [Parameter]
-    public string Theme { get; set; } = string.Empty;
-
-    [Parameter]
-    public string Player { get; set; } = string.Empty;
-
-    [Parameter]
-    public string ProfileId { get; set; } = string.Empty;
+    
 
     private NavigationBarContainer? _nav;
 
@@ -168,11 +161,11 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     {
         get
         {
-            if (string.IsNullOrWhiteSpace(Theme))
+            if (string.IsNullOrWhiteSpace(Key.Theme))
             {
                 return "Needs Theme";
             }
-            return $"{Player.ToDisplayPlayerName()} {Theme.GetWords} {ProfileId.GetWords}";
+            return $"{Key.PlayerName.ToDisplayPlayerName()} {Key.Theme.GetWords} {Key.ProfileId.GetWords}";
         }
     }
 

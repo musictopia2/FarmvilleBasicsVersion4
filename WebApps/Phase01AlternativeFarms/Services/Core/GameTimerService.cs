@@ -62,7 +62,7 @@ public class GameTimerService(IStartFarmRegistry farmRegistry,
                 workshopManager, worksiteManager, questManager,
                 upgradeManager, progressionManager, catalogManager, 
                 storeManager, itemManager, instantUnlimitedManager, 
-                timedBoostManager, outputAugmentationManager, rentalManager
+                timedBoostManager, outputAugmentationManager, rentalManager, farm
                 );
             await gameRegistry.InitializeFarmAsync(timer, farm);
         }
