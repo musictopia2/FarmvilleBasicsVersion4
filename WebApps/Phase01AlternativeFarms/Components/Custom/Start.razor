@@ -5,7 +5,7 @@
 
 @foreach (var farm in _farms)
 {
-    <PrimaryButton OnClick="() => NavigateTo(farm.Theme, farm.PlayerName, farm.ProfileId)">
+    <PrimaryButton OnClick="() => NavigateTo(farm.Theme, farm.PlayerName, farm.ProfileId, farm.Slot)">
         @farm.Theme.GetWords @farm.PlayerName.ToDisplayPlayerName() @farm.ProfileId.GetWords
     </PrimaryButton>
 }
