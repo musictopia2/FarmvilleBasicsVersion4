@@ -22,13 +22,13 @@ public partial class Farm(GameRegistry registry, FarmContext context) : IDisposa
     protected override void OnParametersSet()
     {
         if (!string.IsNullOrWhiteSpace(SlotText) &&
-        Enum.TryParse<Phase01AlternativeFarms.Services.Core.EnumFarmSlot>(SlotText, ignoreCase: true, out var parsed))
+        Enum.TryParse<EnumFarmSlot>(SlotText, ignoreCase: true, out var parsed))
         {
             Slot = parsed;
         }
         else
         {
-            Slot = Phase01AlternativeFarms.Services.Core.EnumFarmSlot.Main;
+            Slot = EnumFarmSlot.Main;
         }
         FarmKey player = new()
         {

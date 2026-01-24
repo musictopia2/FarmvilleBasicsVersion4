@@ -91,12 +91,22 @@
         <IndicatorContent>
 
             <div class="indicator-row">
-                <div class="indicator-left">
-                    <CoinIndicator />
-                </div>
-                <div>
-                    <LevelIndicator />
-                </div>
+                
+                @if (this.IsBaseline)
+                {
+                    <div class="indicator-left">
+                        <CoinIndicator />
+                    </div>
+                    <div>
+                        <LevelIndicator />
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        Scenario To Earn Coin For Main
+                    </div>
+                }
                 <div class="indicator-right">
                     <CompletionBell />
                 </div>
@@ -117,11 +127,11 @@
                     <line x1="15" y1="9" x2="9" y2="15" />
                 </svg>
             </button>
-
+            
             <button class="icon-btn"
                     title="Home"
                     aria-label="Go to home"
-                    @onclick="ChooseAnotherTheme">
+                    @onclick="Home">
                 <svg viewBox="0 0 24 24" width="40" height="40"
                      fill="none" stroke="white" stroke-width="2"
                      stroke-linecap="round" stroke-linejoin="round">
@@ -146,40 +156,47 @@
                 <ImageButtonComponent OnClick="ShowSpeedSeeds" Name="@CurrencyKeys.SpeedSeed" Height="100" />
 
                 <!-- existing: activation -->
-                <ImageButtonComponent OnClick="ShowTimedBoosts" Name="TimedBoost" Height="100" />
+                @if (this.IsBaseline)
+                {
+                    <ImageButtonComponent OnClick="ShowTimedBoosts" Name="TimedBoost" Height="100" />
 
-                <!-- new: only visible when any boost is active -->
-                <button class="activefx-btn @(HasAnyActiveTimedBoosts ? "" : "activefx-hidden")"
-                        title="Active timed boosts"
-                        aria-label="Active timed boosts"
-                        @onclick="ShowActiveBoosts">
-                    <svg viewBox="0 0 100 100" width="70" height="70" aria-hidden="true">
-                        <!-- background -->
-                        <rect x="2" y="2" width="96" height="96" rx="16" ry="16"
-                              fill="#7CFF00" stroke="#222" stroke-width="4" />
+                    <!-- new: only visible when any boost is active -->
+                    <button class="activefx-btn @(HasAnyActiveTimedBoosts ? "" : "activefx-hidden")"
+                            title="Active timed boosts"
+                            aria-label="Active timed boosts"
+                            @onclick="ShowActiveBoosts">
+                        <svg viewBox="0 0 100 100" width="70" height="70" aria-hidden="true">
+                            <!-- background -->
+                            <rect x="2" y="2" width="96" height="96" rx="16" ry="16"
+                                  fill="#7CFF00" stroke="#222" stroke-width="4" />
 
-                        <!-- active ring -->
-                        <circle cx="50" cy="50" r="40"
-                                fill="none" stroke="#222" stroke-width="4" />
+                            <!-- active ring -->
+                            <circle cx="50" cy="50" r="40"
+                                    fill="none" stroke="#222" stroke-width="4" />
 
-                        <!-- lightning -->
-                        <path d="M58 10 L28 54 H48 L40 90 L72 44 H52 Z"
-                              fill="#FFD400" stroke="#222" stroke-width="4"
-                              stroke-linejoin="round" stroke-linecap="round" />
+                            <!-- lightning -->
+                            <path d="M58 10 L28 54 H48 L40 90 L72 44 H52 Z"
+                                  fill="#FFD400" stroke="#222" stroke-width="4"
+                                  stroke-linejoin="round" stroke-linecap="round" />
 
-                        <!-- active dot -->
-                        <circle cx="50" cy="72" r="5"
-                                fill="#FFD400" stroke="#222" stroke-width="3" />
-                    </svg>
-                    <span class="activefx-badge" aria-hidden="true"></span>
-                </button>
+                            <!-- active dot -->
+                            <circle cx="50" cy="72" r="5"
+                                    fill="#FFD400" stroke="#222" stroke-width="3" />
+                        </svg>
+                        <span class="activefx-badge" aria-hidden="true"></span>
+                    </button>
+                }
+                
 
                 <ImageButtonComponent OnClick="PossibleAllWorkshops" Name="@CurrencyKeys.FinishAllWorkshops" Height="100" />
                 <ImageButtonComponent OnClick="PossibleAllWorksites" Name="@CurrencyKeys.FinishAllWorksites" Height="100" />
                 <InstantUnlimitedInstancesComponent />
             </div>
-
-            <ImageButtonComponent OnClick="ShowShop" Name="CashRegister" Height="100" />
+            @if (this.IsBaseline)
+            {
+                <ImageButtonComponent OnClick="ShowShop" Name="CashRegister" Height="100" />
+            }
+            
             <MainSectionLauncher ReadyCategory="EnumMainSection.Crops" />
             <MainSectionLauncher ReadyCategory="EnumMainSection.Trees" />
             <MainSectionLauncher ReadyCategory="EnumMainSection.Animals" />
@@ -187,8 +204,11 @@
             <div>
                 <WorksitesComponent />
             </div>
-            
-            
+            @if (this.IsCoin)
+            {
+                
+            }
+
             <ImageButtonComponent Name="Barn" Width="100" OnClick="ShowBarn" />
             <ImageButtonComponent Name="Silo" Width="100" OnClick="ShowSilo" />
 

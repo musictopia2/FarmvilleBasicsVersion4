@@ -37,6 +37,28 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     private bool _showAllWorksites = false;
     private bool _showAllWorkshops = false;
 
+
+    private void TransferCoin()
+    {
+        if (this.IsCoin == false)
+        {
+            return;
+        }
+        toast.ShowInfoToast("Attempting to send 1000 coins to main farm");
+        FarmKey main = this.AsMain;
+        //figure out how to send to this farm.
+
+        nav.NavigateTo(main); //this will transfer back to the main.  if everything works, you will have the 1000 coins applied when you are on there.
+
+    }
+
+    private void SampleCoins()
+    {
+        InventoryManager.AddCoin(1000); //this is adding coin
+        //but somehow needs to do to the main account (?)
+    }
+
+
     private void ProcessAllWorksites(bool confirmed)
     {
         _showAllWorksites = false;
@@ -109,8 +131,15 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
         await service.CloseAllAsync();
         await base.OnInitializedAsync();
     }
-    private void ChooseAnotherTheme()
+    private void Home()
     {
+        if (this.IsCoin || this.IsCooperative)
+        {
+            FarmKey main = this.AsMain;
+            nav.NavigateTo(main);
+            return;
+        }
+        //has to figure out an easy way eventually to enable the coop (later).
         service.Reset();
         nav.NavigateTo("/");
     }

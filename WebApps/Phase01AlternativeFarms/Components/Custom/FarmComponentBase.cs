@@ -15,5 +15,5 @@ public abstract class FarmComponentBase : ComponentBase
     protected TimedBoostManager TimedBoostManager => Farm!.TimedBoostManager;
     protected ItemManager ItemManager => Farm!.ItemManager;
     protected RentalManager RentalManager => Farm!.RentalManager;
-    protected FarmKey Key => Farm!.FarmKey;
+    public FarmKey Key => Farm!.FarmKey;
 }
