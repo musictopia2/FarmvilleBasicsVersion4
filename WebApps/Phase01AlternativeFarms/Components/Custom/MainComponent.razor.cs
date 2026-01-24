@@ -39,13 +39,16 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     private bool _showAllWorkshops = false;
 
 
-    private void TransferCoin()
+    private async Task TransferCoinAsync()
     {
         if (this.IsCoin == false)
         {
             return;
         }
         toast.ShowSuccessToast("Sending 1000 coins. Check to make sure its fine");
+        await Task.Delay(2000);
+        //for now, forced to do delay since the reload portion would make the toast go away.
+        //if i did not force reload, then quests gets hosed. (everything else appear okay).
         FarmKey main = this.AsMain;
         //figure out how to send to this farm.
         transferService.AddCoinFromScenarioCompletion(Key, 1000);
