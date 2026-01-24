@@ -8,14 +8,12 @@ public static class ImportBalanceMultiplierClass
         // MVP1 Production:
         // - All activities take 50% of their base recipe time
 
-        BasicList<FarmKey> firsts = FarmHelperClass.GetAllFarms();
+        BasicList<FarmKey> firsts = FarmHelperClass.GetAllCompleteFarms();
 
         foreach (FarmKey key in firsts)
         {
-            //list.Add(CreateFarm(key.PlayerName, key.Theme, key.ProfileId, 0.01)); //takes 1 percent of the required time.
-
-            list.Add(CreateFarm(key.PlayerName, key.Theme, key.ProfileId, 0.5)); //must be more meaningful to test more time reduction stuff.
-
+            var multiplier = key.IsMain ? 0.5 : 0.01;
+            list.Add(CreateFarm(key, multiplier));
         }
 
 
@@ -55,28 +53,17 @@ public static class ImportBalanceMultiplierClass
 
 
     private static BalanceProfileDocument CreateFarm(
-        string playerName,
-        string theme,
-        string profileId,
+        FarmKey farm,
         double baseMultiplier,
-
-        // Optional per-system overrides
         double? cropOverride = null,
         double? animalOverride = null,
         double? workshopOverride = null,
         double? treeOverride = null,
         double? worksiteOverride = null)
     {
-        var farm = new FarmKey(playerName, theme, profileId);
-
         return new BalanceProfileDocument
         {
             Farm = farm,
-
-            // IMPORTANT:
-            // These are TIME multipliers.
-            // FinalDuration = BaseDuration × Multiplier
-
             CropTimeMultiplier = cropOverride ?? baseMultiplier,
             AnimalTimeMultiplier = animalOverride ?? baseMultiplier,
             WorkshopTimeMultiplier = workshopOverride ?? baseMultiplier,

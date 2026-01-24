@@ -1,7 +1,7 @@
 ﻿namespace Phase18AlternativeFarms.ImportClasses;
 public static class ImportAnimalCatalogClass
 {
-    private static EnumCatalogCategory _category = EnumCatalogCategory.Animal;
+    private readonly static EnumCatalogCategory _category = EnumCatalogCategory.Animal;
     public static BasicList<CatalogOfferModel> GetAnimalOffers(FarmKey farm)
     {
         if (farm.Theme == FarmThemeList.Tropical)

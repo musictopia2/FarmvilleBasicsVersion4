@@ -3,7 +3,7 @@ public static class ImportAnimalProgressionClass
 {
     public static async Task ImportAnimalsAsync()
     {
-        var firsts = FarmHelperClass.GetAllFarms();
+        var firsts = FarmHelperClass.GetAllCompleteFarms();
         BasicList<AnimalProgressionPlanDocument> list = [];
         foreach (var item in firsts)
         {

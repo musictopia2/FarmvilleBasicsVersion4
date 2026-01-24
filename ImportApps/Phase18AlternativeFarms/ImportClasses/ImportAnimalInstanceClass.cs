@@ -10,22 +10,88 @@ public static class ImportAnimalInstanceClass
         _animalProgression = new();
         _catalogOfferDatabase = new();
         _levelProfile = new();
+
         AnimalRecipeDatabase recipeDb = new();
         _recipes = await recipeDb.GetRecipesAsync();
         if (_recipes.Count == 0)
         {
             throw new CustomBasicException("No animal recipes were imported.");
         }
-        BasicList<AnimalInstanceDocument> list = [];
-        var firsts = FarmHelperClass.GetAllFarms();
-        foreach (var item in firsts)
+
+        BasicList<AnimalInstanceDocument> docs = [];
+
+        // Main
+        foreach (var farm in FarmHelperClass.GetAllMainFarms())
         {
-            list.Add(await CreateInstanceAsync(item));
+            docs.Add(await CreateMainInstanceAsync(farm));
         }
+
+        // Alternative
+        foreach (var farm in FarmHelperClass.GetAllAlternativeFarms())
+        {
+            docs.Add(await CreateAlternativeInstanceAsync(farm, animalsPerRecipe: 3));
+        }
+
         AnimalInstanceDatabase db = new();
-        await db.ImportAsync(list);
+        await db.ImportAsync(docs);
     }
-    private static async Task<AnimalInstanceDocument> CreateInstanceAsync(FarmKey farm)
+    private static async Task<AnimalInstanceDocument> CreateAlternativeInstanceAsync(FarmKey farm, int animalsPerRecipe)
+    {
+        // If alt farm truly has no store, don’t touch catalog/level here.
+        InstantUnlimitedInstanceDatabase unlimitedDb = new();
+        var unlockedUnlimited = await unlimitedDb.GetUnlockedItems(farm);
+
+        // Theme-scoped recipes (important!)
+        var recipesForTheme = _recipes
+            .Where(r => r.Theme == farm.Theme)
+            .ToBasicList();
+
+        if (recipesForTheme.Count == 0)
+        {
+            throw new CustomBasicException($"No animal recipes found for Theme='{farm.Theme}'.");
+        }
+
+        BasicList<AnimalAutoResumeModel> animals = [];
+
+
+        foreach (var recipe in recipesForTheme)
+        {
+            if (recipe.Options.Count == 0)
+            {
+                throw new CustomBasicException(
+                    $"Animal recipe '{recipe.Animal}' has no production options.");
+            }
+
+            var firstOption = recipe.Options[0];
+
+            // If output is instant-unlimited, skip this animal entirely
+            if (unlockedUnlimited.Any(x => x.Name == firstOption.Output.Item))
+            {
+                continue;
+            }
+
+            animalsPerRecipe.Times(_ =>
+            {
+                animals.Add(new AnimalAutoResumeModel
+                {
+                    Name = recipe.Animal,
+                    Unlocked = true,
+                    State = EnumAnimalState.Collecting,
+                    ProductionOptionsAllowed = recipe.Options.Count,
+                    OutputReady = firstOption.Output.Amount
+                });
+            });
+        }
+
+        return new AnimalInstanceDocument
+        {
+            Farm = farm,
+            Animals = animals
+        };
+    }
+
+
+    private static async Task<AnimalInstanceDocument> CreateMainInstanceAsync(FarmKey farm)
     {
         InstantUnlimitedInstanceDatabase db = new();
         var list = await db.GetUnlockedItems(farm);

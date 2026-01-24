@@ -82,13 +82,13 @@ public class AnimalManager(InventoryManager inventory,
         var instance = _animals.LastOrDefault(x => x.Name == rental.TargetName && x.Unlocked == false)
             ?? throw new CustomBasicException("No locked animal available to rent");
         instance.Unlocked = true;
-        instance.State = EnumAnimalState.Collecting; //i think.
+        //instance.State = EnumAnimalState.Collecting; //i think.
         instance.IsRental = true; //so later can lock the proper one.  also ui can show the details for it as well.
         _needsSaving = true;
         return instance.Id;
     }
-    
-    public bool CanDeleteRental(Guid id)
+
+    public bool CanDeleteRental(Guid id, string targetName)
     {
         AnimalInstance? animal = _animals.SingleOrDefault(x => x.Id == id);
         if (animal is not null)
@@ -102,10 +102,14 @@ public class AnimalManager(InventoryManager inventory,
                 animal.IsRental = true; //implies its a rental.
                 _needsSaving = true;
             }
-
+            if (animal.State == EnumAnimalState.None)
+            {
+                animal.Unlocked = false;
+                _needsSaving = true;
+            }
             return false;
         }
-        var rentals = _animals.Where(x => x.IsRental).ToList();
+        var rentals = _animals.Where(x => x.IsRental && x.Name == targetName).ToList();
         if (rentals.Count != 1)
         {
             throw new InvalidOperationException($"Invariant violated: expected exactly one rental animal, found {rentals.Count}.");
@@ -119,7 +123,7 @@ public class AnimalManager(InventoryManager inventory,
         animal.Unlocked = false;
         _needsSaving = true;
         return false;
-        
+
     }
 
     public void DoubleCheckActiveRental(Guid id)

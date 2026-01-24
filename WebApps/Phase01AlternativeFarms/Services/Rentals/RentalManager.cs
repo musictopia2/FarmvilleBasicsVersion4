@@ -146,7 +146,7 @@ public class RentalManager(TreeManager treeManager,
                 {
                     // Ensure expired pending in animal domain
                     //await animalManager.ShowRentalExpireAsync(item);
-                    bool canDelete = animalManager.CanDeleteRental(item.TargetInstanceId!.Value);
+                    bool canDelete = animalManager.CanDeleteRental(item.TargetInstanceId!.Value, item.TargetName);
                     if (canDelete)
                     {
                         _rentals.RemoveSpecificItem(item);
