@@ -5,7 +5,8 @@ using Phase01AlternativeFarms.Services.Core;
 namespace Phase01AlternativeFarms.Components.Custom;
 public partial class MainComponent(NavigationManager nav, OverlayService service,
     IToast toast, IntegerPickerService quantityPickerService,
-    IntegerActionPickerService actionPickerService
+    IntegerActionPickerService actionPickerService,
+    FarmTransferService transferService
     ) : IDisposable
 {
 
@@ -44,20 +45,13 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
         {
             return;
         }
-        toast.ShowInfoToast("Attempting to send 1000 coins to main farm");
+        toast.ShowSuccessToast("Sending 1000 coins. Check to make sure its fine");
         FarmKey main = this.AsMain;
         //figure out how to send to this farm.
-
+        transferService.AddCoinFromScenarioCompletion(Key, 1000);
         nav.NavigateTo(main); //this will transfer back to the main.  if everything works, you will have the 1000 coins applied when you are on there.
 
     }
-
-    private void SampleCoins()
-    {
-        InventoryManager.AddCoin(1000); //this is adding coin
-        //but somehow needs to do to the main account (?)
-    }
-
 
     private void ProcessAllWorksites(bool confirmed)
     {

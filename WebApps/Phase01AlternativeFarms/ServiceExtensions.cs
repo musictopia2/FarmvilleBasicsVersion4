@@ -29,6 +29,7 @@ public static class ServiceExtensions
         {
             services.AddHostedService<GameTimerService>()
                 .AddSingleton<GameRegistry>()
+                .AddSingleton<FarmTransferService>()
                 .AddSingleton<IInventoryRepository, InventoryStockDatabase>()
                 .AddSingleton<IStartFarmRegistry, StartFarmDatabase>()
                 .AddSingleton<IInventoryFactory, InventoryFactory>()
