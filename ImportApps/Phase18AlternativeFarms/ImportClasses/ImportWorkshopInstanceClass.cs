@@ -47,11 +47,16 @@ internal static class ImportWorkshopInstanceClass
         {
             2.Times(_ =>
             {
-                workshops.Add(new WorkshopAutoResumeModel
+                WorkshopAutoResumeModel temp = new()
                 {
-                    Name = building,
-                    Capacity = 9
-                });
+                    Capacity = 9,
+                    Name = building
+                };
+                BasicList<string> others = _recipes.Where(x => x.Theme == farm.Theme && x.BuildingName == building).Select(x => x.Item).ToBasicList();
+                temp.SupportedItems.UnlockSeveralItems(others);
+                
+
+                workshops.Add(temp);
             });
         }
 

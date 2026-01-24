@@ -8,8 +8,9 @@ public class StartFarmDatabase() : ListDataAccess<FarmKey>
 {
     public static string DatabaseName => mm1.DatabaseName;
     public static string CollectionName => "Start";
-    Task<BasicList<FarmKey>> IStartFarmRegistry.GetFarmsAsync()
+    async Task<BasicList<FarmKey>> IStartFarmRegistry.GetFarmsAsync()
     {
-        return GetDocumentsAsync();
+        var list = await GetDocumentsAsync();
+        return list;
     }
 }

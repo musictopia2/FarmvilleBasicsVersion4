@@ -10,6 +10,7 @@ public class StartFarmDatabase() : ListDataAccess<FarmKey>
     //its okay if it wipes out the previos records for this project anyways.
     public async Task ImportAsync(BasicList<FarmKey> list)
     {
+        //await UpsertRecordsAsync([]);
         await UpsertRecordsAsync(list);
     }
 

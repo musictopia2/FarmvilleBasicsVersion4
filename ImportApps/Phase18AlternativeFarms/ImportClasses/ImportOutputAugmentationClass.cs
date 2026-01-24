@@ -3,7 +3,7 @@ internal static class ImportOutputAugmentationClass
 {
     public static async Task ImportOutputAugmentationAsync()
     {
-        var farms = FarmHelperClass.GetAllCompleteFarms(); //try all complete farms for augmentation.  without catalog, won't matter anyways.
+        var farms = FarmHelperClass.GetAllBaselineFarms(); //actually without catalog, can't even fill in the details.
         BasicList<OutputAugmentationPlanDocument> list = [];
         foreach (var farm in farms)
         {
@@ -28,7 +28,8 @@ internal static class ImportOutputAugmentationClass
                 Items = plans // rename to Plans if your document uses Plans
             });
         }
-
+        farms = FarmHelperClass.GetAllCoinFarms();
+        list.AddRange(OutputAugmentationPlanDocument.PopulateEmptyForCoins());
         OutputAugmentationPlanDatabase db = new();
         await db.ImportAsync(list);
     }

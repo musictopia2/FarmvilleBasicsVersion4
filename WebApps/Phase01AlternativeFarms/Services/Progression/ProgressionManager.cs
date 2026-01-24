@@ -198,6 +198,10 @@ public class ProgressionManager(InventoryManager inventoryManager,
 
     private LevelProgressionTier GetCurrentTier()
     {
+        if (_levelPlan.Tiers.Count == 0)
+        {
+            return new();
+        }
         if (_currentProfile.Level - 1 >= _levelPlan.Tiers.Count)
         {
             return _levelPlan.Tiers.Last();

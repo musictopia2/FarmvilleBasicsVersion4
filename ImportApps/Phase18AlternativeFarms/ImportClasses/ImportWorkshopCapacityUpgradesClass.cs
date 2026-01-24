@@ -32,6 +32,8 @@ public static class ImportWorkshopCapacityUpgradesClass
                 });
             }
         }
+        WorkshopCapacityUpgradePlanDatabase db = new();
+        await db.ImportAsync(list);
     }
 
     private static BasicList<UpgradeTier> GetUpgrades(string name)

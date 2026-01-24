@@ -6,10 +6,11 @@ public class CatalogManager
         FarmKey farm)
     {
         _offers = await context.CatalogDataSource.GetCatalogAsync(farm);
-        if (_offers.Count == 0)
-        {
-            throw new CustomBasicException("No Offers");
-        }
+        //try to not force there to be a catalog (since i have the alternative farms now).
+        //if (_offers.Count == 0)
+        //{
+        //    throw new CustomBasicException("No Offers");
+        //}
     }
     public BasicList<CatalogOfferModel> GetAllOffers(EnumCatalogCategory category) =>
     _offers.Where(x => x.Category == category)
