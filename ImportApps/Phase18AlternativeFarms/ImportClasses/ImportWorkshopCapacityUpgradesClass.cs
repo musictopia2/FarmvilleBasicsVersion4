@@ -3,10 +3,9 @@ public static class ImportWorkshopCapacityUpgradesClass
 {
     public static async Task ImportWorkshopsAsync()
     {
-        var farms = FarmHelperClass.GetAllFarms();
+        var farms = FarmHelperClass.GetAllCompleteFarms();
         WorkshopRecipeDatabase others = new();
         var recipes = await others.GetRecipesAsync();
-
         BasicList<WorkshopCapacityUpgradePlanDocument> list = [];
         foreach (var farm in farms)
         {
@@ -17,12 +16,14 @@ public static class ImportWorkshopCapacityUpgradesClass
                 .Where(name => string.IsNullOrWhiteSpace(name) == false)
                 .Distinct()
                 .ToBasicList();
-
             foreach (var buildingName in buildingNames)
             {
-                var upgrades = GetUpgrades(buildingName);
-                ValidateWorkshopCapacityTiers(upgrades, buildingName, farm);
-
+                BasicList<UpgradeTier> upgrades = [];
+                if (farm.IsBaseline)
+                {
+                    upgrades = GetUpgrades(buildingName);
+                    ValidateWorkshopCapacityTiers(upgrades, buildingName, farm);
+                }
                 list.Add(new WorkshopCapacityUpgradePlanDocument
                 {
                     Farm = farm,
@@ -31,8 +32,6 @@ public static class ImportWorkshopCapacityUpgradesClass
                 });
             }
         }
-        WorkshopCapacityUpgradePlanDatabase db = new();
-        await db.ImportAsync(list);
     }
 
     private static BasicList<UpgradeTier> GetUpgrades(string name)

@@ -1,5 +1,4 @@
 ﻿namespace Phase18AlternativeFarms.ImportClasses;
-
 public static class ImportWorkshopRecipeClass
 {
     public static async Task ImportWorkshopsAsync()

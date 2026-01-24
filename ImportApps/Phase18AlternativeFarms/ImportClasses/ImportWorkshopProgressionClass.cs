@@ -3,12 +3,16 @@ public static class ImportWorkshopProgressionClass
 {
     public static async Task ImportWorkshopsAsync()
     {
-        var firsts = FarmHelperClass.GetAllFarms();
+        var firsts = FarmHelperClass.GetAllBaselineFarms();
         BasicList<WorkshopProgressionPlanDocument> list = [];
         foreach (var item in firsts)
         {
             list.Add(GeneratePlanFarm(item));
         }
+
+        list.AddRange(WorkshopProgressionPlanDocument.PopulateEmptyForCoins());
+
+
         WorkshopProgressionPlanDatabase db = new();
         await db.ImportAsync(list);
     }

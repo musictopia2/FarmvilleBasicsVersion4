@@ -8,15 +8,42 @@ public static class ImportWorkerInstanceClass
         _catalogOfferDatabase = new();
         _levelProfile = new();
         BasicList<WorkerInstanceDocument> list = [];
-        var farms = FarmHelperClass.GetAllFarms();
+        var farms = FarmHelperClass.GetAllBaselineFarms();
         foreach (var farm in farms)
         {
-            list.Add(await CreateInstanceAsync(farm));
+            list.Add(await CreateBaselineInstanceAsync(farm));
+        }
+        farms = FarmHelperClass.GetAllCoinFarms();
+        foreach (var farm in farms)
+        {
+            list.Add(await CreateCoinInstanceAsync(farm));
         }
         WorkerInstanceDatabase db = new();
         await db.ImportAsync(list);
     }
-    private static async Task<WorkerInstanceDocument> CreateInstanceAsync(FarmKey farm)
+    private static async Task<WorkerInstanceDocument> CreateCoinInstanceAsync(FarmKey farm)
+    {
+        BasicList<UnlockModel> workers = [];
+
+
+        WorkerRecipeDatabase db = new();
+        var list = await db.GetWorkersAsync(farm.Theme);
+        foreach(var worker in list)
+        {
+            workers.Add(new()
+            {
+                Name = worker.WorkerName,
+                Unlocked = true
+            });
+        }
+
+        return new WorkerInstanceDocument
+        {
+            Farm = farm,
+            Workers = workers
+        };
+    }
+    private static async Task<WorkerInstanceDocument> CreateBaselineInstanceAsync(FarmKey farm)
     {
         BasicList<UnlockModel> workers = [];
         var plan = await _catalogOfferDatabase.GetCatalogAsync(farm, EnumCatalogCategory.Worker);

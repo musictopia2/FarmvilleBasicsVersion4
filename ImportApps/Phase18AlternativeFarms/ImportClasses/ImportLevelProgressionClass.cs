@@ -4,7 +4,7 @@ public static class ImportLevelProgressionClass
     public static async Task ImportProgressionAsync()
     {
         LevelProgressionPlanDatabase db = new();
-        BasicList<FarmKey> farms = FarmHelperClass.GetAllFarms();
+        BasicList<FarmKey> farms = FarmHelperClass.GetAllBaselineFarms();
         BasicList<LevelProgressionPlanDocument> list = [];
         foreach (FarmKey farm in farms)
         {
@@ -12,7 +12,7 @@ public static class ImportLevelProgressionClass
             LevelProgressionPlanDocument plan = new()
             {
                 Farm = farm,
-                IsEndless = false //this time needs to be endless.
+                IsEndless = false //cannot be endless for the baseline farms.
             };
 
             20.Times(x =>
@@ -45,6 +45,7 @@ public static class ImportLevelProgressionClass
             });
             list.Add(plan);
         }
+        list.AddRange(LevelProgressionPlanDocument.PopulateEmptyForCoins()); //for now, will not level up.  later will think about quests for the coin farm.
         await db.ImportAsync(list);
     }
 }

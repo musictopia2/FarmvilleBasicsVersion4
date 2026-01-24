@@ -3,9 +3,8 @@ internal static class ImportOutputAugmentationClass
 {
     public static async Task ImportOutputAugmentationAsync()
     {
-        var farms = FarmHelperClass.GetAllFarms();
+        var farms = FarmHelperClass.GetAllCompleteFarms(); //try all complete farms for augmentation.  without catalog, won't matter anyways.
         BasicList<OutputAugmentationPlanDocument> list = [];
-
         foreach (var farm in farms)
         {
             BasicList<OutputAugmentationPlanModel> plans;

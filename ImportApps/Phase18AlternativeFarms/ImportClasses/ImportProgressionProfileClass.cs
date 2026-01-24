@@ -3,7 +3,7 @@ public static class ImportProgressionProfileClass
 {
     public static async Task ImportProgressionAsync()
     {
-        var farms = FarmHelperClass.GetAllFarms();
+        var farms = FarmHelperClass.GetAllBaselineFarms();
         ProgressionProfileDatabase db = new();
         BasicList<ProgressionProfileDocument> list = [];
         foreach (var farm in farms)
@@ -16,6 +16,7 @@ public static class ImportProgressionProfileClass
             }
             );
         }
+        list.AddRange(ProgressionProfileDocument.PopulateEmptyForCoins());
         await db.ImportAsync(list);
     }
 }

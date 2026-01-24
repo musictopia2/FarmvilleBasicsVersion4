@@ -3,14 +3,17 @@ internal static class FarmHelperClass
 {
 
 
-    extension(FarmKey farm)
-    {
-        public FarmKey AsMain => farm with { Slot = EnumFarmSlot.Main };
-        public FarmKey AsAlternative => farm with { Slot = EnumFarmSlot.Alternative };
-        public bool IsMain => farm.Slot == EnumFarmSlot.Main;
-        public bool IsAlternative => farm.Slot == EnumFarmSlot.Alternative;
-    }
+    public static BasicList<TDocument> CreateDocumentsForCoins<TDocument>(Func<FarmKey, TDocument> factory)
+        where TDocument : IFarmDocument
+        {
+            BasicList<TDocument> output = [];
+            foreach (var farm in GetAllCoinFarms())
+            {
+                output.Add(factory(farm));
+            }
 
+            return output;
+        }
 
     private static BasicList<FarmKey> GetFarmsForSlot(EnumFarmSlot slot)
     {
@@ -20,7 +23,9 @@ internal static class FarmHelperClass
         BasicList<string> profiles = [ProfileIdList.Test];
 
         foreach (var player in players)
+        {
             foreach (var theme in themes)
+            {
                 foreach (var profile in profiles)
                 {
                     output.Add(new FarmKey
@@ -31,16 +36,27 @@ internal static class FarmHelperClass
                         Slot = slot
                     });
                 }
+            }
+        }
 
         return output;
     }
 
     public static BasicList<FarmKey> GetAllMainFarms() => GetFarmsForSlot(EnumFarmSlot.Main);
-    public static BasicList<FarmKey> GetAllAlternativeFarms() => GetFarmsForSlot(EnumFarmSlot.Alternative);
-    public static BasicList<FarmKey> GetAllCompleteFarms()
+    public static BasicList<FarmKey> GetAllCoinFarms() => GetFarmsForSlot(EnumFarmSlot.Coin);
+    public static BasicList<FarmKey> GetAllCooperativeFarms() => GetFarmsForSlot(EnumFarmSlot.Cooperative);
+    // Baseline = farms that get the full “normal” world setup (Main + Cooperative)
+    public static BasicList<FarmKey> GetAllBaselineFarms()
     {
         var output = GetAllMainFarms();
-        output.AddRange(GetAllAlternativeFarms());
+        output.AddRange(GetAllCooperativeFarms());
+        return output;
+    }
+    // Complete = all farms that exist (Baseline + Coin)
+    public static BasicList<FarmKey> GetAllCompleteFarms()
+    {
+        var output = GetAllBaselineFarms();
+        output.AddRange(GetAllCoinFarms());
         return output;
     }
 

@@ -2,5 +2,6 @@
 public enum EnumFarmSlot
 {
     Main,
-    Alternative
+    Coin,
+    Cooperative
 }

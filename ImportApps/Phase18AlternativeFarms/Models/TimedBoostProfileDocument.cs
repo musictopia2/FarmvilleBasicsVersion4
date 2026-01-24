@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public sealed class TimedBoostProfileDocument : IFarmDocument
+public sealed class TimedBoostProfileDocument : IFarmDocument, IFarmDocumentFactory<TimedBoostProfileDocument>
 {
     public required FarmKey Farm { get; set; }
 
@@ -8,4 +8,12 @@ public sealed class TimedBoostProfileDocument : IFarmDocument
 
     // currently running boosts
     public BasicList<ActiveTimedBoost> Active { get; set; } = [];
+
+    public static TimedBoostProfileDocument CreateEmpty(FarmKey farm)
+    {
+        return new()
+        {
+            Farm = farm
+        };
+    }
 }

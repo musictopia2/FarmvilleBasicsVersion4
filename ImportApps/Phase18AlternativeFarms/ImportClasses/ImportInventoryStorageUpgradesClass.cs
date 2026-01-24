@@ -3,7 +3,7 @@ internal static class ImportInventoryStorageUpgradesClass
 {
     public static async Task ImportInventoryStorageUpgradesAsync()
     {
-        var firsts = FarmHelperClass.GetAllFarms();
+        var firsts = FarmHelperClass.GetAllBaselineFarms();
         BasicList<InventoryStorageUpgradePlanDocument> list = [];
         foreach (var farm in firsts)
         {
@@ -19,6 +19,7 @@ internal static class ImportInventoryStorageUpgradesClass
             };
             list.Add(upgrade);
         }
+        list.AddRange(InventoryStorageUpgradePlanDocument.PopulateEmptyForCoins());
         InventoryStorageUpgradePlanDatabase db = new();
         await db.ImportAsync(list);
     }

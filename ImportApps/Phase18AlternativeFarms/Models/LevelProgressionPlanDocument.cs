@@ -1,5 +1,5 @@
 ﻿namespace Phase18AlternativeFarms.Models;
-public class LevelProgressionPlanDocument : IFarmDocument
+public class LevelProgressionPlanDocument : IFarmDocument, IFarmDocumentFactory<LevelProgressionPlanDocument>
 {
     required public FarmKey Farm { get; init; }
 
@@ -12,4 +12,12 @@ public class LevelProgressionPlanDocument : IFarmDocument
     /// Ordered list of level tiers (Level 1 uses Tiers[0], Level 2 uses Tiers[1], etc.).
     /// </summary>
     public BasicList<LevelProgressionTier> Tiers { get; init; } = [];
+
+    public static LevelProgressionPlanDocument CreateEmpty(FarmKey farm)
+    {
+        return new()
+        {
+            Farm = farm
+        };
+    }
 }

@@ -3,12 +3,13 @@ public static class ImportCropProgressionClass
 {
     public static async Task ImportCropsAsync()
     {
-        var firsts = FarmHelperClass.GetAllFarms();
+        var firsts = FarmHelperClass.GetAllBaselineFarms();
         BasicList<CropProgressionPlanDocument> list = [];
         foreach (var item in firsts)
         {
             list.Add(GeneratePlanFarm(item));
         }
+        list.AddRange(CropProgressionPlanDocument.PopulateEmptyForCoins());
         CropProgressionPlanDatabase db = new();
         await db.ImportAsync(list);
     }

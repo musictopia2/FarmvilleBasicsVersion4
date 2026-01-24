@@ -8,15 +8,50 @@ public static class ImportTreeInstanceClass
         _catalogOfferDatabase = new();
         _levelProfile = new();
         BasicList<TreeInstanceDocument> list = [];
-        var farms = FarmHelperClass.GetAllFarms();
-        foreach ( var farm in farms )
+        var farms = FarmHelperClass.GetAllBaselineFarms();
+        foreach (var farm in farms)
         {
-            list.Add(await CreateInstanceAsync(farm));
+            list.Add(await CreateBaselineInstanceAsync(farm));
+        }
+        farms = FarmHelperClass.GetAllCoinFarms();
+        foreach (var farm in farms)
+        {
+            list.Add(await CreateCoinInstanceAsync(farm));
         }
         TreeInstanceDatabase db = new();
         await db.ImportAsync(list);
     }
-    private static async Task<TreeInstanceDocument> CreateInstanceAsync(FarmKey farm)
+    private static async Task<TreeInstanceDocument> CreateCoinInstanceAsync(FarmKey farm)
+    {
+        InstantUnlimitedInstanceDatabase db = new();
+        var list = await db.GetUnlockedItems(farm);
+        TreeRecipeDatabase r = new();
+        var recipes = await r.GetRecipesAsync();
+        BasicList<TreeAutoResumeModel> trees = [];
+        //will allow 3 trees for this.
+        recipes.ForConditionalItems(x => x.Theme == farm.Theme, recipe =>
+        {
+            if (list.Any(x => x.Name == recipe.Item) == false)
+            {
+                3.Times(x =>
+                {
+                    trees.Add(new()
+                    {
+                        TreeName = recipe.TreeName,
+                        Unlocked = true
+                    });
+                });
+            }
+        });
+        return new TreeInstanceDocument
+        {
+            Farm = farm,
+            Trees = trees
+        };
+    }
+
+
+    private static async Task<TreeInstanceDocument> CreateBaselineInstanceAsync(FarmKey farm)
     {
         InstantUnlimitedInstanceDatabase db = new();
         var list = await db.GetUnlockedItems(farm);

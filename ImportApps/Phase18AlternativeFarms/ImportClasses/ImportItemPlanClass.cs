@@ -3,18 +3,106 @@ public static class ImportItemPlanClass
 {
     public static async Task ImportItemsAsync()
     {
-        var farms = FarmHelperClass.GetAllFarms();
+        var farms = FarmHelperClass.GetAllBaselineFarms();
         BasicList<ItemPlanDocument> list = [];
         foreach (var farm in farms)
         {
-            list.Add(await GetPlanAsync(farm));
+            list.Add(await GetBaselinePlanAsync(farm));
+        }
+        farms = FarmHelperClass.GetAllCoinFarms();
+        foreach (var farm in farms)
+        {
+            list.Add(await GetCoinPlanAsync(farm));
         }
         ItemPlanDatabase db = new();
         await db.ImportAsync(list);
     }
-    private static async Task<ItemPlanDocument> GetPlanAsync(FarmKey farm)
+    private static async Task<ItemPlanDocument> GetCoinPlanAsync(FarmKey farm)
     {
-        BasicList<ItemPlanModel> items = await GetPossibleItemsAsync(farm);
+        BasicList<ItemPlanModel> items = await GetPossibleCoinItemsAsync(farm);
+        return new()
+        {
+            Farm = farm,
+            ItemList = items
+        };
+    }
+    private static async Task<BasicList<ItemPlanModel>> GetPossibleCoinItemsAsync(FarmKey farm)
+    {
+        BasicList<ItemPlanModel> output = [];
+        //must use receipes
+        CropRecipeDatabase cropdb = new();
+        var crops = await cropdb.GetRecipesAsync();
+        crops.ForConditionalItems(x => x.Theme == farm.Theme, crop =>
+        {
+            output.Add(new()
+            {
+                Category = EnumItemCategory.Crop,
+                ItemName = crop.Item,
+                MinLevel = 1,
+            });
+        });
+        TreeRecipeDatabase treedb = new();
+        var trees = await treedb.GetRecipesAsync();
+        trees.ForConditionalItems(x => x.Theme == farm.Theme, tree =>
+        {
+            output.Add(new()
+            {
+                Category = EnumItemCategory.Tree,
+                ItemName = tree.Item,
+                MinLevel = 1,
+                Source = tree.TreeName
+            });
+        });
+        AnimalRecipeDatabase animaldb = new();
+        var animals = await animaldb.GetRecipesAsync();
+        animals.ForConditionalItems(x => x.Theme == farm.Theme, animal =>
+        {
+            foreach (var option in animal.Options)
+            {
+                if (output.Any(x => x.ItemName == option.Output.Item) == false)
+                {
+                    output.Add(new()
+                    {
+                        Category = EnumItemCategory.Animal,
+                        ItemName = option.Output.Item,
+                        MinLevel = 1,
+                        Source = animal.Animal
+                    });
+                }
+            }
+        });
+        WorkshopRecipeDatabase workshopdb = new();
+        var workshops = await workshopdb.GetRecipesAsync();
+        workshops.ForConditionalItems(x => x.Theme == farm.Theme, workshop =>
+        {
+            output.Add(new()
+            {
+                Category = EnumItemCategory.Workshop,
+                ItemName = workshop.Item,
+                MinLevel = 1,
+                Source = workshop.BuildingName
+            });
+        });
+        WorksiteRecipeDatabase worksitedb = new();
+        var worksites = await worksitedb.GetRecipesAsync();
+        worksites.ForConditionalItems(x => x.Theme == farm.Theme, worksite =>
+        {
+            worksite.BaselineBenefits.ForConditionalItems(x => x.Optional == false, benefit =>
+            {
+                output.Add(new()
+                {
+                    Category = EnumItemCategory.Worksite,
+                    ItemName = benefit.Item,
+                    MinLevel = 1,
+                    Source = worksite.Location
+                });
+            });
+        });
+        return output;
+    }
+    private static async Task<ItemPlanDocument> GetBaselinePlanAsync(FarmKey farm)
+    {
+        BasicList<ItemPlanModel> items = await GetPossibleBaselineItemsAsync(farm);
         return new()
         {
             Farm = farm,
@@ -77,7 +165,7 @@ public static class ImportItemPlanClass
         }
     }
 
-    private static async Task<BasicList<ItemPlanModel>> GetPossibleItemsAsync(FarmKey farm)
+    private static async Task<BasicList<ItemPlanModel>> GetPossibleBaselineItemsAsync(FarmKey farm)
     {
         Dictionary<string, ItemPlanInfo> itemMap = new(StringComparer.OrdinalIgnoreCase);
 

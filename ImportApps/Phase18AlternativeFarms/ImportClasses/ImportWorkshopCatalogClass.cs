@@ -1,8 +1,8 @@
 ﻿namespace Phase18AlternativeFarms.ImportClasses;
 internal static class ImportWorkshopCatalogClass
 {
-    private static EnumCatalogCategory _category = EnumCatalogCategory.Workshop;
-    private static TimeSpan _duration = TimeSpan.FromHours(2);
+    private readonly static EnumCatalogCategory _category = EnumCatalogCategory.Workshop;
+    private readonly static TimeSpan _duration = TimeSpan.FromHours(2);
     public static BasicList<CatalogOfferModel> GetWorkshopOffers(FarmKey farm)
     {
         if (farm.Theme == FarmThemeList.Tropical)

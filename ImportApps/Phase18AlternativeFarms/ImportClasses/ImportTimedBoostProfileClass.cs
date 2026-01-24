@@ -6,11 +6,12 @@ public static class ImportTimedBoostProfileClass
     {
         _catalogOfferDatabase = new();
         BasicList<TimedBoostProfileDocument> list = [];
-        var firsts = FarmHelperClass.GetAllFarms();
+        var firsts = FarmHelperClass.GetAllBaselineFarms();
         foreach (var item in firsts)
         {
             list.Add(await CreateInstanceAsync(item));
         }
+        list.AddRange(TimedBoostProfileDocument.PopulateEmptyForCoins()); //i assume the coin farm will not do timed boosts.
         TimedBoostProfileDatabase db = new();
         await db.ImportAsync(list);
     }

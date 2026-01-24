@@ -3,7 +3,7 @@ public static class ImportStoreUiStateClass
 {
     public static async Task ImportUiStoreStateAsync()
     {
-        BasicList<FarmKey> farms = FarmHelperClass.GetAllFarms();
+        BasicList<FarmKey> farms = FarmHelperClass.GetAllCompleteFarms();
         BasicList<StoreUiStateDocument> list = [];
         foreach (var item in farms)
         {

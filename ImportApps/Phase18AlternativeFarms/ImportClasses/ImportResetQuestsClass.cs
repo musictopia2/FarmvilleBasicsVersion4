@@ -1,10 +1,9 @@
 ﻿namespace Phase18AlternativeFarms.ImportClasses;
-
 public static class ImportResetQuestsClass
 {
     public static async Task ResetQuestsAsync()
     {
-        var farms = FarmHelperClass.GetAllFarms();
+        var farms = FarmHelperClass.GetAllCompleteFarms(); //i think all need this too.
         BasicList<QuestProfileDocument> list = [];
         foreach (var farm in farms)
         {

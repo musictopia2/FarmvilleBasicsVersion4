@@ -4,7 +4,7 @@ public static class ImportInventoryStorageProfileClass
     public static async Task ImportInventoryProfilesAsync()
     {
         //for this version, do the same for both players.
-        var farms = FarmHelperClass.GetAllFarms();
+        var farms = FarmHelperClass.GetAllBaselineFarms();
         InventoryStorageUpgradePlanDatabase others = new();
         
         InventoryStorageProfileDatabase db = new();
@@ -19,6 +19,20 @@ public static class ImportInventoryStorageProfileClass
                 SiloLevel = 0,
                 BarnSize = upgrades.BarnUpgrades.First().Size,
                 SiloSize = upgrades.SiloUpgrades.First().Size
+            };
+            list.Add(document);
+        }
+
+        farms = FarmHelperClass.GetAllCoinFarms();
+        foreach (var farm in farms)
+        {
+            InventoryStorageProfileDocument document = new()
+            {
+                Farm = farm,
+                BarnLevel = 0,
+                SiloLevel = 0,
+                BarnSize = 1000,
+                SiloSize = 1000
             };
             list.Add(document);
         }

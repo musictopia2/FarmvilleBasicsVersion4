@@ -10,4 +10,9 @@ internal class WorkerRecipeDatabase() : ListDataAccess<WorkerRecipeDocument>
     {
         await UpsertRecordsAsync(list);
     }
+    public async Task<BasicList<WorkerRecipeDocument>> GetWorkersAsync(string theme)
+    {
+        var list = await GetDocumentsAsync();
+        return list.Where(x => x.Theme == theme).ToBasicList();
+    }
 }

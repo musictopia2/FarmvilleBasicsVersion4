@@ -4,13 +4,13 @@ public static class ImportCatalogOfferClass
     public static async Task ImportCatalogAsync()
     {
         CatalogOfferDatabase db = new();
-        var firsts = FarmHelperClass.GetAllMainFarms(); //only main farm should do any of this.
+        var firsts = FarmHelperClass.GetAllBaselineFarms(); //only baseline farms.
         BasicList<CatalogOfferDocument> list = [];
         foreach (var item in firsts)
         {
             list.Add(GenerateCatalogFarm(item));
         }
-        firsts = FarmHelperClass.GetAllAlternativeFarms();
+        firsts = FarmHelperClass.GetAllCoinFarms();
         foreach (var item in firsts)
         {
             list.Add(new()

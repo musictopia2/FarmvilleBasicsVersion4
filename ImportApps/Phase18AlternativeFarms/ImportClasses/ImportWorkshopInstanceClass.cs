@@ -17,15 +17,51 @@ internal static class ImportWorkshopInstanceClass
         _workshopProgression = new();
         _levelProfile = new();
         BasicList<WorkshopInstanceDocument> list = [];
-        var farms = FarmHelperClass.GetAllFarms();
+        var farms = FarmHelperClass.GetAllBaselineFarms();
         foreach (var farm in farms)
         {
-            list.Add(await CreateInstanceAsync(farm));
+            list.Add(await CreateBaselineInstanceAsync(farm));
+        }
+        farms = FarmHelperClass.GetAllCoinFarms();
+        foreach (var farm in farms)
+        {
+            list.Add(CreateCoinInstance(farm));
         }
         WorkshopInstanceDatabase db = new();
         await db.ImportAsync(list);
     }
-    private static async Task<WorkshopInstanceDocument> CreateInstanceAsync(FarmKey farm)
+    private static WorkshopInstanceDocument CreateCoinInstance(FarmKey farm)
+    {
+        BasicList<WorkshopAutoResumeModel> workshops = [];
+        var buildings = _recipes
+            .Where(r => r.Theme == farm.Theme)
+            .Select(r => r.BuildingName)
+            .Distinct()
+            .ToBasicList();
+        if (buildings.Count == 0)
+        {
+            throw new CustomBasicException(
+                $"No workshop buildings found for Theme='{farm.Theme}' ProfileId='{farm.ProfileId}'.");
+        }
+        foreach (var building in buildings)
+        {
+            2.Times(_ =>
+            {
+                workshops.Add(new WorkshopAutoResumeModel
+                {
+                    Name = building,
+                    Capacity = 9
+                });
+            });
+        }
+
+        return new()
+        {
+            Farm = farm,
+            Workshops = workshops
+        };
+    }
+    private static async Task<WorkshopInstanceDocument> CreateBaselineInstanceAsync(FarmKey farm)
     {
         BasicList<WorkshopAutoResumeModel> workshops = [];
         var workshopPlan = await _workshopProgression.GetPlanAsync(farm);

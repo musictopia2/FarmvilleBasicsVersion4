@@ -6,20 +6,43 @@ public static class ImportInventoryStockClass
     public static async Task ImportBeginningInventoryAmountsAsync()
     {
         BasicList<InventoryStockDocument> list = [];
-        var farms = FarmHelperClass.GetAllFarms();
-        ProgressionProfileDatabase t = new();
+        var farms = FarmHelperClass.GetAllBaselineFarms();
         _levelProfile = new();
         _cropProgression = new();
         foreach (var farm in farms)
         {
-            list.Add(await GetInventoryAsync(farm));
+            list.Add(await GetBaselineInventoryAsync(farm));
         }
-       
+        farms = FarmHelperClass.GetAllCoinFarms();
+        CropRecipeDatabase recipeDb = new();
+        var recipes = await recipeDb.GetRecipesAsync();
+        foreach (var farm in farms)
+        {
+            list.Add(GetCoinInventory(farm, recipes));
+        }
         InventoryStockDatabase db = new();
         await db.ImportAsync(list);
     }
-
-    private static async Task<InventoryStockDocument> GetInventoryAsync(FarmKey farm)
+    private static InventoryStockDocument GetCoinInventory(FarmKey farm, BasicList<CropRecipeDocument> recipes)
+    {
+        Dictionary<string, int> amounts = [];
+        recipes.ForConditionalItems(x => x.Theme == farm.Theme, recipe =>
+        {
+            amounts.Add(recipe.Item, 10);
+        });
+        //if i give extras, decide how many i get for the scenario.
+        amounts.Add(CurrencyKeys.SpeedSeed, 10);
+        amounts.Add(CurrencyKeys.FinishSingleWorksite, 3); //choose wisely when to use it.
+        amounts.Add(CurrencyKeys.FinishSingleWorkshop, 3);
+        amounts.Add(CurrencyKeys.PowerGloveWorkshop, 5);
+        amounts.Add(CurrencyKeys.PowerGloveWorksite, 5);
+        return new()
+        {
+            Farm = farm,
+            List = amounts
+        };
+    }
+    private static async Task<InventoryStockDocument> GetBaselineInventoryAsync(FarmKey farm)
     {
         Dictionary<string, int> amounts = [];
 
@@ -42,22 +65,6 @@ public static class ImportInventoryStockClass
         amounts.Add(CurrencyKeys.FinishSingleWorksite, 2);
         amounts.Add(CurrencyKeys.FinishAllWorksites, 1);
         amounts.Add(CurrencyKeys.FinishAllWorkshops, 2);
-        //amounts.Add(CurrencyKeys.PowerGloveWorksite, 20);
-        //amounts.Add(CurrencyKeys.PowerGloveWorkshop, 20);
-
-        //if (farm.Theme == FarmThemeList.Country)
-        //{
-        //    amounts.Add(CountryItemList.Flour, 20);
-        //    amounts.Add(CountryItemList.Milk, 10);
-        //    amounts.Add(CountryItemList.Apple, 60); //so i can apple pies now.
-        //}
-
-        //amounts.Add(CurrencyKeys.SpeedSeed, 10); //you get 10 speed seeds.  once gone, that is it.
-        //if (farm.Theme == FarmThemeList.Country)
-        //{
-        //    amounts.Add(CountryItemList.GranolaBar, 2);
-        //    amounts.Add(CountryItemList.Blanket, 2);
-        //}
         return new()
         {
             Farm = farm,

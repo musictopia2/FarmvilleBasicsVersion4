@@ -21,21 +21,21 @@ public static class ImportAnimalInstanceClass
         BasicList<AnimalInstanceDocument> docs = [];
 
         // Main
-        foreach (var farm in FarmHelperClass.GetAllMainFarms())
+        foreach (var farm in FarmHelperClass.GetAllBaselineFarms())
         {
-            docs.Add(await CreateMainInstanceAsync(farm));
+            docs.Add(await CreateBaselineInstanceAsync(farm));
         }
 
         // Alternative
-        foreach (var farm in FarmHelperClass.GetAllAlternativeFarms())
+        foreach (var farm in FarmHelperClass.GetAllCoinFarms())
         {
-            docs.Add(await CreateAlternativeInstanceAsync(farm, animalsPerRecipe: 3));
+            docs.Add(await CreateCoinInstanceAsync(farm, animalsPerRecipe: 3));
         }
 
         AnimalInstanceDatabase db = new();
         await db.ImportAsync(docs);
     }
-    private static async Task<AnimalInstanceDocument> CreateAlternativeInstanceAsync(FarmKey farm, int animalsPerRecipe)
+    private static async Task<AnimalInstanceDocument> CreateCoinInstanceAsync(FarmKey farm, int animalsPerRecipe)
     {
         // If alt farm truly has no store, don’t touch catalog/level here.
         InstantUnlimitedInstanceDatabase unlimitedDb = new();
@@ -91,7 +91,7 @@ public static class ImportAnimalInstanceClass
     }
 
 
-    private static async Task<AnimalInstanceDocument> CreateMainInstanceAsync(FarmKey farm)
+    private static async Task<AnimalInstanceDocument> CreateBaselineInstanceAsync(FarmKey farm)
     {
         InstantUnlimitedInstanceDatabase db = new();
         var list = await db.GetUnlockedItems(farm);

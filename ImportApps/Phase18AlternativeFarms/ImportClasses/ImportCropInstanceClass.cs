@@ -1,7 +1,6 @@
 ﻿namespace Phase18AlternativeFarms.ImportClasses;
 public static class ImportCropInstanceClass
 {
-
     private static CropProgressionPlanDatabase _cropProgression = null!;
     private static ProgressionProfileDatabase _levelProfile = null!;
     public static async Task ImportCropsAsync()
@@ -9,20 +8,51 @@ public static class ImportCropInstanceClass
         BasicList<CropInstanceDocument> list = [];
         _cropProgression = new();
         _levelProfile = new();
-        // Production farms for MVP1 (same slot count for both players and both themes)
-
-        var firsts = FarmHelperClass.GetAllFarms();
+        var firsts = FarmHelperClass.GetAllBaselineFarms();
         foreach (var farm in firsts)
         {
-            list.Add(await CreateInstanceAsync(farm));
+            list.Add(await CreateBaselineInstanceAsync(farm));
         }
-
+        firsts = FarmHelperClass.GetAllCoinFarms();
+        CropRecipeDatabase recipeDb = new();
+        var recipes = await recipeDb.GetRecipesAsync();
+        foreach (var farm in firsts)
+        {
+            list.Add(await CreateCoinInstancesAsync(farm, recipes));
+        }
         CropInstanceDatabase db = new();
         await db.ImportAsync(list);
     }
+    private static async Task<CropInstanceDocument> CreateCoinInstancesAsync(FarmKey farm, BasicList<CropRecipeDocument> recipes)
+    {
+        BasicList<CropAutoResumeModel> slots = [];
+        BasicList<CropDataModel> crops = [];
+        InstantUnlimitedInstanceDatabase db = new();
+        var list = await db.GetUnlockedItems(farm);
+        35.Times(_ => slots.Add(new CropAutoResumeModel()));
+        recipes.ForConditionalItems(x => x.Theme == farm.Theme, recipe =>
+        {
+            if (list.Any(x => x.Name == recipe.Item) == false)
+            {
+                crops.Add(new()
+                {
+                    Unlocked = true,
+                    Item = recipe.Item,
+                    IsSuppressed = false
+                });
+            }
+        });
+        CropInstanceDocument output = new()
+        {
+            Farm = farm,
+            Crops = crops,
+            Slots = slots
 
+        };
+        return output;
+    }
 
-    private static async Task<CropInstanceDocument> CreateInstanceAsync (FarmKey farm)
+    private static async Task<CropInstanceDocument> CreateBaselineInstanceAsync(FarmKey farm)
     {
         BasicList<CropAutoResumeModel> slots = [];
         BasicList<CropDataModel> crops = [];
@@ -74,7 +104,5 @@ public static class ImportCropInstanceClass
 
         };
         return output;
-
     }
-
 }

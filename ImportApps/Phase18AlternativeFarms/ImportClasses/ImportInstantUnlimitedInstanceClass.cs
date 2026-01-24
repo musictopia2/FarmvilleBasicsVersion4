@@ -1,34 +1,72 @@
 ﻿namespace Phase18AlternativeFarms.ImportClasses;
 public static class ImportInstantUnlimitedInstanceClass
 {
-    //private static AnimalProgressionPlanDatabase _animalProgression = null!;
     private static CatalogOfferDatabase _catalogOfferDatabase = null!;
-    //this time, don't even need level.
-    //private static ProgressionProfileDatabase _levelProfile = null!;
-    //private static BasicList<AnimalRecipeDocument> _recipes = [];
     public static async Task ImportInstantUnlimitedAsync()
     {
         _catalogOfferDatabase = new();
         BasicList<InstantUnlimitedInstanceDocument> list = [];
-        var firsts = FarmHelperClass.GetAllFarms();
+        var firsts = FarmHelperClass.GetAllBaselineFarms();
         foreach (var item in firsts)
         {
-            list.Add(await CreateInstanceAsync(item));
+            list.Add(await CreateBaselineInstanceAsync(item));
+        }
+        firsts = FarmHelperClass.GetAllCoinFarms();
+        foreach (var item in firsts)
+        {
+            if (item.Theme == FarmThemeList.Tropical)
+            {
+                list.Add(CreateTropicalCoinInstances(item));
+            }
+            else if (item.Theme == FarmThemeList.Country)
+            {
+                list.Add(CreateCountryCoinInstances(item));
+            }
+            else
+            {
+                throw new CustomBasicException("Not Supported");
+            }
         }
         InstantUnlimitedInstanceDatabase db = new();
         await db.ImportAsync(list);
     }
-    private static async Task<InstantUnlimitedInstanceDocument> CreateInstanceAsync(FarmKey farm)
+    private static InstantUnlimitedInstanceDocument CreateTropicalCoinInstances(FarmKey farm)
+    {
+        BasicList<string> names =
+            [
+                TropicalItemList.Fish,
+                TropicalItemList.Pineapple,
+                TropicalItemList.Coconut
+            ];
+        InstantUnlimitedInstanceDocument doc = new()
+        {
+            Farm = farm
+        };
+        doc.Items.UnlockSeveralItems(names);
+        return doc;
+    }
+    private static InstantUnlimitedInstanceDocument CreateCountryCoinInstances(FarmKey farm)
+    {
+        BasicList<string> names =
+            [
+                CountryItemList.Milk,
+                CountryItemList.Wheat,
+                CountryItemList.Apple
+            ];
+        InstantUnlimitedInstanceDocument doc = new()
+        {
+            Farm = farm
+        };
+        doc.Items.UnlockSeveralItems(names);
+        return doc;
+    }
+    private static async Task<InstantUnlimitedInstanceDocument> CreateBaselineInstanceAsync(FarmKey farm)
     {
         BasicList<UnlockModel> list = [];
-        var plan = await _catalogOfferDatabase.GetCatalogAsync(farm, EnumCatalogCategory.InstantUnlimited);
-        foreach (var item in plan)
+        var offers = await _catalogOfferDatabase.GetCatalogAsync(farm, EnumCatalogCategory.InstantUnlimited);
+        foreach (var item in offers)
         {
-            bool unlocked = true;
-            if (item.Costs.Count > 0)
-            {
-                unlocked = false; //you have to pay for it first.
-            }
+            bool unlocked = item.Costs.Count == 0;
             list.Add(new()
             {
                 Name = item.TargetName,
