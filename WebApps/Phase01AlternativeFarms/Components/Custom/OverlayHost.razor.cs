@@ -1,6 +1,7 @@
 namespace Phase01AlternativeFarms.Components.Custom;
 public partial class OverlayHost(OverlayService overlay) : IDisposable
 {
+    private string _flexibleHeader => Key.IsBaseline ? "Orders" : "Tasks";
     public void Dispose()
     {
         overlay.Changed -= Refresh;

@@ -5,7 +5,8 @@ namespace Phase01AlternativeFarms.Components.Custom;
 
 public partial class MainComponent(NavigationManager nav, OverlayService service,
     IToast toast, IntegerPickerService quantityPickerService,
-    IntegerActionPickerService actionPickerService
+    IntegerActionPickerService actionPickerService,
+    FarmTransferService farmTransfer
     ) : IDisposable
 {
 
@@ -36,6 +37,11 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
 
     private bool _showAllWorksites = false;
     private bool _showAllWorkshops = false;
+
+    private async Task TransferCoinsAsync()
+    {
+        await ScenarioManager.ClaimRewardAsync(nav, Key, farmTransfer);
+    }
 
     //leave it commented out until i prove my new system works.
 

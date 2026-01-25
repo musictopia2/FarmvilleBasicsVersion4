@@ -3,11 +3,12 @@ public class OverlayService(PopupRegistry popup, FarmContext farm)
 {
     public event Action? Changed;
     public IToast? Toast { get; set; }
-    public bool ShowQuestBook { get; private set; }
+    public bool ShowQuestOrScenarioBook { get; private set; }
     public bool ShowAnimals { get; private set; }
     public bool ShowTrees { get; private set; }
     public bool ShowCrops { get; private set;  }
     public bool ShowLevelDetails { get; private set; }
+    
     public bool ShowWorkshops => CurrentWorkshop is not null;
     public bool ShowWorksites => CurrentWorksite is not null;
     public void Init()
@@ -130,15 +131,15 @@ public class OverlayService(PopupRegistry popup, FarmContext farm)
     }
 
 
-    public async Task OpenQuestBookAsync()
+    public async Task OpenQuestOrScenarioBookAsync()
     {
         await CloseAllAsync();
-        ShowQuestBook = true;
+        ShowQuestOrScenarioBook = true;
         Changed?.Invoke();
     }
-    public void CloseQuestBook()
+    public void CloseQuestOrScenarioBook()
     {
-        ShowQuestBook = false;
+        ShowQuestOrScenarioBook = false;
         Changed?.Invoke();
     }
     public void SetWorkshopVisible(bool visible)
@@ -232,7 +233,7 @@ public class OverlayService(PopupRegistry popup, FarmContext farm)
     }
     public void Reset()
     {
-        ShowQuestBook = false;
+        ShowQuestOrScenarioBook = false;
         ShowTrees = false;
         ShowCrops = false;
         CurrentWorksite = null;

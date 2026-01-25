@@ -14,7 +14,14 @@
     </PrimaryButton>
     return;
 }
-
+@if (_status == EnumScenarioStatus.WaitingToClaim)
+{
+    int coins = ScenarioManager.Reward;
+    <PrimaryButton FontSize="5rem" OnClick="TransferCoinsAsync">
+        Completed Tasks. Transfer Your Reward Of @ScenarioManager.Reward
+    </PrimaryButton>
+    return;
+}
 <CascadingValue IsFixed=true Value="_overlays">
     <IntegerInputModal Visible="quantityPickerService.Visible"
         MaxValue="quantityPickerService.MaxValue"
@@ -161,9 +168,7 @@
             }
             else
             {
-                <div>
-                    Start thinking about creating the scenario processes.
-                </div>
+               <ScenarioTrackerComponent />
             }
         </HeaderContent>
         <MainContent>
