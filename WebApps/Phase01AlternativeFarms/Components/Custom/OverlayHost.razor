@@ -21,15 +21,28 @@
                    Location="@overlay.CurrentWorksite"
                    Visible="overlay.ShowWorksites"
                    VisibleChanged="overlay.SetWorksiteVisible" />
+@if (Key.IsBaseline)
+{
+    <PopupViewport Visible="overlay.ShowQuestBook"
+                   HeaderTitle="Orders"
+                   CloseButtonClick="overlay.CloseQuestBook">
+        <StopClickPropagation>
+            <QuestBookComponent />
+        </StopClickPropagation>
 
-<PopupViewport Visible="overlay.ShowQuestBook"
-               HeaderTitle="Orders"
-               CloseButtonClick="overlay.CloseQuestBook">
-    <StopClickPropagation>
-        <QuestBookComponent />
-    </StopClickPropagation>
-    
-</PopupViewport>
+    </PopupViewport>
+}
+else //something else.   needs to create this.
+{
+    <PopupViewport Visible="overlay.ShowQuestBook"
+                   HeaderTitle="Orders"
+                   CloseButtonClick="overlay.CloseQuestBook">
+        <StopClickPropagation>
+            <QuestBookComponent />
+        </StopClickPropagation>
+
+    </PopupViewport>
+}
 
 <PopupViewport Visible="overlay.ShowAnimals"
                VisibleChanged="overlay.SetAnimalsVisible"

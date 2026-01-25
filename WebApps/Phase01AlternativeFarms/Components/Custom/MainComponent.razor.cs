@@ -1,21 +1,20 @@
 using BasicBlazorLibrary.Components.Layouts;
 using BasicBlazorLibrary.Components.NavigationMenus;
-using Phase01AlternativeFarms.Services.Core;
 
 namespace Phase01AlternativeFarms.Components.Custom;
+
 public partial class MainComponent(NavigationManager nav, OverlayService service,
     IToast toast, IntegerPickerService quantityPickerService,
-    IntegerActionPickerService actionPickerService,
-    FarmTransferService transferService
+    IntegerActionPickerService actionPickerService
     ) : IDisposable
 {
 
-    
+
 
     private NavigationBarContainer? _nav;
 
     private readonly OverlayInsets _overlays = new();
-    
+
     private void VisibleChanged(bool visible)
     {
         quantityPickerService.UpdateVisibleStatus(visible);
@@ -38,23 +37,24 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     private bool _showAllWorksites = false;
     private bool _showAllWorkshops = false;
 
+    //leave it commented out until i prove my new system works.
 
-    private async Task TransferCoinAsync()
-    {
-        if (this.IsCoin == false)
-        {
-            return;
-        }
-        toast.ShowSuccessToast("Sending 1000 coins. Check to make sure its fine");
-        await Task.Delay(2000);
-        //for now, forced to do delay since the reload portion would make the toast go away.
-        //if i did not force reload, then quests gets hosed. (everything else appear okay).
-        FarmKey main = this.AsMain;
-        //figure out how to send to this farm.
-        transferService.AddCoinFromScenarioCompletion(Key, 1000);
-        nav.NavigateTo(main); //this will transfer back to the main.  if everything works, you will have the 1000 coins applied when you are on there.
+    //private async Task TransferCoinAsync()
+    //{
+    //    if (this.IsCoin == false)
+    //    {
+    //        return;
+    //    }
+    //    toast.ShowSuccessToast("Sending 1000 coins. Check to make sure its fine");
+    //    await Task.Delay(2000);
+    //    //for now, forced to do delay since the reload portion would make the toast go away.
+    //    //if i did not force reload, then quests gets hosed. (everything else appear okay).
+    //    FarmKey main = this.AsMain;
+    //    //figure out how to send to this farm.
+    //    transferService.AddCoinFromScenarioCompletion(Key, 1000);
+    //    nav.NavigateTo(main); //this will transfer back to the main.  if everything works, you will have the 1000 coins applied when you are on there.
 
-    }
+    //}
 
     private void ProcessAllWorksites(bool confirmed)
     {
@@ -116,20 +116,36 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
         }
         base.OnAfterRender(firstRender);
     }
+
+    private bool _loaded = false;
+
     protected override void OnInitialized()
     {
-        if (Key.IsCoin)
+        if (Key.IsCoin == false)
         {
-            toast.ShowInfoToast("Coin.  Rethink");
+            _loaded = true;
+            //toast.ShowInfoToast("Coin.  Rethink");
         }
         quantityPickerService.StateChanged = Changed;
         TimedBoostManager.Tick += Changed;
         service.Toast = toast;
         base.OnInitialized();
     }
+    private EnumScenarioStatus _status;
+    private string _nextScenarioStatus = "";
     protected override async Task OnInitializedAsync()
     {
         await service.CloseAllAsync();
+        if (Key.IsCoin)
+        {
+            await ScenarioManager.LoadAsync();
+            _status = ScenarioManager.GetStatus;
+            if (_status == EnumScenarioStatus.Cooldown)
+            {
+                _nextScenarioStatus = ScenarioManager.TimeLeft();
+            }
+            _loaded = true;
+        }
         await base.OnInitializedAsync();
     }
     private void Home()
@@ -171,7 +187,7 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     {
         _showSilo = true;
     }
-    
+
     private void ShowBarn()
     {
         _showBarn = true;

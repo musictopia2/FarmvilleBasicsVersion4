@@ -34,6 +34,8 @@ public static class ImportInventoryStockClass
         amounts.Add(CurrencyKeys.SpeedSeed, 10);
         amounts.Add(CurrencyKeys.FinishSingleWorksite, 3); //choose wisely when to use it.
         amounts.Add(CurrencyKeys.FinishSingleWorkshop, 3);
+        amounts.Add(CurrencyKeys.FinishAllWorksites, 1);
+        amounts.Add(CurrencyKeys.FinishAllWorkshops, 1);
         amounts.Add(CurrencyKeys.PowerGloveWorkshop, 5);
         amounts.Add(CurrencyKeys.PowerGloveWorksite, 5);
         return new()

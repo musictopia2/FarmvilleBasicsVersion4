@@ -1,7 +1,21 @@
 ﻿@inherits FarmComponentBase
-<CascadingValue IsFixed=true Value="_overlays">
+@if (_loaded == false)
+{
+    return;
+}
 
-    
+@if (string.IsNullOrWhiteSpace(_nextScenarioStatus) == false)
+{
+    <div style="font-size: 3rem;">
+        On Cool Down.   Check Back In @_nextScenarioStatus
+    </div>
+    <PrimaryButton FontSize="3rem" OnClick="Home">
+        Back To Home
+    </PrimaryButton>
+    return;
+}
+
+<CascadingValue IsFixed=true Value="_overlays">
     <IntegerInputModal Visible="quantityPickerService.Visible"
         MaxValue="quantityPickerService.MaxValue"
         StartBlank="true"
@@ -141,10 +155,19 @@
             </button>
         </BarContent>
         <HeaderContent>
-            <QuestTrackerComponent />
+            @if (Key.IsBaseline)
+            {
+                <QuestTrackerComponent />
+            }
+            else
+            {
+                <div>
+                    Start thinking about creating the scenario processes.
+                </div>
+            }
         </HeaderContent>
         <MainContent>
-            @if (ProgressionManager.CompletedGame)
+            @if (Key.IsCoin == false && ProgressionManager.CompletedGame)
             {
                 <div>
                     You completed the game
@@ -204,14 +227,7 @@
             <div>
                 <WorksitesComponent />
             </div>
-            @if (this.IsCoin)
-            {
-                <div>
-                    <PrimaryButton OnClick="TransferCoinAsync">
-                        Add 1000 Coins To Main
-                    </PrimaryButton>
-                </div>
-            }
+            
 
             <ImageButtonComponent Name="Barn" Width="100" OnClick="ShowBarn" />
             <ImageButtonComponent Name="Silo" Width="100" OnClick="ShowSilo" />
