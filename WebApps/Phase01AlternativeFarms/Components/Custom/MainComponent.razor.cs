@@ -118,6 +118,10 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     }
     protected override void OnInitialized()
     {
+        if (Key.IsCoin)
+        {
+            toast.ShowInfoToast("Coin.  Rethink");
+        }
         quantityPickerService.StateChanged = Changed;
         TimedBoostManager.Tick += Changed;
         service.Toast = toast;
