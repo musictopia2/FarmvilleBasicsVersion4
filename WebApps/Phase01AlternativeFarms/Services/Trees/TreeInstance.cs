@@ -135,18 +135,27 @@ public class TreeInstance(
             {
                 Unlocked = false;
             }
-            // Start production for next batch
-            _runMultiplier = _currentMultiplier; // LOCK promise
-            State = EnumTreeState.Producing;
-            IsCollecting = false;
+            Reset();
             ReducedBy = reducedBy;
-            // both clocks start now
-            StartedAt = DateTime.Now;
-            TempStart = DateTime.Now;
-            OutputPromise = null; // clear promise to allow new one
-            RunPossibleAugmentation();
+            // Start production for next batch
+
         }
     }
+
+    public void Reset()
+    {
+        _runMultiplier = _currentMultiplier; // LOCK promise
+        State = EnumTreeState.Producing;
+        IsCollecting = false;
+        ReducedBy = TimeSpan.Zero; //may change later.
+        // both clocks start now
+        StartedAt = DateTime.Now;
+        TempStart = DateTime.Now;
+        OutputPromise = null; // clear promise to allow new one
+        RunPossibleAugmentation();
+        _needsSaving = true;
+    }
+
 
     private bool _needsSaving;
     public bool NeedsToSave => _needsSaving;

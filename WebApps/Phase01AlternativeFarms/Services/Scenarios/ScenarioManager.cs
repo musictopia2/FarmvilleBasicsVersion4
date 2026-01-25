@@ -1,5 +1,8 @@
 ﻿namespace Phase01AlternativeFarms.Services.Scenarios;
-public class ScenarioManager(InventoryManager inventoryManager)
+public class ScenarioManager(InventoryManager inventoryManager,
+    CropManager cropManager, TreeManager treeManager, AnimalManager animalManager,
+    WorkshopManager workshopManager, WorksiteManager worksiteManager
+    )
 {
     private int _trackedSeq = 0;
     private ScenarioProfileModel? _currentProfile = null;
@@ -7,15 +10,19 @@ public class ScenarioManager(InventoryManager inventoryManager)
     private IScenarioGenerationService _scenarioGenerationService = null!;
     private BasicList<ScenarioInstance> _tasks = [];
     public event Action? OnUpdated;
-    public async Task SetStyleContextAsync(ScenarioServicesContext context)
+    Dictionary<string, int> _baseLine = [];
+    //private IInventoryStarterRepository _inventoryStarterRepository = null!;
+    public async Task SetStyleContextAsync(ScenarioServicesContext context, FarmKey farm)
     {
+        
         _scenarioProfileDb = context.ScenarioProfile;
         _currentProfile = await context.ScenarioProfile.LoadAsync();
-        _scenarioGenerationService = context.ScenarioGeneration;
         if (_currentProfile is null)
         {
             return; //there is none.
         }
+        _scenarioGenerationService = context.ScenarioGeneration;
+        _baseLine = await context.InventoryStarterRepository.GetBaseLineAsync(farm);
         _tasks = _currentProfile.Tasks;
     }
     public EnumScenarioStatus GetStatus
@@ -281,6 +288,16 @@ public class ScenarioManager(InventoryManager inventoryManager)
             await UpdateAsync();
         }
     }
+    private void ResetFarm()
+    {
+        inventoryManager.ResetInventory(_baseLine);
+        cropManager.ResetAllCropsToEmpty();
+        treeManager.ResetAllTreesToIdle();
+        animalManager.ResetAllAnimalsToIdle();
+        workshopManager.ResetAllWorkshopQueues();
+        worksiteManager.ResetAll();
+    }
+
     public async Task ClaimRewardAsync(NavigationManager nav, FarmKey farm, FarmTransferService transfer)
     {
         if (_currentProfile is null)
@@ -291,6 +308,7 @@ public class ScenarioManager(InventoryManager inventoryManager)
         _tasks = [];                 // optional but safe
         //since you are already notified, no toast needed.
         _currentProfile.Status = EnumScenarioStatus.Cooldown;
+        ResetFarm();
         await UpdateAsync();
 
         int reward = _currentProfile.Rewards;

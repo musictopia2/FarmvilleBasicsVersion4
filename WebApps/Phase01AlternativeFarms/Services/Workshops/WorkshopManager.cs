@@ -16,7 +16,17 @@ public class WorkshopManager(InventoryManager inventory,
     private DateTime _lastSave = DateTime.MinValue;
     private double _multiplier;
     public event Action<ItemAmount>? OnAugmentedOutput;
-
+    public void ResetAllWorkshopQueues()
+    {
+        lock (_lock)
+        {
+            foreach (var w in _workshops)
+            {
+                w.Queue.Clear(); //hopefully this simple (?)
+            }
+            _needsSaving = true;
+        }
+    }
     private WorkshopInstance GetWorkshopById(Guid id)
     {
         var workshop = _workshops.SingleOrDefault(t => t.Id == id) ?? throw new CustomBasicException($"Workshop with Id {id} not found.");

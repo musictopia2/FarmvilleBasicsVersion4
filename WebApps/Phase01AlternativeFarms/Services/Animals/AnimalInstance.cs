@@ -15,7 +15,23 @@ public class AnimalInstance(AnimalRecipe recipe, double currentMultiplier,
 
     public int ProductionOptionsAllowed { get; set; }
     public int TotalProductionOptions => recipe.Options.Count;
-    public AnimalProductionOption NextProductionOption => recipe.Options.Skip(ProductionOptionsAllowed).Take(1).Single();
+    public AnimalProductionOption NextProductionOption
+    {
+        get
+        {
+            var options = recipe.Options;
+            if (options is null || options.Count == 0)
+            {
+                throw new CustomBasicException($"Animal recipe '{recipe.Animal}' has no production options.");
+            }
+
+            // If ProductionOptionsAllowed means "how many are unlocked",
+            // then the "next" option index is exactly ProductionOptionsAllowed,
+            // but clamp so we never go out of range.
+            int index = Math.Min(ProductionOptionsAllowed, options.Count - 1);
+            return options[index];
+        }
+    }
     public string Name => recipe.Animal;
     public string ItemReceived(int selected) => recipe.Options[selected].Output.Item;
 
@@ -288,16 +304,22 @@ public class AnimalInstance(AnimalRecipe recipe, double currentMultiplier,
         OutputReady--;
         if (OutputReady == 0)
         {
-            State = EnumAnimalState.None;
-
-
-            _selected = null;
-
-            // Clear promise for next run
-            _runMultiplier = null;
-            _needsSaving = true;
-            Duration = null;
+            Reset();
+            
         }
+    }
+    public void Reset()
+    {
+        State = EnumAnimalState.None;
+
+
+        _selected = null;
+
+        // Clear promise for next run
+        _runMultiplier = null;
+        _needsSaving = true;
+        Duration = null;
+        Clear();
     }
     public void Clear()
     {

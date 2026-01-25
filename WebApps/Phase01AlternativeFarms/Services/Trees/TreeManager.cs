@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Phase01AlternativeFarms.Services.Trees;
-
+﻿namespace Phase01AlternativeFarms.Services.Trees;
 public class TreeManager(InventoryManager inventory,
     IBaseBalanceProvider baseBalanceProvider,
     ItemRegistry itemRegistry,
@@ -39,8 +36,18 @@ public class TreeManager(InventoryManager inventory,
         }
     }
     public TimeSpan GetTimeForGivenTree(string name) => _recipes.Single(x => x.Item == name).ProductionTimeForEach;
+    public void ResetAllTreesToIdle()
+    {
+        lock (_lock)
+        {
+            foreach (var tree in _trees)
+            {
+                tree.Reset();
+            }
 
-   
+            _needsSaving = true;
+        }
+    }
     public bool CanDeleteRental(Guid id)
     {
         TreeInstance tree = _trees.Single(x => x.Id == id);
@@ -95,7 +102,7 @@ public class TreeManager(InventoryManager inventory,
         _needsSaving = true;
         return instance.Id;
     }
-    
+
     public void UnlockTreePaidFor(StoreItemRowModel store)
     {
         if (store.Category != EnumCatalogCategory.Tree)

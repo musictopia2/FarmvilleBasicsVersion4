@@ -156,12 +156,23 @@ public class WorksiteInstance(WorksiteRecipe recipe, double currentMultiplier,
             }
 
         }
-
-
-
         Workers.Clear();
     }
-
+    public void Reset()
+    {
+        _rewards.Clear();
+        foreach (var item in Workers)
+        {
+            FreeWorker(item);
+        }
+        Focused = false; //no longer focused.
+        Workers.Clear();
+        StartedAt = null;
+        Status = EnumWorksiteState.None;
+        OutputPromise = null;
+        // Run is over; clear promise
+        _runMultiplier = null;
+    }
     public void AddWorkerAfterLoading(WorkerRecipe worker)
     {
         Workers.Add(worker);
@@ -460,19 +471,8 @@ public class WorksiteInstance(WorksiteRecipe recipe, double currentMultiplier,
 
     public void CollectAllRewards()
     {
-        _rewards.Clear();
-
-        foreach (var item in Workers)
-        {
-            FreeWorker(item);
-        }
-        Focused = false; //no longer focused.
-        Workers.Clear();
-        StartedAt = null;
-        Status = EnumWorksiteState.None;
-        OutputPromise = null;
-        // Run is over; clear promise
-        _runMultiplier = null;
+        Reset();
+        
     }
 
     private void RunPossibleAugmentation()

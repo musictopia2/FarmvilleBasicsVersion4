@@ -17,12 +17,18 @@ public class WorksiteManager(
     private bool _needsSaving;
     private DateTime _lastSave = DateTime.MinValue;
     private readonly Lock _lock = new();
-
     public BasicList<string> GetAllUnlockedWorkers()
     {
         return _workerStates.Where(x => x.Unlocked).Select(x => x.Name).ToBasicList();
     }
-
+    public void ResetAll()
+    {
+        foreach (var item in _worksites)
+        {
+            item.Reset();
+        }
+        _needsSaving = true;
+    }
     public BasicList<WorkerRecipe> GetUnlockedWorkers(string location)
     {
         var unlockedNames = _workerStates.Where(x => x.Unlocked).Select(x => x.Name).ToBasicList();

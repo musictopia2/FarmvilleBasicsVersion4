@@ -134,9 +134,20 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
         }
         quantityPickerService.StateChanged = Changed;
         TimedBoostManager.Tick += Changed;
+        ScenarioManager.OnUpdated += TryUpdateTasks;
         service.Toast = toast;
         base.OnInitialized();
     }
+
+    private void TryUpdateTasks()
+    {
+        _status = ScenarioManager.GetStatus;
+        if (_status == EnumScenarioStatus.Cooldown)
+        {
+            _nextScenarioStatus = ScenarioManager.TimeLeft();
+        }
+    }
+
     private EnumScenarioStatus _status;
     private string _nextScenarioStatus = "";
     protected override async Task OnInitializedAsync()
@@ -145,11 +156,7 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
         if (Key.IsCoin)
         {
             await ScenarioManager.LoadAsync();
-            _status = ScenarioManager.GetStatus;
-            if (_status == EnumScenarioStatus.Cooldown)
-            {
-                _nextScenarioStatus = ScenarioManager.TimeLeft();
-            }
+            TryUpdateTasks();
             _loaded = true;
         }
         await base.OnInitializedAsync();
@@ -206,6 +213,8 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     public void Dispose()
     {
         quantityPickerService.StateChanged = null;
+        TimedBoostManager.Tick -= Changed;
+        ScenarioManager.OnUpdated -= TryUpdateTasks;
         GC.SuppressFinalize(this);
     }
 

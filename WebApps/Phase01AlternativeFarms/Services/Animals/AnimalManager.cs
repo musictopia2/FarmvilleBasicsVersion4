@@ -21,6 +21,23 @@ public class AnimalManager(InventoryManager inventory,
     private DateTime _lastSave = DateTime.MinValue;
     private readonly Lock _lock = new();
     private BasicList<AnimalRecipe> _recipes = [];
+
+    public void ResetAllAnimalsToIdle()
+    {
+        lock (_lock)
+        {
+            foreach (var animal in _animals)
+            {
+                animal.Reset();
+            }
+
+            _needsSaving = true;
+        }
+
+        // optional
+        OnAnimalsUpdated?.Invoke();
+    }
+
     public BasicList<AnimalView> GetUnlockedAnimals
     {
         get

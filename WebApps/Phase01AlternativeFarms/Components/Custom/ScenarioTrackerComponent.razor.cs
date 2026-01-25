@@ -39,9 +39,6 @@ public partial class ScenarioTrackerComponent(OverlayService overlayService, ITo
         }
         await overlayService.OpenQuestOrScenarioBookAsync();
     }
-
-    private static string NameStyle => "font-size:0.95rem;";
-
     private void LoadScenarios()
     {
         _incompleteTasks = Farm!.ScenarioManager.ShowCurrentScenarios(4);

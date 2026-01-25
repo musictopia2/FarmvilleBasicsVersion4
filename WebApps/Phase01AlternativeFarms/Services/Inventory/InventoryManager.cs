@@ -10,12 +10,21 @@ public class InventoryManager(FarmKey farm, IInventoryRepository persist,
     public void LoadStartingInventory(Dictionary<string, int> items, InventoryStorageProfileModel storage)
     {
         _inventoryProfileModel = storage;
+        ClearInventory(items);
+        InventoryChanged?.Invoke(); //not sure but do just in case.
+    }
+    private void ClearInventory(Dictionary<string, int> items)
+    {
         _items.Clear();
         foreach (var item in items)
         {
             _items.Add(item.Key, item.Value);
         }
-        InventoryChanged?.Invoke(); //not sure but do just in case.
+    }
+    public void ResetInventory(Dictionary<string, int> items)
+    {
+        ClearInventory(items);
+        UpdateInventory();
     }
     public void UpdateInventoryProfile(InventoryStorageProfileModel profile)
     {

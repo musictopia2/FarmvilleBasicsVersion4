@@ -28,7 +28,19 @@ public class CropManager(InventoryManager inventory,
         });
         _needsSaving = true;
     }
+    public void ResetAllCropsToEmpty()
+    {
+        lock (_lock)
+        {
+            foreach (var crop in _crops)
+            {
+                crop.Clear();
 
+            }
+
+            _needsSaving = true;
+        }
+    }
     public void ApplyCropProgressionUnlocks(CropProgressionPlanModel plan, int level)
     {
         bool changed = false;

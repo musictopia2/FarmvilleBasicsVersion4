@@ -191,7 +191,7 @@ public class BasicGameState : IGameTimer
         RentalsServicesContext rentalContext = _rentalFactory.GetRentalServices(farm);
         await _rentalManager.SetRentalStyleContextAsync(rentalContext);
         ScenarioServicesContext scenarioContext = _scenarioFactory.GetScenarioServices(farm, _instantUnlimitedManager);
-        await _scenarioManager.SetStyleContextAsync(scenarioContext);
+        await _scenarioManager.SetStyleContextAsync(scenarioContext, farm);
         _init = true;
     }
     async Task IGameTimer.TickAsync()

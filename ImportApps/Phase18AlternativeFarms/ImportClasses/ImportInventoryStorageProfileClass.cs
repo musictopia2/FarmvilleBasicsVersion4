@@ -31,8 +31,8 @@ public static class ImportInventoryStorageProfileClass
                 Farm = farm,
                 BarnLevel = 0,
                 SiloLevel = 0,
-                BarnSize = 1000,
-                SiloSize = 1000
+                BarnSize = 3100,
+                SiloSize = 3100
             };
             list.Add(document);
         }

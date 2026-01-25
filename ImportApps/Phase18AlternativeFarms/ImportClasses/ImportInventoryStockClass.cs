@@ -41,7 +41,8 @@ public static class ImportInventoryStockClass
         return new()
         {
             Farm = farm,
-            List = amounts
+            Baseline = amounts,
+            Current = amounts
         };
     }
     private static async Task<InventoryStockDocument> GetBaselineInventoryAsync(FarmKey farm)
@@ -70,7 +71,7 @@ public static class ImportInventoryStockClass
         return new()
         {
             Farm = farm,
-            List = amounts
+            Current = amounts
         };
     }
 
