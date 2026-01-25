@@ -9,6 +9,7 @@ public class MainFarmContainer
     required public WorkshopManager WorkshopManager { get; set; }
     required public WorksiteManager WorksiteManager { get; set; }
     required public QuestManager QuestManager { get; set; }
+    required public ScenarioManager ScenarioManager { get; set; }
     required public UpgradeManager UpgradeManager { get; set; }
     required public ProgressionManager ProgressionManager { get; set; }
     required public CatalogManager CatalogManager { get; set; }

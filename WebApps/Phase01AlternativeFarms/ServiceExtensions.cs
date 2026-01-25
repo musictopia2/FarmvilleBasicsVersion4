@@ -10,6 +10,7 @@ using Phase01AlternativeFarms.DataAccess.OutputAugmentation;
 using Phase01AlternativeFarms.DataAccess.Progression;
 using Phase01AlternativeFarms.DataAccess.Quests; //not common enough.
 using Phase01AlternativeFarms.DataAccess.Rentals;
+using Phase01AlternativeFarms.DataAccess.Scenarios;
 using Phase01AlternativeFarms.DataAccess.Store;
 using Phase01AlternativeFarms.DataAccess.TimedBoosts;
 using Phase01AlternativeFarms.DataAccess.Trees;
@@ -40,6 +41,7 @@ public static class ServiceExtensions
                 .AddSingleton<IWorksiteFactory, WorksiteFactory>()
                 .AddSingleton<IWorkerFactory, WorkerFactory>()
                 .AddSingleton<IQuestFactory, QuestFactory>()
+                .AddSingleton<IScenarioFactory, ScenarioFactory>()
                 .AddSingleton<IUpgradeFactory, UpgradeFactory>()
                 .AddSingleton<IProgressionFactory, ProgressionFactory>()
                 .AddSingleton<ICatalogFactory, CatalogFactory>()
