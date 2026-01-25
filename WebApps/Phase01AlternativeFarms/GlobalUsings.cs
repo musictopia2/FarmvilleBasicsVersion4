@@ -39,4 +39,5 @@ global using Phase01AlternativeFarms.Services.InstantUnlimited;
 global using Phase01AlternativeFarms.Services.TimedBoosts;
 global using Phase01AlternativeFarms.Services.OutputAugmentation;
 global using Phase01AlternativeFarms.Services.Rentals;
+global using Phase01AlternativeFarms.Services.Scenarios;
 global using rs1 = Phase01AlternativeFarms.Utilities.RandomUtilities;

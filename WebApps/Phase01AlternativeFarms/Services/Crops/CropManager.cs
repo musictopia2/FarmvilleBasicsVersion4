@@ -20,8 +20,6 @@ public class CropManager(InventoryManager inventory,
     private readonly TimeSpan _harvestPolicyCacheDuration = TimeSpan.FromMinutes(5); //so if they change it, won't be reflected for 5 minutes or if server restarts.
     public BasicList<string> UnlockedRecipes => _allCropDefinitions.Where(x => x.Unlocked && x.IsSuppressed == false).Select(x => x.Item).ToBasicList(); //so if you change the list, won't change this.
     public BasicList<Guid> GetUnlockedCrops => _crops.Where(x => x.Unlocked).Select(x => x.Id).ToBasicList();
-
-
     public void SetCropSuppressionByProducedItem(string itemName, bool supressed)
     {
         _allCropDefinitions.ForConditionalItems(x => x.Item == itemName, item =>

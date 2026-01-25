@@ -8,6 +8,7 @@ public class InstantUnlimitedManager(CropManager cropManager,
     private BasicList<UnlockModel> _items = [];
     private IInstantUnlimitedProfile _profile = null!;
     public event Action? Changed;
+    public BasicList<string> GetInstantItems => _items.Where(x => x.Unlocked).Select(x => x.Name).ToBasicList();
     public async Task SetInstantUnlimitedStyleContextAsync(InstantUnlimitedServicesContext context)
     {
         _items = await context.InstantUnlimitedProfile.LoadAsync();

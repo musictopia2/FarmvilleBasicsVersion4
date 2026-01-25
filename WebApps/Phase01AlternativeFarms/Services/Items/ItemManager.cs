@@ -9,4 +9,5 @@ public class ItemManager
     public BasicList<ItemPlanModel> GetEligibleItems(int level) => _items.Where(x => x.MinLevel <= level).ToBasicList();
     public EnumItemCategory GetItemCategory(string item) => _items.Single(x => x.ItemName == item).Category;
     public string GetSource(string item) => _items.Single(x => x.ItemName == item).Source;
+    public BasicList<ItemPlanModel> GetAllItems => _items.ToBasicList();
 }

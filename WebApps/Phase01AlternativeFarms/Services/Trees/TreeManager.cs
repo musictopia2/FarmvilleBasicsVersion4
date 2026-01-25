@@ -38,7 +38,6 @@ public class TreeManager(InventoryManager inventory,
             return output;
         }
     }
-    
     public TimeSpan GetTimeForGivenTree(string name) => _recipes.Single(x => x.Item == name).ProductionTimeForEach;
 
    
