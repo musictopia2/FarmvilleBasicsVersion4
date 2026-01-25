@@ -237,7 +237,10 @@
 
             <ImageButtonComponent Name="Barn" Width="100" OnClick="ShowBarn" />
             <ImageButtonComponent Name="Silo" Width="100" OnClick="ShowSilo" />
-
+            @if (Key.IsMain)
+            {
+                <ImageButtonComponent Name="ConnectingFarms" Width="100" OnClick="Travel" />
+            }
 
 
         </MainContent>

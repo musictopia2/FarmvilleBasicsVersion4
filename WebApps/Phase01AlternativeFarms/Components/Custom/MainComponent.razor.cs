@@ -161,6 +161,13 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
         }
         await base.OnInitializedAsync();
     }
+
+    private void Travel()
+    {
+        FarmKey coop = this.AsCooperative;
+        nav.NavigateTo(coop);
+    }
+
     private void Home()
     {
         if (this.IsCoin || this.IsCooperative)
