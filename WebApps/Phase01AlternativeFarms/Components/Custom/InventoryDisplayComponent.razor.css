@@ -24,6 +24,40 @@
         transform: translateY(1px);
     }
 
+.inv-discard {
+    position: absolute;
+    top: clamp(6px, 0.9vw, 12px);
+    right: clamp(6px, 0.9vw, 12px);
+    width: clamp(44px, 4vw, 56px);
+    height: clamp(44px, 4vw, 56px);
+    border-radius: 14px;
+    z-index: 2;
+}
+
+    /* Bigger icon inside for tablet readability */
+    .inv-discard svg {
+        width: clamp(26px, 2.8vw, 60px);
+        height: clamp(26px, 2.8vw, 60px);
+        color: navy;
+    }
+
+.inv-transfer {
+    position: absolute;
+    top: clamp(6px, 0.9vw, 12px);
+    left: clamp(6px, 0.9vw, 12px); /* <-- key difference */
+    width: clamp(44px, 4vw, 56px);
+    height: clamp(44px, 4vw, 56px);
+    border-radius: 14px;
+    z-index: 2;
+}
+
+    /* Bigger icon inside for tablet readability (match discard) */
+    .inv-transfer svg {
+        width: clamp(26px, 2.8vw, 60px);
+        height: clamp(26px, 2.8vw, 60px);
+        color: navy; /* or a different color if you want */
+    }
+
 /* This is the important part: one column that fills the viewport */
 .inv-page {
     height: 100dvh; /* better than 100vh on mobile/tablets */
@@ -229,20 +263,3 @@
     font-size: 0.85em; /* slightly smaller than the number */
     opacity: 0.85;
 }
-.inv-discard {
-    position: absolute;
-    top: clamp(6px, 0.9vw, 12px);
-    right: clamp(6px, 0.9vw, 12px);
-    width: clamp(44px, 4vw, 56px);
-    height: clamp(44px, 4vw, 56px);
-    border-radius: 14px;
-    z-index: 2;
-}
-
-    /* Bigger icon inside for tablet readability */
-    .inv-discard svg {
-        width: clamp(26px, 2.8vw, 60px);
-        height: clamp(26px, 2.8vw, 60px);
-        color: navy;
-    }
-    

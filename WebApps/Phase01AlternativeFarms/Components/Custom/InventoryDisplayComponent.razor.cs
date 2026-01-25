@@ -1,17 +1,38 @@
 namespace Phase01AlternativeFarms.Components.Custom;
-public partial class InventoryDisplayComponent(IToast toast) : InventoryAwareComponentBase
+public partial class InventoryDisplayComponent(IToast toast, FarmTransferService farmTransferService) : InventoryAwareComponentBase
 {
     [Parameter]
     [EditorRequired]
     public EnumInventoryStorageCategory InventoryStorageCategory { get; set; }
-
     private BasicList<ItemAmount> _list = [];
     private string _errorMessage = "";
-
     private bool _showDiscard;
     private bool _showUpgrade;
     private string _item = "";
     private int _currentSize;
+    private bool _showTransfer;
+    private void CancelTransfer()
+    {
+        _showTransfer = false;
+    }
+    private void TranferInventoryItem(ItemAmount item)
+    {
+        if (item.Item != _item)
+        {
+            return; //can't do anyways.
+        }
+        _showTransfer = false;
+
+        if (farmTransferService.CanTransferInventory(Key, item) == false)
+        {
+            
+            toast.ShowUserErrorToast($"Unable to transfer because the other farm did not have enough {InventoryStorageCategory} space");
+            return;
+        }
+        farmTransferService.TransferInventory(Key, item, InventoryManager);
+
+
+    }
 
     private void DiscardInventoryItem(ItemAmount item)
     {
@@ -143,6 +164,11 @@ public partial class InventoryDisplayComponent(IToast toast) : InventoryAwareCom
     private void DisplayInventoryItem(string itemName)
     {
         toast.ShowInfoToast(itemName.GetWords);
+    }
+    private void OpenTransfer(string name)
+    {
+        _item = name;
+        _showTransfer = true;
     }
     private void OpenDiscard(string name)
     {

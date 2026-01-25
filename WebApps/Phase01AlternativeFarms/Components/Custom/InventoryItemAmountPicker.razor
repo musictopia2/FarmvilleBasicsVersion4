@@ -14,27 +14,27 @@
 </PrimaryButton>
 <StopClickPropagation>
     <div style="font-size: 3rem;">
-        Proposed Discard Amount:  @_proposed
+        Proposed @ActionVerb Amount:  @_proposed
     </div>
 
     <ArrowLeftComponent TargetHeight="10vh" Clicked="GoLeft" />
     <PrimaryButton FontSize="3rem" OnClick="ProposeOne">
-        Discard 1
+        @ActionVerb 1
     </PrimaryButton>
 
     <PrimaryButton FontSize="3rem" OnClick="OpenCustom">
-        Discard Custom
+        @ActionVerb Custom
     </PrimaryButton>
 
     <PrimaryButton FontSize="3rem" OnClick="ProposeAll">
-        Discard All
+        @ActionVerb All
     </PrimaryButton>
     <ArrowRightComponent TargetHeight="10vh" Clicked="GoRight" />
     @if (_proposed > 0)
     {
         <div>
             <DangerButton FontSize="3rem" OnClick="Submit">
-                Discard @_proposed
+                @ActionVerb @_proposed
             </DangerButton>
         </div>
     }

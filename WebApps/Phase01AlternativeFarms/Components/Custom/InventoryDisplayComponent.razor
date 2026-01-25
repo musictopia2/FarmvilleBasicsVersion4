@@ -22,13 +22,27 @@
     TapToClose="true"
     ShowHeaders="false"
 >
-    <DiscardComponent ItemName="@_item"
+    <InventoryItemAmountPicker ItemName="@_item"
         Limit="_limit"
         CurrentCount="_currentSize"
-        OnDiscard="DiscardInventoryItem"
+        ActionVerb="Discard"
+        OnSubmit="DiscardInventoryItem"
         OnCancel="CancelDiscard"
         />
 </PopupViewport>
+
+<PopupViewport @bind-Visible="_showTransfer"
+               TapToClose="true"
+               ShowHeaders="false">
+    <InventoryItemAmountPicker ItemName="@_item"
+                               Limit="_limit"
+                               CurrentCount="_currentSize"
+                               ActionVerb="Transfer"
+                               OnSubmit="TranferInventoryItem"
+                               OnCancel="CancelTransfer" />
+</PopupViewport>
+
+
 <div class="inv-page">
     <div class="upgrade-bar">
         <div class="upgrade-left">
@@ -75,7 +89,7 @@
                 @foreach (var item in _list)
                 {
                     <div class="inv-item" @key="item.Item" @onclick="() => DisplayInventoryItem(item.Item)">
-                        @if (_showDiscard == false && _showUpgrade == false)
+                        @if (_showDiscard == false && _showUpgrade == false && _showTransfer == false)
                         {
                             <button class="icon-btn inv-discard"
                                     type="button"
@@ -93,6 +107,26 @@
                                           fill="none" />
                                 </svg>
                             </button>
+                            <button class="icon-btn inv-transfer"
+                                    type="button"
+                                    title="Transfer"
+                                    aria-label="Transfer"
+                                    @onclick="(e) => OpenTransfer(item.Item)"
+                                    @onclick:stopPropagation="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                     fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <!-- left box -->
+                                    <rect x="3" y="7" width="7" height="10" rx="2" />
+                                    <!-- right box -->
+                                    <rect x="14" y="7" width="7" height="10" rx="2" />
+                                    <!-- arrow -->
+                                    <path d="M10 12h4" />
+                                    <path d="M13 10l2 2-2 2" />
+                                </svg>
+                            </button>
+                            
+
                         }
 
                         <img class="inv-img"

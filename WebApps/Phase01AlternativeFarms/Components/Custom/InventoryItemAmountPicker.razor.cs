@@ -1,6 +1,6 @@
 namespace Phase01AlternativeFarms.Components.Custom;
 
-public partial class DiscardComponent(IntegerPickerService quantityPickerService) : IDisposable
+public partial class InventoryItemAmountPicker(IntegerPickerService quantityPickerService) : IDisposable
 {
     [Parameter]
     [EditorRequired]
@@ -14,9 +14,11 @@ public partial class DiscardComponent(IntegerPickerService quantityPickerService
     [Parameter]
     [EditorRequired]
     public int CurrentCount { get; set; }
-
     [Parameter]
-    public EventCallback<ItemAmount> OnDiscard { get; set; }
+    [EditorRequired]
+    public string ActionVerb { get; set; }
+    [Parameter]
+    public EventCallback<ItemAmount> OnSubmit { get; set; }
 
     [Parameter]
     public EventCallback OnCancel { get; set; }
@@ -60,7 +62,7 @@ public partial class DiscardComponent(IntegerPickerService quantityPickerService
             return;
         }
         ItemAmount item = new(ItemName, _proposed);
-        OnDiscard.InvokeAsync(item);
+        OnSubmit.InvokeAsync(item);
     }
 
     private void GoLeft()
