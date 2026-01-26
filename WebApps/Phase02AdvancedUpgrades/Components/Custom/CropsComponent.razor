@@ -7,7 +7,14 @@
         />
     return;
 }
-
+<PopupViewport ShowHeaders="false"
+    @bind-Visible="_showUpgrades"   
+    TapToClose="true"
+>
+    <UpgradeCropModal CropName="@_selectedItem"
+        OnUpgraded="Upgraded"
+        />
+</PopupViewport>
 <div class="mb-1">Select Crop to Plant:</div>
 
 <div class="crop-selected-line" aria-live="polite">
@@ -113,6 +120,12 @@
     <PrimaryButton OnClick="HarvestMax">
         Harvest All
     </PrimaryButton>
+    @if (_upgradesEverAvailable && _selectedItem is not null)
+    {
+        <PrimaryButton OnClick="@ShowUpgrades">
+            Show Upgrades
+        </PrimaryButton>
+    }
 </div>
 
 <BasicProgressModal @bind-Visible="_showProgressModal">

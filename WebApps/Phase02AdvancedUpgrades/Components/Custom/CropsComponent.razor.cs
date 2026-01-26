@@ -13,7 +13,18 @@ public partial class CropsComponent(IToast toast, OverlayService overlayService)
     private TimeSpan? _unlimitedSpeedSeedTime;
 
     private bool _upgradesEverAvailable;
+    private bool _showUpgrades;
+    private void ShowUpgrades()
+    {
+        _showUpgrades = true;
+    }
 
+    
+    private void Upgraded()
+    {
+        _showUpgrades = false;
+
+    }
     private void UpdateCrops()
     {
 

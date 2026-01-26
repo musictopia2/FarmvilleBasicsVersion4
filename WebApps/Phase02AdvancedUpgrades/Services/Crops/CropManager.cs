@@ -150,6 +150,11 @@ public class CropManager(InventoryManager inventory,
         return _recipes.Exists(x => x.Item == item);
     }
     public int GetLevel(string item) => _allCropDefinitions.Single(x => x.Item == item).Level;
+    public int LevelRequiredForUpgrade(string item, int levelDesired)
+    {
+        var recipe = _recipes.Single(x => x.Item == item);
+        return recipe.TierLevelRequired[levelDesired - 2];
+    }
     public void UpdateCropLevel(string item, double extraSpeed, bool maxBenefits)
     {
         var temp = _allCropDefinitions.Single(x => x.Item == item);

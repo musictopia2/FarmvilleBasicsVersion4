@@ -1,0 +1,25 @@
+﻿.tab-header-root {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.middleHeight{
+    height: 100px;
+}
+
+.tab-icon-slot {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Checkmark */
+.upgrade-check {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+    color: #2faa3a;
+}
