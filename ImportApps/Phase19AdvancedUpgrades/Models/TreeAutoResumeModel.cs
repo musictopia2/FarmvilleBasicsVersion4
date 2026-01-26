@@ -16,4 +16,6 @@ public class TreeAutoResumeModel
     public OutputAugmentationSnapshot? OutputPromise { get; set; }
     public bool IsRental { get; set; } //this means if it comes from rental, needs to mark so can lock the exact proper one.
     public bool RentalExpired { get; set; }
+    public int Level { get; set; } = 1;
+    public double? AdvancedSpeedBonus { get; set; }
 }

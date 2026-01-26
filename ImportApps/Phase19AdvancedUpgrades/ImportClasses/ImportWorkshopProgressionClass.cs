@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.ImportClasses;
+﻿namespace Phase19AdvancedUpgrades.DataAccess;
 public static class ImportWorkshopProgressionClass
 {
     public static async Task ImportWorkshopsAsync()

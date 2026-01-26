@@ -11,4 +11,6 @@ public class WorkshopAutoResumeModel
     public BasicList<CraftingAutoResumeModel> Queue { get; set; } = [];
     public double? RunMultiplier { get; set; }
     public TimeSpan ReduceBy { get; set; } = TimeSpan.Zero;
+    public int Level { get; set; } = 1; //starts at 1.  needs to do lookups.
+    public double? AdvancedSpeedBonus { get; set; }
 }

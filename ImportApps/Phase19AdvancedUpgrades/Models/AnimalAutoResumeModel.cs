@@ -16,5 +16,7 @@ public class AnimalAutoResumeModel
     public OutputAugmentationSnapshot? OutputPromise { get; set; }
     public BasicList<ItemAmount> ExtraRewards { get; set; } = [];
     public bool ExtrasResolved { get; set; }
+    public int Level { get; set; } = 1;
+    public double? AdvancedSpeedBonus { get; set; }
     //eventually needs to know about options you are allowed to do (later)
 }

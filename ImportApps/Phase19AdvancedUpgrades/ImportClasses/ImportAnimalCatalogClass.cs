@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.ImportClasses;
+﻿namespace Phase19AdvancedUpgrades.DataAccess;
 public static class ImportAnimalCatalogClass
 {
     private readonly static EnumCatalogCategory _category = EnumCatalogCategory.Animal;

@@ -12,6 +12,9 @@ public class CropAutoResumeModel
     public TimeSpan ReducedBy { get; set; } = TimeSpan.Zero;
     public bool ExtrasResolved { get; set; }
     public OutputAugmentationSnapshot? OutputPromise { get; set; }
-
     public BasicList<ItemAmount> ExtraRewards { get; set; } = [];
+
+    public double? AdvancedSpeedBonus { get; set; }
+
+    //here may need something else to capture the extra stuff as well.
 }

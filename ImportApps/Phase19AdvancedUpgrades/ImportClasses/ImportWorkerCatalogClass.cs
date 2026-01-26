@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.ImportClasses;
+﻿namespace Phase19AdvancedUpgrades.DataAccess;
 internal static class ImportWorkerCatalogClass
 {
     private static EnumCatalogCategory _category = EnumCatalogCategory.Worker;
