@@ -12,6 +12,6 @@ global using Phase19AdvancedUpgrades.DataAccess;
 global using dd1 = CommonBasicLibraries.DatabaseHelpers.MiscClasses.GlobalClass;
 global using SQLiteHelperLibraries;
 global using mm1 = Phase19AdvancedUpgrades.DataAccess.MainDatabase;
-global using ii1 = Phase19AdvancedUpgrades.DataAccess;
+global using ii1 = Phase19AdvancedUpgrades.ImportClasses;
 global using CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.RandomGenerator;
 global using rs1 = CommonBasicLibraries.AdvancedGeneralFunctionsAndProcesses.RandomGenerator.RandomHelpers;

@@ -5,4 +5,7 @@ public class TreeRecipeDocument
     public string Item { get; init; } = ""; //this is what you receive from the tree.
     public TimeSpan ProductionTimeForEach { get; init; }
     required public string Theme { get; init; } //mode is done somewhere else now.
+
+    required public BasicList<int> TierLevelRequired { get; init; } = [];
+
 }

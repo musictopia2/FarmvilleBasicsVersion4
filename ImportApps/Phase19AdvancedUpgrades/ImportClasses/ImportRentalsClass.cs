@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.DataAccess;
+﻿namespace Phase19AdvancedUpgrades.ImportClasses;
 public static class ImportRentalsClass
 {
     public static async Task ImportRentalsAsync()

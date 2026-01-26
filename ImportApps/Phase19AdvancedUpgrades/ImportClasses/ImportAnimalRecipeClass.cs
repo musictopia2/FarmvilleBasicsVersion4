@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.DataAccess;
+﻿namespace Phase19AdvancedUpgrades.ImportClasses;
 public static class ImportAnimalRecipeClass
 {
     public static async Task ImportAnimalsAsync()
@@ -14,6 +14,10 @@ public static class ImportAnimalRecipeClass
         string theme = FarmThemeList.Country;
         BasicList<AnimalRecipeDocument> output = [];
         BasicList<AnimalProductionOption> options = [];
+        BasicList<int> levels =
+            [
+                7, 10, 13
+            ];
         options.Add(new AnimalProductionOption
         {
             Duration = TimeSpan.FromMinutes(1),
@@ -39,7 +43,8 @@ public static class ImportAnimalRecipeClass
         {
             Animal = CountryAnimalListClass.Cow,
             Options = options,
-            Theme = theme
+            Theme = theme,
+            TierLevelRequired = levels
         };
         output.Add(recipe);
         options = [];
@@ -64,11 +69,16 @@ public static class ImportAnimalRecipeClass
             Output = new(CountryItemList.GoatMilk, 8),
             Required = CountryItemList.Carrot
         });
+        levels =
+            [
+                13, 16, 19
+            ];
         recipe = new()
         {
             Animal = CountryAnimalListClass.Goat,
             Options = options,
-            Theme = theme
+            Theme = theme,
+            TierLevelRequired = levels
         };
         output.Add(recipe);
 
@@ -94,21 +104,29 @@ public static class ImportAnimalRecipeClass
             Output = new(CountryItemList.Wool, 12),
             Required = CountryItemList.Tomato
         });
+        levels =
+            [
+                20, 23, 26
+            ];
         recipe = new()
         {
             Animal = CountryAnimalListClass.Sheep,
             Options = options,
-            Theme = theme
+            Theme = FarmThemeList.Country,
+            TierLevelRequired = levels
         };
         output.Add(recipe);
         return output;
     }
-    
     private static BasicList<AnimalRecipeDocument> GetTropicalRecipes()
     {
         string theme = FarmThemeList.Tropical;
         BasicList<AnimalRecipeDocument> output = [];
         BasicList<AnimalProductionOption> options = [];
+        BasicList<int> levels =
+            [
+                7, 10, 13
+            ];
         options.Add(new AnimalProductionOption
         {
             Duration = TimeSpan.FromMinutes(1),
@@ -134,7 +152,8 @@ public static class ImportAnimalRecipeClass
         {
             Animal = TropicalAnimalListClass.Dolphin,
             Options = options,
-            Theme = theme
+            Theme = theme,
+            TierLevelRequired = levels
         };
         output.Add(recipe);
 
@@ -160,11 +179,16 @@ public static class ImportAnimalRecipeClass
             Output = new(TropicalItemList.Egg, 10),
             Required = TropicalItemList.Rice
         });
+        levels =
+            [
+                10, 13, 16
+            ];
         recipe = new()
         {
             Animal = TropicalAnimalListClass.Chicken,
             Options = options,
-            Theme = theme
+            Theme = theme,
+            TierLevelRequired= levels
         };
         output.Add(recipe);
 
@@ -190,11 +214,16 @@ public static class ImportAnimalRecipeClass
             Output = new(TropicalItemList.Mushroom, 10),
             Required = TropicalItemList.Tapioca
         });
+        levels =
+            [
+                16, 19, 22
+            ];
         recipe = new()
         {
             Animal = TropicalAnimalListClass.Boar,
             Options = options,
-            Theme = theme
+            Theme = theme,
+            TierLevelRequired = levels
         };
         output.Add(recipe);
         return output;

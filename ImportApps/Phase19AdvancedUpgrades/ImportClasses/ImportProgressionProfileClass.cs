@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.DataAccess;
+﻿namespace Phase19AdvancedUpgrades.ImportClasses;
 public static class ImportProgressionProfileClass
 {
     public static async Task ImportProgressionAsync()
@@ -12,7 +12,7 @@ public static class ImportProgressionProfileClass
             { 
                 Farm = farm,
                 PointsThisLevel = 0,
-                Level = 1
+                Level = 34 //so i can test current level with all possibilties
             }
             );
         }

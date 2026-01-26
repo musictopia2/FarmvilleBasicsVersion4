@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.DataAccess;
+﻿namespace Phase19AdvancedUpgrades.ImportClasses;
 public static class ImportBalanceMultiplierClass
 {
     public static async Task ImportBalanceMultiplierAsync()

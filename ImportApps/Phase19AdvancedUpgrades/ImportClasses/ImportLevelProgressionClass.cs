@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.DataAccess;
+﻿namespace Phase19AdvancedUpgrades.ImportClasses;
 public static class ImportLevelProgressionClass
 {
     public static async Task ImportProgressionAsync()
@@ -15,13 +15,13 @@ public static class ImportLevelProgressionClass
                 IsEndless = false //cannot be endless for the baseline farms.
             };
 
-            20.Times(x =>
+            35.Times(x =>
             {
                 //pretend like i get 1 at 10 and 2 at 50 and 1 at 80 for testing.
                 LevelProgressionTier tier = new()
                 {
-                    RequiredPoints = 10,
-                    RewardsOnLevelComplete = FarmHelperClass.GetCoinOnlyDictionary(100)
+                    RequiredPoints = 5,
+                    RewardsOnLevelComplete = FarmHelperClass.GetCoinOnlyDictionary(20)
                 };
                 //ProgressMilestoneReward mile = new()
                 //{

@@ -1,6 +1,4 @@
-﻿using System.Runtime;
-
-namespace Phase19AdvancedUpgrades.DataAccess;
+﻿namespace Phase19AdvancedUpgrades.ImportClasses;
 public static class FarmExtensions
 {
     extension(FarmKey farm)

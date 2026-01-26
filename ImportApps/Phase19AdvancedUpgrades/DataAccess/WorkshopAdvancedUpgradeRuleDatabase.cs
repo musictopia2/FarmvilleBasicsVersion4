@@ -1,12 +1,12 @@
 ﻿namespace Phase19AdvancedUpgrades.DataAccess;
-public class WorkshopAdvancedUpgradeRuleDatabase() : ListDataAccess<WorkshopAdvancedUpgradeRuleDatabase>
+public class WorkshopAdvancedUpgradeRuleDatabase() : ListDataAccess<WorkshopAdvancedUpgradeRuleDocument>
     (DatabaseName, CollectionName, mm1.DatabasePath),
     ISqlDocumentConfiguration
 
 {
     public static string DatabaseName => mm1.DatabaseName;
     public static string CollectionName => "WorkshopAdvancedUpgradeRule";
-    public async Task ImportAsync(BasicList<WorkshopAdvancedUpgradeRuleDatabase> list)
+    public async Task ImportAsync(BasicList<WorkshopAdvancedUpgradeRuleDocument> list)
     {
         await UpsertRecordsAsync(list);
     }

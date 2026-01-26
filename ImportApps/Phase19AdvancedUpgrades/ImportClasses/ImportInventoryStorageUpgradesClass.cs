@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.DataAccess;
+﻿namespace Phase19AdvancedUpgrades.ImportClasses;
 internal static class ImportInventoryStorageUpgradesClass
 {
     public static async Task ImportInventoryStorageUpgradesAsync()

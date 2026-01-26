@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.DataAccess;
+﻿namespace Phase19AdvancedUpgrades.ImportClasses;
 internal static class ImportOutputAugmentationClass
 {
     public static async Task ImportOutputAugmentationAsync()

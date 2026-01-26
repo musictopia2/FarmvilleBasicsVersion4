@@ -1,4 +1,4 @@
-﻿namespace Phase19AdvancedUpgrades.ImportClasses;
+﻿namespace Phase19AdvancedUpgrades.Models;
 public class WorkshopAdvancedUpgradeRuleModel
 {
     public required string BuildingName { get; init; }
