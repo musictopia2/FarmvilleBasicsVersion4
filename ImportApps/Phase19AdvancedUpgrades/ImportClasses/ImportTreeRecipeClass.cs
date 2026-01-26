@@ -23,7 +23,8 @@ public static class ImportTreeRecipeClass
             Item = CountryItemList.Apple,
             ProductionTimeForEach = TimeSpan.FromSeconds(10),
             Theme = theme,
-            TierLevelRequired= levels
+            TierLevelRequired= levels,
+            IsFast = true
         };
         output.Add(tree);
         levels =
@@ -36,7 +37,8 @@ public static class ImportTreeRecipeClass
             Item = CountryItemList.Peach,
             ProductionTimeForEach = TimeSpan.FromHours(1),
             Theme = theme,
-            TierLevelRequired= levels
+            TierLevelRequired= levels,
+            IsFast = false
         };
         output.Add(tree);
         return output;
@@ -55,7 +57,8 @@ public static class ImportTreeRecipeClass
             Item = TropicalItemList.Coconut,
             ProductionTimeForEach = TimeSpan.FromMinutes(2),
             Theme = theme,
-            TierLevelRequired= levels
+            TierLevelRequired= levels,
+            IsFast = true
         };
         output.Add(tree);
         levels =
@@ -68,7 +71,8 @@ public static class ImportTreeRecipeClass
             Item = TropicalItemList.Lime,
             ProductionTimeForEach = TimeSpan.FromMinutes(45),
             Theme = theme,
-            TierLevelRequired= levels
+            TierLevelRequired= levels,
+            IsFast = false
         };
         output.Add(tree);
         return output;

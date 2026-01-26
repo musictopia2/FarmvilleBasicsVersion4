@@ -22,7 +22,8 @@ public static class ImportCropRecipeClass
             Item = CountryItemList.Wheat,
             Duration = TimeSpan.FromSeconds(30),
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = true
         });
         levels =
             [
@@ -33,7 +34,8 @@ public static class ImportCropRecipeClass
             Item = CountryItemList.Corn,
             Duration = TimeSpan.FromMinutes(2),
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = false
         });
         levels =
             [
@@ -44,7 +46,8 @@ public static class ImportCropRecipeClass
             Item = CountryItemList.Carrot,
             Duration = TimeSpan.FromMinutes(4),
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = false
         });
         levels =
             [
@@ -55,7 +58,8 @@ public static class ImportCropRecipeClass
             Item = CountryItemList.Strawberry,
             Duration = TimeSpan.FromHours(1),
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = false
         });
         levels =
             [
@@ -66,7 +70,8 @@ public static class ImportCropRecipeClass
             Item = CountryItemList.Tomato,
             Duration = TimeSpan.FromMinutes(10),
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = false
         });
         levels =
             [
@@ -77,7 +82,8 @@ public static class ImportCropRecipeClass
             Item = CountryItemList.HoneyComb,
             Duration = TimeSpan.FromMinutes(45),
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = false
         });
         return output;
     }
@@ -94,7 +100,8 @@ public static class ImportCropRecipeClass
             Item = TropicalItemList.Pineapple,
             Duration = TimeSpan.FromSeconds(45),
             Theme = theme,
-            TierLevelRequired= levels
+            TierLevelRequired= levels,
+            IsFast = true
         });
         levels =
             [
@@ -105,7 +112,8 @@ public static class ImportCropRecipeClass
             Item = TropicalItemList.Rice,
             Duration = TimeSpan.FromMinutes(1),
             Theme = theme,
-            TierLevelRequired= levels
+            TierLevelRequired= levels,
+            IsFast = false
         });
         levels =
             [
@@ -116,7 +124,8 @@ public static class ImportCropRecipeClass
             Item = TropicalItemList.Tapioca,
             Duration = TimeSpan.FromMinutes(20),
             Theme = theme,
-            TierLevelRequired= levels
+            TierLevelRequired= levels,
+            IsFast= false
         });
         return output;
     }

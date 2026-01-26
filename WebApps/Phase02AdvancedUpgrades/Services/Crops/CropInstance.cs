@@ -10,6 +10,7 @@ public class CropInstance(double currentMultiplier,
     public DateTime? PlantedAt { get; private set; }
     public string? Crop { get; private set; } = null;
     public TimeSpan? GrowTime { get; private set; } = null;
+    public double? AdvancedSpeedBonus { get ; private set; } = null;
     public OutputAugmentationSnapshot? OutputPromise { get; private set; }
     public BasicList<ItemAmount> ExtraRewards { get; private set; } = [];
     private bool _needsSaving;
@@ -63,6 +64,7 @@ public class CropInstance(double currentMultiplier,
         _extrasResolved = slot.ExtrasResolved;
         OutputPromise = slot.OutputPromise;
         ExtraRewards = slot.ExtraRewards;
+        AdvancedSpeedBonus = slot.AdvancedSpeedBonus;
         _runMultiplier = slot.RunMultiplier;
         // If something is/was planted, ensure a run multiplier exists
         if (Crop is not null && _runMultiplier is null)

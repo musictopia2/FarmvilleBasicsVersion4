@@ -365,6 +365,11 @@ public class WorkshopManager(InventoryManager inventory,
         WorkshopInstance workshop = GetWorkshopById(summary);
         return workshop.Capacity;
     }
+    public int GetLevel(WorkshopView summary)
+    {
+        WorkshopInstance workshop = GetWorkshopById(summary);
+        return workshop.Level;
+    }
     public void UpdateCapacity(WorkshopView summary, int capacity)
     {
         WorkshopInstance workshop = GetWorkshopById(summary);

@@ -7,5 +7,6 @@ public class TreeRecipeDocument
     required public string Theme { get; init; } //mode is done somewhere else now.
 
     required public BasicList<int> TierLevelRequired { get; init; } = [];
+    required public bool IsFast { get; init; }
 
 }

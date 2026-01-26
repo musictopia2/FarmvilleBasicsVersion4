@@ -16,6 +16,8 @@ public class TreeInstance(
     public int TreesReady { get; private set; } = collecting.TreesCollectedAtTime;
     public EnumTreeState State { get; private set; } = EnumTreeState.Collecting;
     public TimeSpan ReducedBy { get; private set; } = TimeSpan.Zero;
+    public double? AdvancedSpeedBonus { get; private set; }
+    public int Level { get; set; } = 1;
     private TimeSpan ProductionTimePerTree => tree.ProductionTimeForEach;
     public bool RentalExpired { get; set; }
     public bool IsRental { get; set; }
@@ -94,6 +96,8 @@ public class TreeInstance(
                 OutputPromise = OutputPromise,
                 RentalExpired = RentalExpired,
                 IsRental = IsRental,
+                AdvancedSpeedBonus = AdvancedSpeedBonus,
+                Level = Level,
                 Id = Id,
                 // Save the promise ONLY while producing
                 RunMultiplier = State == EnumTreeState.Producing ? _runMultiplier : null
@@ -114,6 +118,8 @@ public class TreeInstance(
         OutputPromise = model.OutputPromise;
         RentalExpired = model.RentalExpired;
         IsRental = model.IsRental;
+        AdvancedSpeedBonus = model.AdvancedSpeedBonus;
+        Level = model.Level;
         Id = model.Id;
         // Back-compat / safety: if producing but multiplier missing, fall back to current
         if (State == EnumTreeState.Producing && _runMultiplier is null)

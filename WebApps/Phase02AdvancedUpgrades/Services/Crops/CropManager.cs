@@ -134,6 +134,7 @@ public class CropManager(InventoryManager inventory,
     {
         return _recipes.Exists(x => x.Item == item);
     }
+    public int Level(string item) => _allCropDefinitions.Single(x => x.Item == item).Level;
     public BasicList<GrantableItem> GetUnlockedCropGrantItems()
     {
 
@@ -413,7 +414,8 @@ public class CropManager(InventoryManager inventory,
                 ReducedBy = crop.ReducedBy,
                 ExtraRewards = crop.ExtraRewards,
                 ExtrasResolved = crop.IsExtrasResolved,
-                OutputPromise = crop.OutputPromise
+                OutputPromise = crop.OutputPromise,
+                AdvancedSpeedBonus = crop.AdvancedSpeedBonus
             }).ToBasicList();
             //has to figure out the other side (since you may unlock more slots).
             CropSystemState slate = new()

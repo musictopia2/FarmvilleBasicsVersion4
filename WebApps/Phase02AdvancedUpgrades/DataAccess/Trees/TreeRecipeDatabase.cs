@@ -1,10 +1,7 @@
-﻿using Phase02AdvancedUpgrades.Services.Core;
-
-namespace Phase02AdvancedUpgrades.DataAccess.Trees;
+﻿namespace Phase02AdvancedUpgrades.DataAccess.Trees;
 internal class TreeRecipeDatabase(FarmKey farm) : ListDataAccess<TreeRecipeDocument>
     (DatabaseName, CollectionName, mm1.DatabasePath),
     ISqlDocumentConfiguration, ITreeRecipes
-
 {
     public static string DatabaseName => mm1.DatabaseName;
     public static string CollectionName => "TreeRecipes";
@@ -18,7 +15,9 @@ internal class TreeRecipeDatabase(FarmKey farm) : ListDataAccess<TreeRecipeDocum
             {
                 TreeName = old.TreeName,
                 ProductionTimeForEach = old.ProductionTimeForEach,
-                Item = old.Item
+                Item = old.Item,
+                TierLevelRequired = old.TierLevelRequired,
+                IsFast = old.IsFast
             });
         });
         return output;

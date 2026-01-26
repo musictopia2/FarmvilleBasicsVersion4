@@ -1,6 +1,9 @@
 ﻿namespace Phase02AdvancedUpgrades.Services.Upgrades;
 public class UpgradeManager(InventoryManager inventoryManager,
     IInventoryProfile inventoryProfile,
+    CropManager cropManager,
+    AnimalManager animalManager,
+    TreeManager treeManager,
     WorkshopManager workshopManager //i think i need workshop manager for this.
     )
 {
@@ -11,6 +14,8 @@ public class UpgradeManager(InventoryManager inventoryManager,
     private InventoryStorageUpgradePlanModel _inventoryPlan = null!;
     private BasicList<WorkshopCapacityUpgradePlanModel> _workshopCapacities = [];
     private InventoryStorageProfileModel _inventoryStorageProfile = null!;
+    private BasicList<WorkshopAdvancedUpgradeRuleModel> _workshopUpgrades = [];
+    private BasicList<AdvancedUpgradePlanModel> _advancedUpgrades = [];
     public async Task SetInventoryStyleContextAsync(UpgradeServicesContext context,
         InventoryStorageProfileModel storage
         , FarmKey farm)
@@ -20,7 +25,92 @@ public class UpgradeManager(InventoryManager inventoryManager,
         _inventoryPlan = await context.InventoryStorageUpgradePlanProvider.GetPlanAsync(farm);
         _inventoryStorageProfile = storage;
         _workshopCapacities = await context.WorkshopCapacityUpgradePlanProvider.GetPlansAsync(farm);
+        _workshopUpgrades = await context.WorkshopAdvancedUpgradePlanProvider.GetPlansAsync(farm);
+        _advancedUpgrades = await context.AdvancedUpgradePlanProvider.GetPlansAsync(farm);
     }
+    public bool HasAdvancedUpgrades => _advancedUpgrades.Any(); //if there is none, then no upgrades (like the coin farm).
+    public bool IsWorkshopUpgradesMaxedOut(WorkshopView workshop)
+    {
+        int level = WorkshopCurrentLevel(workshop);
+        int maxCount = _advancedUpgrades.Count(x => x.Category == EnumAdvancedUpgradeTrack.Workshop);
+        if (level + 1 == maxCount)
+        {
+            return true;
+        }
+        if (level + 1 < maxCount)
+        {
+            return false;
+        }
+        throw new CustomBasicException("Not sure");
+    }
+    public int WorkshopCurrentLevel(WorkshopView workshop) => workshopManager.GetLevel(workshop);
+    public int WorkshopNextLevelRequirement(WorkshopView workshop)
+    {
+        var item = _workshopUpgrades.Single(x => x.BuildingName == workshop.Name);
+        int level = WorkshopCurrentLevel(workshop);
+        level++;
+        return item.TierLevelRequired[level - 2];
+    }
+    public double? GetWorkshopSpeedBoost(int level)
+    {
+        if (level == 1)
+        {
+            return null;
+        }
+        var item = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level);
+        return item.SpeedBonus;
+    }
+    private AdvancedUpgradeTier GetAdvancedUpgrade(EnumAdvancedUpgradeTrack category, int level)
+    {
+        return _advancedUpgrades.Single(x => x.Category == category).Tiers[level - 2];
+    }
+    public Dictionary<string, int> GetWorkshopUpgradeCost(WorkshopView workshop)
+    {
+        int level = WorkshopCurrentLevel(workshop);
+        var item = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level);
+        return item.Cost;
+    }
+    public int CropCurrentLevel(string crop) => cropManager.Level(crop);
+    public int AnimalCurrentLevel(AnimalView animal) => animalManager.Level(animal);
+    public int TreeCurrentLevel(TreeView tree) => treeManager.Level(tree);
+    public Dictionary<string, int> GetBasicItemsUpgradeCost(int level) //if maxed out, should not do this
+    {
+        var item = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Standard, level);
+        return item.Cost;
+    }
+    public double? GetBasicItemsSpeedBoost(int level, bool isFast)
+    {
+        if (level == 1)
+        {
+            return null;
+        }
+        EnumAdvancedUpgradeTrack category;
+        if (isFast)
+        {
+            category = EnumAdvancedUpgradeTrack.Fastest;
+        }
+        else
+        {
+            category = EnumAdvancedUpgradeTrack.Standard;
+        }
+        var item = GetAdvancedUpgrade(category, level);
+        return item.SpeedBonus;
+    }
+
+    public bool IsBasicItemUpgradesMaxedOut(int level)
+    {
+        int maxCount = _advancedUpgrades.Count(x => x.Category == EnumAdvancedUpgradeTrack.Standard); //they both have the same levels
+        if (level + 1 == maxCount)
+        {
+            return true;
+        }
+        if (level + 1 < maxCount)
+        {
+            return false;
+        }
+        throw new CustomBasicException("Not sure");
+    }
+
     public bool IsWorkshopAtMaximumCapacity(WorkshopView workshop)
     {
         int capacity = workshopManager.GetCapcity(workshop);

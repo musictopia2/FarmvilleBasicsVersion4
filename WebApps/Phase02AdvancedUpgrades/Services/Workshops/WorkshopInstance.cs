@@ -6,6 +6,8 @@ public class WorkshopInstance
     public BasicList<UnlockModel> SupportedItems { get; set; } = [];
     public int Capacity { get; set; } = 2; //for now, always 2.  later will rethink.
     public bool Unlocked { get; set; }
+    public int Level { get; set; } = 1; //starts at 1.  needs to do lookups.
+    public double? AdvancedSpeedBonus { get; set; }
     public bool IsRental { get; set; } //this means if it comes from rental, needs to mark so can lock the exact proper one.
     public TimeSpan ReducedBy { get; set; } = TimeSpan.Zero;
     public BasicList<CraftingJobInstance> Queue { get; } = [];
@@ -38,6 +40,8 @@ public class WorkshopInstance
         Unlocked = workshop.Unlocked;
         SelectedRecipeIndex = workshop.SelectedRecipeIndex;
         ReducedBy = workshop.ReducedBy;
+        Level = workshop.Level;
+        AdvancedSpeedBonus = workshop.AdvancedSpeedBonus;
         Queue.Clear();
         foreach (var item in workshop.Queue)
         {
@@ -59,6 +63,8 @@ public class WorkshopInstance
                 SupportedItems = SupportedItems,
                 ReducedBy = ReducedBy,
                 IsRental = IsRental,
+                AdvancedSpeedBonus = AdvancedSpeedBonus,
+                Level = Level,
                 Id = Id, //somehow even if something did not change, its needed.
                 Queue = Queue.Select(x => x.GetCraftingForSaving).ToBasicList(),
                 SelectedRecipeIndex = SelectedRecipeIndex

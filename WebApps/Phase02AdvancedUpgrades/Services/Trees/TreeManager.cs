@@ -16,6 +16,11 @@ public class TreeManager(InventoryManager inventory,
     private bool _collectAll;
     public event Action<ItemAmount>? OnAugmentedOutput;
     // Public read-only summaries for the UI
+    public int Level(TreeView tree)
+    {
+        var instance = GetTreeById(tree);
+        return instance.Level;
+    }
     public BasicList<TreeView> GetUnlockedTrees
     {
         get

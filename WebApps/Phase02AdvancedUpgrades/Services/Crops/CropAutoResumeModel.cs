@@ -12,4 +12,5 @@ public class CropAutoResumeModel
     public OutputAugmentationSnapshot? OutputPromise { get; set; }
 
     public BasicList<ItemAmount> ExtraRewards { get; set; } = []; //when you are about to collect, show then.
+    public double? AdvancedSpeedBonus { get; set; }
 }

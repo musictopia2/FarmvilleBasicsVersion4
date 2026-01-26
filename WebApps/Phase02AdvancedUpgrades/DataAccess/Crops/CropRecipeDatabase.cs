@@ -1,6 +1,4 @@
-﻿using Phase02AdvancedUpgrades.Services.Core;
-
-namespace Phase02AdvancedUpgrades.DataAccess.Crops;
+﻿namespace Phase02AdvancedUpgrades.DataAccess.Crops;
 public class CropRecipeDatabase(FarmKey farm) : ListDataAccess<CropRecipeDocument>
     (DatabaseName, CollectionName, mm1.DatabasePath),
     ISqlDocumentConfiguration, ICropRegistry
@@ -17,7 +15,9 @@ public class CropRecipeDatabase(FarmKey farm) : ListDataAccess<CropRecipeDocumen
             output.Add(new()
             {
                 Duration = old.Duration,
-                Item = old.Item
+                Item = old.Item,
+                TierLevelRequired = old.TierLevelRequired,
+                IsFast = old.IsFast
             });
         });
         return output;

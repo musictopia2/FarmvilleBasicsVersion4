@@ -570,10 +570,13 @@ public class AnimalManager(InventoryManager inventory,
                 });
             }
         }
-
         return output;
     }
-
+    public int Level(AnimalView animal)
+    {
+        AnimalInstance instance = GetAnimalById(animal);
+        return instance.Level;
+    }
     public BasicList<AnimalProductionOption> GetUnlockedProductionOptions(AnimalView animal)
     {
         AnimalInstance instance = GetAnimalById(animal);

@@ -44,7 +44,8 @@ public static class ImportAnimalRecipeClass
             Animal = CountryAnimalListClass.Cow,
             Options = options,
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = true
         };
         output.Add(recipe);
         options = [];
@@ -78,7 +79,8 @@ public static class ImportAnimalRecipeClass
             Animal = CountryAnimalListClass.Goat,
             Options = options,
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = false
         };
         output.Add(recipe);
 
@@ -113,7 +115,8 @@ public static class ImportAnimalRecipeClass
             Animal = CountryAnimalListClass.Sheep,
             Options = options,
             Theme = FarmThemeList.Country,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = false
         };
         output.Add(recipe);
         return output;
@@ -153,7 +156,8 @@ public static class ImportAnimalRecipeClass
             Animal = TropicalAnimalListClass.Dolphin,
             Options = options,
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast = true
         };
         output.Add(recipe);
 
@@ -188,7 +192,8 @@ public static class ImportAnimalRecipeClass
             Animal = TropicalAnimalListClass.Chicken,
             Options = options,
             Theme = theme,
-            TierLevelRequired= levels
+            TierLevelRequired= levels,
+            IsFast = false
         };
         output.Add(recipe);
 
@@ -223,7 +228,8 @@ public static class ImportAnimalRecipeClass
             Animal = TropicalAnimalListClass.Boar,
             Options = options,
             Theme = theme,
-            TierLevelRequired = levels
+            TierLevelRequired = levels,
+            IsFast= false
         };
         output.Add(recipe);
         return output;
