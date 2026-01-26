@@ -73,7 +73,7 @@ public class WorksiteManager(
         {
             CompleteActiveJobImmediately(item.Location);
         }
-        inventory.Consume(CurrencyKeys.FinishAllWorkshops, 1);
+        inventory.Consume(CurrencyKeys.FinishAllWorksites, 1);
     }
 
     private void CompleteActiveJobImmediately(string location)
