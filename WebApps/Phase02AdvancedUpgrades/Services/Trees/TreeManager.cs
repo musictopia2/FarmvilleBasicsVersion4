@@ -16,10 +16,19 @@ public class TreeManager(InventoryManager inventory,
     private bool _collectAll;
     public event Action<ItemAmount>? OnAugmentedOutput;
     // Public read-only summaries for the UI
-    public int Level(TreeView tree)
+    public int GetLevel(TreeView tree)
     {
         var instance = GetTreeById(tree);
         return instance.Level;
+    }
+    public bool IsFast(TreeView tree) => _recipes.Single(x => x.TreeName == tree.TreeName).IsFast;
+    public void UpgradeTreeLevel(TreeView tree, double extraSpeed, bool maxBenefits)
+    {
+        var instance = GetTreeById(tree);
+        instance.Level++;
+        instance.AdvancedSpeedBonus = extraSpeed;
+        instance.MaxBenefits = maxBenefits;
+        _needsSaving = true;
     }
     public BasicList<TreeView> GetUnlockedTrees
     {

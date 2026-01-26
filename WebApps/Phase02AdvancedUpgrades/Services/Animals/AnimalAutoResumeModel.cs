@@ -19,5 +19,5 @@ public class AnimalAutoResumeModel
     public BasicList<ItemAmount> ExtraRewards { get; set; } = []; //when you are about to collect, show then.
     public int Level { get; set; } = 1;
     public double? AdvancedSpeedBonus { get; set; }
-
+    public bool MaxBenefits { get; set; }
 }

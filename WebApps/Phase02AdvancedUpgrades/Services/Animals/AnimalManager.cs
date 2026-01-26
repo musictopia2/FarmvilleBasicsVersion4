@@ -572,10 +572,20 @@ public class AnimalManager(InventoryManager inventory,
         }
         return output;
     }
-    public int Level(AnimalView animal)
+    public bool IsAnimalFast(AnimalView animal) => _recipes.Single(x => x.Animal == animal.Name).IsFast;
+    
+    public int GetLevel(AnimalView animal)
     {
         AnimalInstance instance = GetAnimalById(animal);
         return instance.Level;
+    }
+    public void UpgradeAnimalLevel(AnimalView animal, double extraSpeed, bool maxBenefits)
+    {
+        AnimalInstance instance = GetAnimalById(animal);
+        instance.Level++;
+        instance.AdvancedSpeedBonus = extraSpeed;
+        instance.MaxBenefits = maxBenefits;
+        _needsSaving = true;
     }
     public BasicList<AnimalProductionOption> GetUnlockedProductionOptions(AnimalView animal)
     {

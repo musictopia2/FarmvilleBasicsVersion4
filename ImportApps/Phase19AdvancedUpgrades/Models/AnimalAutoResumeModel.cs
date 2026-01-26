@@ -18,5 +18,6 @@ public class AnimalAutoResumeModel
     public bool ExtrasResolved { get; set; }
     public int Level { get; set; } = 1;
     public double? AdvancedSpeedBonus { get; set; }
+    public bool MaxBenefits { get; set; }
     //eventually needs to know about options you are allowed to do (later)
 }

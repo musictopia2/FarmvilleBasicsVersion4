@@ -20,6 +20,7 @@ public class TreeAutoResumeModel
 
     public int Level { get; set; } = 1;
     public double? AdvancedSpeedBonus { get; set; }
+    public bool MaxBenefits { get; set; }
 
     //good news is did not save time here so at least no problem here.
 

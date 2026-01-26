@@ -98,7 +98,7 @@ public class CropManager(InventoryManager inventory,
     public EnumCropState GetCropState(Guid id) => GetCrop(id).State;
     public string GetTimeLeft(Guid id) => GetCrop(id).ReadyTime?.GetTimeString ?? "";
     public string GetCropName(Guid id) => GetCrop(id).Crop!;
-
+    public bool IsFast(string name) => _recipes.Single(x => x.Item == name).IsFast;
     private CropInstance GetCrop(Guid id)
     => _crops.SingleOrDefault(x => x.Id == id) ??
        throw new CustomBasicException($"Crop with ID {id} not found.");
@@ -134,7 +134,15 @@ public class CropManager(InventoryManager inventory,
     {
         return _recipes.Exists(x => x.Item == item);
     }
-    public int Level(string item) => _allCropDefinitions.Single(x => x.Item == item).Level;
+    public int GetLevel(string item) => _allCropDefinitions.Single(x => x.Item == item).Level;
+    public void UpdateCropLevel(string item, double extraSpeed, bool maxBenefits)
+    {
+        var temp = _allCropDefinitions.Single(x => x.Item == item);
+        temp.Level++;
+        temp.AdvancedSpeedBonus = extraSpeed;
+        temp.MaxBenefits = maxBenefits;
+        _needsSaving = true;
+    }
     public BasicList<GrantableItem> GetUnlockedCropGrantItems()
     {
 

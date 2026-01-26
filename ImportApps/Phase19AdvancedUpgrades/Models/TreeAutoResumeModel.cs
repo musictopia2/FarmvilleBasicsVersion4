@@ -18,4 +18,5 @@ public class TreeAutoResumeModel
     public bool RentalExpired { get; set; }
     public int Level { get; set; } = 1;
     public double? AdvancedSpeedBonus { get; set; }
+    public bool MaxBenefits { get; set; }
 }

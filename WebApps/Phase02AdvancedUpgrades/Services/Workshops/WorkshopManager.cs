@@ -370,6 +370,16 @@ public class WorkshopManager(InventoryManager inventory,
         WorkshopInstance workshop = GetWorkshopById(summary);
         return workshop.Level;
     }
+    
+    public void UpgradeWorshopLevel(WorkshopView summary, double extraSpeed, bool maxBenefits, double? dropRate)
+    {
+        WorkshopInstance workshop = GetWorkshopById(summary);
+        workshop.Level++;
+        workshop.MaxBenefits = maxBenefits;
+        workshop.AdvancedSpeedBonus = extraSpeed;
+        workshop.MaxDropRate = dropRate;
+        _needsSaving = true;
+    }
     public void UpdateCapacity(WorkshopView summary, int capacity)
     {
         WorkshopInstance workshop = GetWorkshopById(summary);

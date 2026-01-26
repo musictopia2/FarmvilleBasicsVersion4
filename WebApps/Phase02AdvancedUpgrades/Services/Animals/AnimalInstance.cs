@@ -10,8 +10,9 @@ public class AnimalInstance(AnimalRecipe recipe, double currentMultiplier,
     public bool IsRental { get; set; } //this means if it comes from rental, needs to mark so can lock the exact proper one.
     public OutputAugmentationSnapshot? OutputPromise { get; private set; }
     public BasicList<ItemAmount> ExtraRewards { get; private set; } = [];
-    public double? AdvancedSpeedBonus { get; private set; }
+    public double? AdvancedSpeedBonus { get; set; } //has to set right away now.
     public int Level { get; set; } = 1;
+    public bool MaxBenefits { get; set; }
     public BasicList<AnimalProductionOption> GetUnlockedProductionOptions()
         => recipe.Options.Take(ProductionOptionsAllowed).ToBasicList();
 
@@ -72,6 +73,7 @@ public class AnimalInstance(AnimalRecipe recipe, double currentMultiplier,
         AdvancedSpeedBonus = animal.AdvancedSpeedBonus;
         Level = animal.Level;
         _extrasResolved = animal.ExtrasResolved;
+        MaxBenefits = animal.MaxBenefits;
         IsRental = animal.IsRental;
         // Restore locked promise only (do NOT overwrite current multiplier)
         _runMultiplier = animal.RunMultiplier;
@@ -111,6 +113,7 @@ public class AnimalInstance(AnimalRecipe recipe, double currentMultiplier,
                 OutputPromise = OutputPromise,
                 AdvancedSpeedBonus = AdvancedSpeedBonus,
                 Level = Level,
+                MaxBenefits = MaxBenefits,
                 IsRental = IsRental,
                 // Save the promise only when a run exists; otherwise null
                 RunMultiplier = _selected is null ? null : _runMultiplier

@@ -5,4 +5,6 @@ public class CropDataModel
     public bool Unlocked { get; set; }
     public bool IsSuppressed { get; set; }
     public int Level { get; set; } = 1;
+    public double? AdvancedSpeedBonus { get; set; }
+    public bool MaxBenefits { get; set; }
 }

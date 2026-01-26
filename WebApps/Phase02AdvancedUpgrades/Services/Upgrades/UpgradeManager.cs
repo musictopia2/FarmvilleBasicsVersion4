@@ -1,4 +1,5 @@
 ﻿namespace Phase02AdvancedUpgrades.Services.Upgrades;
+
 public class UpgradeManager(InventoryManager inventoryManager,
     IInventoryProfile inventoryProfile,
     CropManager cropManager,
@@ -60,6 +61,19 @@ public class UpgradeManager(InventoryManager inventoryManager,
         var item = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level);
         return item.SpeedBonus;
     }
+    private AdvancedUpgradeTier GetAdvancedUpgrade(bool fast, int level)
+    {
+        EnumAdvancedUpgradeTrack category;
+        if (fast)
+        {
+            category = EnumAdvancedUpgradeTrack.Fastest;
+        }
+        else
+        {
+            category = EnumAdvancedUpgradeTrack.Standard;
+        }
+        return GetAdvancedUpgrade(category, level);
+    }
     private AdvancedUpgradeTier GetAdvancedUpgrade(EnumAdvancedUpgradeTrack category, int level)
     {
         return _advancedUpgrades.Single(x => x.Category == category).Tiers[level - 2];
@@ -70,9 +84,60 @@ public class UpgradeManager(InventoryManager inventoryManager,
         var item = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level);
         return item.Cost;
     }
-    public int CropCurrentLevel(string crop) => cropManager.Level(crop);
-    public int AnimalCurrentLevel(AnimalView animal) => animalManager.Level(animal);
-    public int TreeCurrentLevel(TreeView tree) => treeManager.Level(tree);
+    public string GetBasicPercent(int level, bool isFast)
+    {
+        if (level <= 1)
+        {
+            throw new CustomBasicException("Must be at least level 2 in order to get the percents");
+        }
+        EnumAdvancedUpgradeTrack category;
+        if (isFast)
+        {
+            category = EnumAdvancedUpgradeTrack.Fastest;
+        }
+        else
+        {
+            category = EnumAdvancedUpgradeTrack.Standard;
+        }
+        var upgrade = GetAdvancedUpgrade(category, level);
+        return FormatPercent(upgrade.SpeedBonus);
+    }
+    public string GetWorkshopPercent(int level)
+    {
+        if (level <= 1)
+        {
+            throw new CustomBasicException("Must be at least level 2 in order to get the percents");
+        }
+
+        var upgrade = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level);
+        return FormatPercent(upgrade.SpeedBonus);
+    }
+    public int MaximumWorkshopLevels
+    {
+        get
+        {
+            var item = _advancedUpgrades.Single(x => x.Category == EnumAdvancedUpgradeTrack.Workshop);
+            return item.Tiers.Count + 1;
+        }
+    }
+    public int MaximumBasicLevels
+    {
+        get
+        {
+            var item = _advancedUpgrades.Single(x => x.Category == EnumAdvancedUpgradeTrack.Standard);
+            return item.Tiers.Count + 1;
+        }
+    }
+    private static string FormatPercent(double adjustment)
+    {
+        // adjustment is expressed as a fraction (e.g. 0.15 = 15%)
+        var percent = adjustment * 100;
+        return $"{percent:0}% Faster";
+    }
+
+    public int CropCurrentLevel(string crop) => cropManager.GetLevel(crop);
+    public int AnimalCurrentLevel(AnimalView animal) => animalManager.GetLevel(animal);
+    public int TreeCurrentLevel(TreeView tree) => treeManager.GetLevel(tree);
     public Dictionary<string, int> GetBasicItemsUpgradeCost(int level) //if maxed out, should not do this
     {
         var item = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Standard, level);
@@ -110,7 +175,113 @@ public class UpgradeManager(InventoryManager inventoryManager,
         }
         throw new CustomBasicException("Not sure");
     }
+    public bool CanUpgradeAnimalLevel(AnimalView animal)
+    {
+        int level = AnimalCurrentLevel(animal);
+        if (IsBasicItemUpgradesMaxedOut(level))
+        {
+            return false;
+        }
+        var upgrade = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Standard, level);
+        return CanAfford(upgrade);
+    }
 
+
+
+    public void UpgradeAnimalLevel(AnimalView animal)
+    {
+        if (CanUpgradeAnimalLevel(animal) == false)
+        {
+            throw new CustomBasicException("Unable to upgrade animal.  Should had called CanUpgradeAnimalLevel first");
+        }
+        int level = AnimalCurrentLevel(animal);
+        bool fast = animalManager.IsAnimalFast(animal);
+        var upgrade = GetAdvancedUpgrade(fast, level);
+        bool maxedOut = IsBasicItemUpgradesMaxedOut(level);
+        animalManager.UpgradeAnimalLevel(animal, upgrade.SpeedBonus, maxedOut);
+        inventoryManager.Consume(upgrade.Cost);
+    }
+    public bool CanUpgradeTreeLevel(TreeView tree)
+    {
+        int level = TreeCurrentLevel(tree);
+        if (IsBasicItemUpgradesMaxedOut(level))
+        {
+            return false;
+        }
+        var upgrade = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Standard, level);
+        return CanAfford(upgrade);
+    }
+    public void UpgradeTreeLevel(TreeView tree)
+    {
+        if (CanUpgradeTreeLevel(tree) == false)
+        {
+            throw new CustomBasicException("Unable to upgrade tree.  Should had called CanUpgradeTreeLevel first");
+        }
+        int level = treeManager.GetLevel(tree);
+        bool fast = treeManager.IsFast(tree);
+        var upgrade = GetAdvancedUpgrade(fast, level);
+        bool maxedOut = IsBasicItemUpgradesMaxedOut(level);
+        treeManager.UpgradeTreeLevel(tree, upgrade.SpeedBonus, maxedOut);
+        inventoryManager.Consume(upgrade.Cost);
+    }
+    public bool CanUpgradeCropLevel(string crop)
+    {
+        int level = CropCurrentLevel(crop);
+        if (IsBasicItemUpgradesMaxedOut(level))
+        {
+            return false;
+        }
+        var upgrade = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Standard, level);
+        return CanAfford(upgrade);
+    }
+    public void UpgradeCropLevel(string crop)
+    {
+        if (CanUpgradeCropLevel(crop) == false)
+        {
+            throw new CustomBasicException("Unable to upgrade crop.  Should had called CanUpgradeCropLevel first");
+        }
+        int level = cropManager.GetLevel(crop);
+        bool fast = cropManager.IsFast(crop);
+        var upgrade = GetAdvancedUpgrade(fast, level);
+        bool maxedOut = IsBasicItemUpgradesMaxedOut(level);
+        cropManager.UpdateCropLevel(crop, upgrade.SpeedBonus, maxedOut);
+        inventoryManager.Consume(upgrade.Cost);
+    }
+    public bool CanUpgradeWorkshopLevel(WorkshopView workshop)
+    {
+        if (IsWorkshopUpgradesMaxedOut(workshop))
+        {
+            return false;
+        }
+        int level = WorkshopCurrentLevel(workshop);
+        var upgrade = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level);
+        return CanAfford(upgrade);
+    }
+    public void UpgradeWorkshopLevel(WorkshopView workshop)
+    {
+        if (CanUpgradeWorkshopLevel(workshop) == false)
+        {
+            throw new CustomBasicException("Unable to upgrade workshop.  Should had called CanUpgradeWorkshopLevel first");
+        }
+        int level = workshopManager.GetLevel(workshop);
+        var upgrade = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level);
+        bool maxedOut = IsWorkshopAtMaximumCapacity(workshop);
+        var fins = _advancedUpgrades.Single(x => x.Category == EnumAdvancedUpgradeTrack.Workshop);
+        if (fins.ExtraOutputChance is null)
+        {
+            throw new CustomBasicException("Must have extra output chance");
+        }
+        double? chances;
+        if (maxedOut)
+        {
+            chances = fins.ExtraOutputChance.Value;
+        }
+        else
+        {
+            chances = null;
+        }
+        workshopManager.UpgradeWorshopLevel(workshop, upgrade.SpeedBonus, maxedOut, chances);
+    }
     public bool IsWorkshopAtMaximumCapacity(WorkshopView workshop)
     {
         int capacity = workshopManager.GetCapcity(workshop);
@@ -154,8 +325,6 @@ public class UpgradeManager(InventoryManager inventoryManager,
         workshopManager.UpdateCapacity(workshop, capacity);
         inventoryManager.Consume(temp.Cost);
     }
-    
-    //if this does not work, then rethink.
     public int NextBarnCoinCost
     {
         get
@@ -260,7 +429,20 @@ public class UpgradeManager(InventoryManager inventoryManager,
         {
             int has = inventoryManager.Get(item.Key);
             int required = item.Value;
-            if ( required > has )
+            if (required > has)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    private bool CanAfford(AdvancedUpgradeTier tier)
+    {
+        foreach (var item in tier.Cost)
+        {
+            int has = inventoryManager.Get(item.Key);
+            int required = item.Value;
+            if (required > has)
             {
                 return false;
             }

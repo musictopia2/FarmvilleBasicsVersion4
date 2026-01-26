@@ -13,4 +13,6 @@ public class WorkshopAutoResumeModel
     public TimeSpan ReduceBy { get; set; } = TimeSpan.Zero;
     public int Level { get; set; } = 1; //starts at 1.  needs to do lookups.
     public double? AdvancedSpeedBonus { get; set; }
+    public bool MaxBenefits { get; set; }
+    public double? MaxDropRate { get; set; }
 }

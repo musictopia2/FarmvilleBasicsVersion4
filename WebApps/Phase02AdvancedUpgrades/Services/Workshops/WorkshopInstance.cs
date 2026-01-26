@@ -8,6 +8,8 @@ public class WorkshopInstance
     public bool Unlocked { get; set; }
     public int Level { get; set; } = 1; //starts at 1.  needs to do lookups.
     public double? AdvancedSpeedBonus { get; set; }
+    public bool MaxBenefits { get; set; }
+    public double? MaxDropRate { get; set; }
     public bool IsRental { get; set; } //this means if it comes from rental, needs to mark so can lock the exact proper one.
     public TimeSpan ReducedBy { get; set; } = TimeSpan.Zero;
     public BasicList<CraftingJobInstance> Queue { get; } = [];
@@ -42,6 +44,8 @@ public class WorkshopInstance
         ReducedBy = workshop.ReducedBy;
         Level = workshop.Level;
         AdvancedSpeedBonus = workshop.AdvancedSpeedBonus;
+        MaxBenefits = workshop.MaxBenefits;
+        MaxDropRate = workshop.MaxDropRate;
         Queue.Clear();
         foreach (var item in workshop.Queue)
         {
@@ -64,6 +68,8 @@ public class WorkshopInstance
                 ReducedBy = ReducedBy,
                 IsRental = IsRental,
                 AdvancedSpeedBonus = AdvancedSpeedBonus,
+                MaxBenefits = MaxBenefits,
+                MaxDropRate = MaxDropRate,
                 Level = Level,
                 Id = Id, //somehow even if something did not change, its needed.
                 Queue = Queue.Select(x => x.GetCraftingForSaving).ToBasicList(),
