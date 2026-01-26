@@ -18,7 +18,8 @@ public class TreeAutoResumeModel
 
     public OutputAugmentationSnapshot? OutputPromise { get; set; }
 
-
+    public int Level { get; set; } = 1;
+    public double? AdvancedSpeedBonus { get; set; }
 
     //good news is did not save time here so at least no problem here.
 

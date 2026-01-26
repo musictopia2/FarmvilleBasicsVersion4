@@ -7,6 +7,8 @@ public class UpgradeFactory : IUpgradeFactory
         {
             InventoryStorageUpgradePlanProvider = new InventoryStorageUpgradePlanDatabase(),
             WorkshopCapacityUpgradePlanProvider = new WorkshopCapacityUpgradePlanDatabase(),
+            AdvancedUpgradePlanProvider = new AdvancedUpgradePlanDatabase(),
+            WorkshopAdvancedUpgradePlanProvider = new WorkshopAdvancedUpgradeRuleDatabase()
         };
     }
 }
