@@ -12,7 +12,7 @@ public partial class CropsComponent(IToast toast, OverlayService overlayService)
     private void SelectCrop(string id) => _selectedItem = id;
     private TimeSpan? _unlimitedSpeedSeedTime;
 
-
+    private bool _upgradesEverAvailable;
 
     private void UpdateCrops()
     {
@@ -23,6 +23,27 @@ public partial class CropsComponent(IToast toast, OverlayService overlayService)
         _unlimitedSpeedSeedTime = TimedBoostManager.GetUnlimitedSpeedSeedTimeLeft();
 
     }
+
+    private string GetFirstDetails
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(_selectedItem))
+            {
+                return "None";
+            }
+
+            string duration = CropManager.GetAdjustedTimeForGivenCrop(_selectedItem);
+            
+            if (_upgradesEverAvailable == false)
+            {
+                return $"{_selectedItem.GetWords} {duration}";
+            }
+            int level = CropManager.GetLevel(_selectedItem);
+            return $"{_selectedItem.GetWords} Level {level} {duration}";
+        }
+    }
+
     protected override Task OnTickAsync()
     {
         UpdateCrops();
@@ -31,6 +52,7 @@ public partial class CropsComponent(IToast toast, OverlayService overlayService)
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        _upgradesEverAvailable = UpgradeManager.HasAdvancedUpgrades;
         UpdateCrops();
     }
     private int InventoryAmount(string crop) => InventoryManager.GetInventoryCount(crop);

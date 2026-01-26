@@ -17,6 +17,7 @@ public class CropManager(InventoryManager inventory,
     private ICropRepository _cropRepository = null!;
     private DateTime _lastSave = DateTime.MinValue;
     private bool _needsSaving;
+    private double _offset;
     private readonly TimeSpan _harvestPolicyCacheDuration = TimeSpan.FromMinutes(5); //so if they change it, won't be reflected for 5 minutes or if server restarts.
     public BasicList<string> UnlockedRecipes => _allCropDefinitions.Where(x => x.Unlocked && x.IsSuppressed == false).Select(x => x.Item).ToBasicList(); //so if you change the list, won't change this.
     public BasicList<Guid> GetUnlockedCrops => _crops.Where(x => x.Unlocked).Select(x => x.Id).ToBasicList();
@@ -106,6 +107,20 @@ public class CropManager(InventoryManager inventory,
     //any methods needed goes here.
 
     public bool CanManuallyPickUpCrop => _canAutomateCropHarvest == false;
+    public string GetAdjustedTimeForGivenCrop(string name)
+    {
+        CropRecipe currentRecipe = _recipes.Single(x => x.Item == name);
+        TimeSpan reducedBy = timedBoostManager.GetReducedTime(name);
+
+        TimeSpan duration = currentRecipe.Duration;
+        duration = duration - reducedBy;
+        bool fast;
+        var temp = _allCropDefinitions.Single(x => x.Item == name);
+        fast = temp.MaxBenefits == true && currentRecipe.IsFast;
+        //eventually need to figure out the extra speed.
+        return duration.Apply(_offset, fast).GetTimeString;
+
+    }
     public TimeSpan GetTimeForGivenCrop(string name) => _recipes.Single(x => x.Item == name).Duration;
     public bool CanPlant(Guid id, string item)
     {
@@ -348,7 +363,7 @@ public class CropManager(InventoryManager inventory,
         CropSystemState system = await context.CropRepository.LoadAsync();
         _crops.Clear();
         BaseBalanceProfile profile = await baseBalanceProvider.GetBaseBalanceAsync(farm);
-        double offset = profile.CropTimeMultiplier;
+        _offset = profile.CropTimeMultiplier;
         system.Slots.ForEach(x =>
         {
             CropRecipe? recipe = null;
@@ -357,7 +372,7 @@ public class CropManager(InventoryManager inventory,
                 //
                 recipe = _recipes.Single(y => y.Item == x.Crop);
             }
-            CropInstance crop = new(offset, recipe, timedBoostManager, outputAugmentationManager);
+            CropInstance crop = new(_offset, recipe, timedBoostManager, outputAugmentationManager);
             crop.Load(x);
             _crops.Add(crop);
         });

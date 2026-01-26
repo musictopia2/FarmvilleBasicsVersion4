@@ -14,11 +14,7 @@
 }
 
 .crop-selected-value {
-    font-weight: 800;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* long crop names won't wrap */
-    max-width: 240px; /* adjust to taste */
+    font-weight: 600;
 }
 
 .crop-picker {

@@ -87,7 +87,7 @@ public static class TimeExtensions
 
             return TimeSpan.FromTicks(finalPerUnitTicks);
         }
-        public TimeSpan Apply(double multiplier)
+        public TimeSpan Apply(double multiplier, bool canInstant = false)
         {
             if (multiplier <= 0)
             {
@@ -96,9 +96,15 @@ public static class TimeExtensions
 
             // preserve precision
             var ticks = (long)Math.Round(time.Ticks * multiplier, MidpointRounding.AwayFromZero);
-            
-            var minTicks = TimeSpan.FromSeconds(5).Ticks;
-
+            long minTicks;
+            if (canInstant == false)
+            {
+                minTicks = TimeSpan.FromSeconds(2).Ticks; //i think should be 2 seconds minimum usually
+            }
+            else
+            {
+                minTicks = TimeSpan.FromSeconds(0).Ticks;
+            }
             if (ticks < minTicks)
             {
                 ticks = minTicks;
