@@ -113,10 +113,22 @@
 <div class="workshop-header" @onclick:stopPropagation="true">
     <button type="button" class="workshop-nav" @onclick="PreviousClicked" aria-label="Previous workshop">
         <ArrowLeftComponent TargetHeight="10vh" />
+        
     </button>
+    @if (_anyAdvancedUpgrades)
+    {
+        <SuccessButton>
+            Get Upgrades
+        </SuccessButton>
+    }
+    else
+    {
+        <div>
 
+        </div>
+    }
     <div class="workshop-title">
-        <span class="workshop-name">@Workshop.Name.GetWords</span>
+        <span class="workshop-name">@WorkshopDetails</span>
 
         <span class="rental-pill @(string.IsNullOrWhiteSpace(_lastRentalText) ? "rental-pill-hidden" : "")">
             Rental: @_lastRentalText

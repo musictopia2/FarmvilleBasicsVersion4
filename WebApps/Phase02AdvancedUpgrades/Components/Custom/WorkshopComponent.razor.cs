@@ -25,6 +25,7 @@ public partial class WorkshopComponent(IToast toast)
     private bool _showConfirmation = false;
     private bool _raisedEvent;
     private string _lastRentalText = "";
+    private bool _anyAdvancedUpgrades;
 
     //private string RentalTimeLeft => RentalManager.GetDurationString(Workshop.Name);
 
@@ -39,13 +40,24 @@ public partial class WorkshopComponent(IToast toast)
             return;
         }
     }
-
+    private string WorkshopDetails
+    {
+        get
+        {
+            if (_anyAdvancedUpgrades == false)
+            {
+                return Workshop.Name.GetWords;
+            }
+            return $"{Workshop.Name.GetWords} Level {WorkshopManager.GetLevel(Workshop)}";
+        }
+    }
     private void ClosePowerGloves()
     {
         _showPowerGloves = false;
     }
     protected override void OnParametersSet()
     {
+        _anyAdvancedUpgrades = UpgradeManager.HasAdvancedUpgrades;
         _showToast = true; //good news is when the readycount increases since something is ready from the parent calls this so i actually get desired behavior.
         _raisedEvent = false;
         _recipes = WorkshopManager.GetRecipesForWorkshop(Workshop);

@@ -134,7 +134,7 @@
     max-width: 100%;
     overflow: hidden; /* prevents tiny horizontal scrollbars */
     display: grid;
-    grid-template-columns: 52px 1fr 52px; /* smaller = less likely to overflow */
+    grid-template-columns: 52px 150px 1fr 52px; /* smaller = less likely to overflow */
     align-items: center;
     column-gap: 10px;
     padding: 0 6px; /* small, safe padding */

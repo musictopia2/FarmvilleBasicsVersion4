@@ -10,8 +10,8 @@
     @if (_anyAdvancedUpgrades)
     {
         <div>
-            <PrimaryButton OnClick="ToggleUpgradeMode">
-                @(_upgradeMode ? "Done" : "Upgrades")
+            <PrimaryButton Style="width: 150px;" OnClick="ToggleUpgradeMode">
+                @(_upgradeMode ? "Done" : "Get Upgrades")
             </PrimaryButton>
             @if (_upgradeMode)
             {
