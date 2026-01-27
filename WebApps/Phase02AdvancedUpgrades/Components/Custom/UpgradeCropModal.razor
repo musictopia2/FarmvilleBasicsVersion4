@@ -65,9 +65,21 @@
                     }
                     else if (column.LevelDesired == _cropLevel + 1)
                     {
-                        <SuccessButton FontSize="2rem" OnClick="Upgrade">
-                            Upgrade Now
-                        </SuccessButton>
+                        <div class="upgrade-row-compact">
+                            <div class="upgrade-costs-left">
+                                @foreach (var cost in column.Costs)
+                                {
+                                    <span class="cost-chip-dark">
+                                        <BoostIconComponent ImageSize="60" Name="@cost.Key" />
+                                        <span class="cost-amt-dark">@cost.Value.ToString("N0")</span>
+                                    </span>
+                                }
+                            </div>
+
+                            <SuccessButton FontSize="2rem" OnClick="Upgrade">
+                                Upgrade Now
+                            </SuccessButton>
+                        </div>
                     }
                     else if (_cropLevel + 1 >= column.LevelDesired)
                     {
