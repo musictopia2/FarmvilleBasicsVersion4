@@ -113,7 +113,7 @@ public static class ImportAdvancedUpgradesClass
             output.Add(new AdvancedUpgradePlanModel
             {
                 Category = EnumAdvancedUpgradeTrack.Workshop,
-                ExtraOutputChance = 0.5,
+                ExtraOutputChance = 50, //must be in integer above 1.
                 Tiers = tiers
             });
         }

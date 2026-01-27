@@ -8,6 +8,13 @@
         />
 </PopupViewport>
 
+<PopupViewport @bind-Visible="_showUpgrades"
+               TapToClose="true"
+               ShowHeaders="false">
+    <UpgradeWorkshopModal Workshop="Workshop"
+                        OnUpgraded="Upgraded" />
+</PopupViewport>
+
 @if (_showConfirmation)
 {
     <ConfirmationBlazor Title="Complete Active Item"
@@ -117,7 +124,7 @@
     </button>
     @if (_anyAdvancedUpgrades)
     {
-        <SuccessButton>
+        <SuccessButton OnClick="ShowUpgrades">
             Get Upgrades
         </SuccessButton>
     }

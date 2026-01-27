@@ -1,4 +1,5 @@
 ﻿namespace Phase02AdvancedUpgrades.Services.Workshops;
+
 public class WorkshopManager(InventoryManager inventory,
     IBaseBalanceProvider baseBalanceProvider,
     ItemRegistry itemRegistry,
@@ -162,7 +163,7 @@ public class WorkshopManager(InventoryManager inventory,
 
                 // If we can't add, STOP immediately.
                 // (You can optionally flip to manual-ready here so UI explains why it stopped.)
-                if (CanAddToInventory(active) == false)
+                if (CanAddToInventory(active, workshop.MaxBenefits) == false)
                 {
                     // Optional: make it obvious to the player why it halted.
                     active.ReadyForManualPickup();
@@ -276,7 +277,7 @@ public class WorkshopManager(InventoryManager inventory,
         _needsSaving = true;
         return instance.Id;
     }
-    
+
     public bool CanDeleteRental(Guid id)
     {
         WorkshopInstance instance = _workshops.Single(x => x.Id == id);
@@ -315,7 +316,7 @@ public class WorkshopManager(InventoryManager inventory,
             NotifyWorkshopsUpdated();
             _needsSaving = true;
         }
-        
+
     }
 
 
@@ -370,7 +371,7 @@ public class WorkshopManager(InventoryManager inventory,
         WorkshopInstance workshop = GetWorkshopById(summary);
         return workshop.Level;
     }
-    
+
     public void UpgradeWorshopLevel(WorkshopView summary, double extraSpeed, bool maxBenefits, double? dropRate)
     {
         WorkshopInstance workshop = GetWorkshopById(summary);
@@ -430,8 +431,9 @@ public class WorkshopManager(InventoryManager inventory,
             WorkshopRecipe recipe = _recipes.Single(x => x.Item == item);
             inventory.Consume(recipe.Inputs);
             TimeSpan reduced = timedBoostManager.GetReducedTime(summary.Name);
-            CraftingJobInstance job = new(recipe, _multiplier, reduced, timedBoostManager, outputAugmentationManager);
             WorkshopInstance workshop = GetWorkshopById(summary);
+            CraftingJobInstance job = new(recipe, _multiplier, reduced, workshop.AdvancedSpeedBonus, timedBoostManager, outputAugmentationManager);
+
             workshop.ReducedBy = reduced; //i think this too.
             workshop.Queue.Add(job);
             _needsSaving = true;
@@ -494,18 +496,18 @@ public class WorkshopManager(InventoryManager inventory,
         var firstList = _recipes.Where(x => x.BuildingName == summary.Name).ToBasicList();
         BasicList<WorkshopRecipeSummary> output = [];
 
-
+        var workshop = _workshops.Single(x => x.Id == summary.Id);
 
         foreach (var item in firstList)
         {
-            var workshop = _workshops.First(x => x.BuildingName == item.BuildingName);
+
             var nexts = workshop.SupportedItems.Single(x => x.Name == item.Item);
 
             TimeSpan duration = item.Duration - timeReduction;
-
+            double extras = workshop.AdvancedSpeedBonus.SpeedBonusToTimeMultiplier();
             WorkshopRecipeSummary fins = new()
             {
-                Duration = duration.Apply(m),
+                Duration = duration.Apply(m * extras),
                 Inputs = item.Inputs,
                 Output = item.Output,
                 Item = item.Item,
@@ -585,17 +587,26 @@ public class WorkshopManager(InventoryManager inventory,
     private bool CanAddToInventory(WorkshopInstance workshop)
     {
         CraftingJobInstance active = workshop.Queue.First(x => x.State == EnumWorkshopState.ReadyToPickUpManually);
-        return CanAddToInventory(active);
+        return CanAddToInventory(active, workshop.MaxBenefits);
         //return inventory.CanAdd(active.Recipe.Output);
     }
-    private bool CanAddToInventory(CraftingJobInstance active)
+    private bool CanAddToInventory(CraftingJobInstance active, bool maxBenefits)
     {
 
-        if (active.OutputPromise is null)
+        if (active.OutputPromise is null && maxBenefits == false)
         {
             return inventory.CanAdd(active.Recipe.Output);
         }
-        return inventory.CanAdd(active.Recipe.Output.Item, active.Recipe.Output.Amount + 1);
+        int extras;
+        if (active.OutputPromise is not null && maxBenefits)
+        {
+            extras = 2;
+        }
+        else
+        {
+            extras = 1;
+        }
+        return inventory.CanAdd(active.Recipe.Output.Item, active.Recipe.Output.Amount + extras);
     }
     //private bool CanAddToInventory(CraftingJobInstance active) => inventory.CanAdd(active.Recipe.Output);
     public void PickupManually(WorkshopView summary)
@@ -603,30 +614,49 @@ public class WorkshopManager(InventoryManager inventory,
         lock (_lock)
         {
             WorkshopInstance workshop = GetWorkshopById(summary);
+
             if (CanAddToInventory(workshop) == false)
             {
                 throw new CustomBasicException("Should had used the CanAddToInventory because you were over the barn limits");
             }
+
             CraftingJobInstance active = workshop.Queue.First(x => x.State == EnumWorkshopState.ReadyToPickUpManually);
             workshop.Queue.RemoveSpecificItem(active);
-            //save something here too.
-            
-            if (active.OutputPromise is null || rs1.RollHit(active.OutputPromise.Chance) == false)
+
+            int batches = 1;
+
+            // 1) Existing promise chance (your "augmented output" system)
+            bool promiseHit = active.OutputPromise is not null
+                && rs1.RollHit(active.OutputPromise.Chance);
+
+            if (promiseHit)
             {
-                inventory.Add(active.Recipe.Output.Item, active.Recipe.Output.Amount);
-                _needsSaving = true;
-                NotifyWorkshopsUpdated();
-                return;
+                batches += 1;
+                OnAugmentedOutput?.Invoke(active.Recipe.Output);
             }
-            OnAugmentedOutput?.Invoke(active.Recipe.Output);
-            inventory.Add(active.Recipe.Output.Item, active.Recipe.Output.Amount);
-            inventory.Add(active.Recipe.Output.Item, active.Recipe.Output.Amount);
+
+            // 2) Maxed workshop bonus chance (independent extra)
+            bool maxBonusHit = workshop.MaxBenefits
+                && rs1.RollHit(workshop.MaxDropRate!.Value);
+
+            if (maxBonusHit)
+            {
+                batches += 1;
+                OnAugmentedOutput?.Invoke(active.Recipe.Output); //needs to show how many total you received (does not matter if its from power pins).
+                // Optional: fire a different event so UI/toast can say "Max bonus!"
+                // OnMaxWorkshopBonus?.Invoke(active.Recipe.Output);
+            }
+
+            // Award total
+            int totalAmount = active.Recipe.Output.Amount * batches;
+            inventory.Add(active.Recipe.Output.Item, totalAmount);
+
             _needsSaving = true;
             NotifyWorkshopsUpdated();
         }
     }
 
-    
+
 
     public async Task SetStyleContextAsync(WorkshopServicesContext context, FarmKey farm)
     {
@@ -693,7 +723,7 @@ public class WorkshopManager(InventoryManager inventory,
             elapsed -= active.DurationForProcessing;
             if (_automateCollection)
             {
-                if (CanAddToInventory(active))
+                if (CanAddToInventory(active, workshop.MaxBenefits))
                 {
                     //if you are doing automatically, no toasts (no toasts should be here).
 
@@ -716,7 +746,7 @@ public class WorkshopManager(InventoryManager inventory,
                     }
                     active.Complete();
                     workshop.Queue.RemoveSpecificItem(active);
-                    
+
                     _needsSaving = true;
                 }
             }

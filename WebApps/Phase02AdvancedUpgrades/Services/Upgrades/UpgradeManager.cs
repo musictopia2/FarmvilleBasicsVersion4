@@ -41,13 +41,21 @@ public class UpgradeManager(InventoryManager inventoryManager,
         return level >= maxLevel;
     }
     public int WorkshopCurrentLevel(WorkshopView workshop) => workshopManager.GetLevel(workshop);
-    public int WorkshopNextLevelRequirement(WorkshopView workshop)
+
+    public int WorkshopNextLevelRequirement(WorkshopView workshop, int levelDesired)
     {
         var item = _workshopUpgrades.Single(x => x.BuildingName == workshop.Name);
-        int level = WorkshopCurrentLevel(workshop);
-        level++;
-        return item.TierLevelRequired[level - 2];
+        
+        return item.TierLevelRequired[levelDesired - 2];
     }
+
+    //public int WorkshopNextLevelRequirement(WorkshopView workshop)
+    //{
+    //    var item = _workshopUpgrades.Single(x => x.BuildingName == workshop.Name);
+    //    int level = WorkshopCurrentLevel(workshop);
+    //    level++;
+    //    return item.TierLevelRequired[level - 2];
+    //}
     public double? GetWorkshopSpeedBoost(int level)
     {
         if (level == 1)
@@ -151,6 +159,11 @@ public class UpgradeManager(InventoryManager inventoryManager,
     public int CropCurrentLevel(string crop) => cropManager.GetLevel(crop);
     public int AnimalCurrentLevel(AnimalView animal) => animalManager.GetLevel(animal);
     public int TreeCurrentLevel(TreeView tree) => treeManager.GetLevel(tree);
+    public Dictionary<string, int> GetWorkshopItemsUpgradeCost(int level)
+    {
+        var item = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level);
+        return item.Cost;
+    }
     public Dictionary<string, int> GetBasicItemsUpgradeCost(int level) //if maxed out, should not do this
     {
         var item = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Standard, level);
@@ -276,8 +289,12 @@ public class UpgradeManager(InventoryManager inventoryManager,
         }
         int level = workshopManager.GetLevel(workshop);
         var upgrade = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level + 1);
-        bool maxedOut = IsWorkshopUpgradesMaxedOut(workshop);
+        int newLevel = level + 1;                                   // after purchase
+
         var fins = _advancedUpgrades.Single(x => x.Category == EnumAdvancedUpgradeTrack.Workshop);
+        int maxLevel = fins.Tiers.Count + 1;                         // level 1 + tiers
+
+        bool maxedOut = newLevel >= maxLevel;
         if (fins.ExtraOutputChance is null)
         {
             throw new CustomBasicException("Must have extra output chance");

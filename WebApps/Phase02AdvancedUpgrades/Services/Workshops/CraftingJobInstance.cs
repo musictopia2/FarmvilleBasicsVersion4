@@ -5,6 +5,7 @@ public class CraftingJobInstance(
     WorkshopRecipe recipe,
     double currentMultiplier,
     TimeSpan reducedBy,
+    double? extraSpeed,
     TimedBoostManager timedBoostManager,
     OutputAugmentationManager outputAugmentationManager
     )
@@ -46,7 +47,8 @@ public class CraftingJobInstance(
 
             TimeSpan duration = recipe.Duration - ReducedBy;
 
-            return duration.Apply(m); //hopefully this simple this time.
+            double bonusMult = extraSpeed.SpeedBonusToTimeMultiplier();
+            return duration.Apply(m * bonusMult); //hopefully this simple this time.
         }
     }
 

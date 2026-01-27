@@ -23,6 +23,7 @@ public partial class WorkshopComponent(IToast toast)
     private bool _showPowerGloves = false;
 
     private bool _showConfirmation = false;
+    private bool _showUpgrades = false;
     private bool _raisedEvent;
     private string _lastRentalText = "";
     private bool _anyAdvancedUpgrades;
@@ -40,6 +41,15 @@ public partial class WorkshopComponent(IToast toast)
             return;
         }
     }
+    private void ShowUpgrades()
+    {
+        _showUpgrades = true;
+    }
+    private void Upgraded()
+    {
+        _showUpgrades = false;
+        RebuildWorkshopUi();
+    }
     private string WorkshopDetails
     {
         get
@@ -55,18 +65,21 @@ public partial class WorkshopComponent(IToast toast)
     {
         _showPowerGloves = false;
     }
-    protected override void OnParametersSet()
+    private void RebuildWorkshopUi()
     {
         _anyAdvancedUpgrades = UpgradeManager.HasAdvancedUpgrades;
-        _showToast = true; //good news is when the readycount increases since something is ready from the parent calls this so i actually get desired behavior.
+        _showToast = true;
         _raisedEvent = false;
+
         _recipes = WorkshopManager.GetRecipesForWorkshop(Workshop);
-        WorkshopRecipeSummary? extra = _recipes.FirstOrDefault(x => x.Unlocked == false);
-        _recipes.RemoveAllAndObtain(x => x.Unlocked == false); //so only shows ones you can do.  needs next future one if any.
+
+        var extra = _recipes.FirstOrDefault(x => x.Unlocked == false);
+        _recipes.RemoveAllAndObtain(x => x.Unlocked == false);
         if (extra is not null)
         {
             _recipes.Add(extra);
         }
+
         if (_recipes.Count > 0)
         {
             Workshop.SelectedRecipeIndex = Math.Clamp(
@@ -75,6 +88,11 @@ public partial class WorkshopComponent(IToast toast)
         }
 
         _capacity = WorkshopManager.GetCapcity(Workshop);
+    }
+    protected override void OnParametersSet()
+    {
+        RebuildWorkshopUi();
+        
         base.OnParametersSet();
     }
 

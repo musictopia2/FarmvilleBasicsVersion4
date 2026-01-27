@@ -50,7 +50,7 @@ public class WorkshopInstance
         foreach (var item in workshop.Queue)
         {
             WorkshopRecipe recipe = recipes.Single(x => x.Item == item.RecipeItem);
-            CraftingJobInstance job = new(recipe, multiplier, workshop.ReducedBy, timedBoostManager, outputAugmentationManager);
+            CraftingJobInstance job = new(recipe, multiplier, workshop.ReducedBy, workshop.AdvancedSpeedBonus, timedBoostManager, outputAugmentationManager);
             job.Load(item);
             Queue.Add(job);
         }
