@@ -22,6 +22,13 @@ public class TreeManager(InventoryManager inventory,
         return instance.Level;
     }
     public bool IsFast(TreeView tree) => _recipes.Single(x => x.TreeName == tree.TreeName).IsFast;
+
+    public int LevelRequiredForUpgrade(TreeView tree, int levelDesired)
+    {
+        var recipe = _recipes.Single(x => x.Item == tree.ItemName);
+        return recipe.TierLevelRequired[levelDesired - 2];
+    }
+
     public void UpgradeTreeLevel(TreeView tree, double extraSpeed, bool maxBenefits)
     {
         var instance = GetTreeById(tree);
