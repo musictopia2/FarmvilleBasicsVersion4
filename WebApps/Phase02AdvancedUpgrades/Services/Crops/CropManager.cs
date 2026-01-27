@@ -231,7 +231,15 @@ public class CropManager(InventoryManager inventory,
         {
             return false;
         }
-        int granted = toUse * item.Amount;
+        bool maxed;
+
+        maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
+        int amount = item.Amount;
+        if (maxed)
+        {
+            amount++;
+        }
+        int granted = toUse * amount;
 
         var temp = timedBoostManager.GetActiveOutputAugmentationKeyForItem(item.Item); //i think.
         if (temp is null)
