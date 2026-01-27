@@ -8,7 +8,7 @@ public partial class UpgradeCropModal(IToast toast)
     [Parameter]
     public EventCallback OnUpgraded { get; set; }
 
-    private readonly BasicList<CropUpgradeColumn> _columns = [];
+    private readonly BasicList<UpgradeColumn> _columns = [];
     int _personalLevel;
     int _cropLevel;
     bool _isFast;
@@ -29,7 +29,7 @@ public partial class UpgradeCropModal(IToast toast)
             if (x > 1)
             {
                 var costs = UpgradeManager.GetBasicItemsUpgradeCost(x);
-                CropUpgradeColumn column = new(x, CropManager.LevelRequiredForUpgrade(CropName, x), costs);
+                UpgradeColumn column = new(x, CropManager.LevelRequiredForUpgrade(CropName, x), costs);
                 
                 _columns.Add(column);
             }
