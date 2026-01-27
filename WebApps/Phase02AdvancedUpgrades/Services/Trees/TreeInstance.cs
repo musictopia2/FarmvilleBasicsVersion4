@@ -52,7 +52,7 @@ public class TreeInstance(
             return ProductionTimePerTree.ApplyWithMinTotalForBatch(
                 m,
                 collecting.TreesCollectedAtTime,
-                ReducedBy);
+                ReducedBy, canInstant);
         }
     }
     public TimeSpan BaseTime => ProductionTimePerTree;
