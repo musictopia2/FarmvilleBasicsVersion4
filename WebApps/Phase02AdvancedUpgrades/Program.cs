@@ -2,6 +2,10 @@ using Microsoft.Extensions.FileProviders; //not common enough.
 
 var builder = WebApplication.CreateBuilder(args);
 
+//double? item = 1.00;
+//double adjusted = item.SpeedBonusToTimeMultiplier(true);
+//Console.WriteLine(adjusted);
+
 
 
 // Add services to the container.

@@ -1,6 +1,43 @@
 ﻿namespace Phase02AdvancedUpgrades.Utilities;
 public static class TimeExtensions
 {
+    extension (double? speedBonus)
+    {
+        public double SpeedBonusToTimeMultiplier(bool canInstant = false)
+        {
+            if (speedBonus is null)
+            {
+                return 1.0;
+            }
+
+            double b = speedBonus.Value;
+
+            // interpret as "15% faster" => b = 0.15, valid range 0..1 (or slightly above if you want)
+            if (double.IsNaN(b) || double.IsInfinity(b))
+            {
+                throw new CustomBasicException($"Speed bonus must be finite. Value={b}");
+            }
+            if (b < 0)
+            {
+                throw new CustomBasicException($"Speed bonus cannot be negative. Value={b}");
+            }
+
+            double m = 1.0 - b;
+
+            // If you allow 100% faster (instant) only when canInstant == true,
+            // keep a tiny epsilon so your existing Apply(multiplier) validation still passes.
+            if (m <= 0)
+            {
+                if (canInstant == false)
+                {
+                    throw new CustomBasicException($"Speed bonus too large (would make time <= 0). Value={b}");
+                }
+                m = 1e-9;
+            }
+
+            return m;
+        }
+    }
     extension (double progress)
     {
         public string GetTimeString

@@ -30,6 +30,7 @@ public class UpgradeManager(InventoryManager inventoryManager,
         _advancedUpgrades = await context.AdvancedUpgradePlanProvider.GetPlansAsync(farm);
     }
     public bool HasAdvancedUpgrades => _advancedUpgrades.Count != 0; //if there is none, then no upgrades (like the coin farm).
+    //iffy when i get to workshops.
     public bool IsWorkshopUpgradesMaxedOut(WorkshopView workshop)
     {
         int level = WorkshopCurrentLevel(workshop);
@@ -183,7 +184,7 @@ public class UpgradeManager(InventoryManager inventoryManager,
         // If there are 3 upgrades, they represent levels 2..4, so max level = 1 + 3 = 4
         int maxLevel = 1 + maxCount;
 
-        return level >= maxLevel;
+        return level > maxLevel;
     }
     public bool CanUpgradeAnimalLevel(AnimalView animal)
     {
@@ -207,7 +208,7 @@ public class UpgradeManager(InventoryManager inventoryManager,
         int level = AnimalCurrentLevel(animal);
         bool fast = animalManager.IsAnimalFast(animal);
         var upgrade = GetAdvancedUpgrade(fast, level + 1);
-        bool maxedOut = IsBasicItemUpgradesMaxedOut(level + 1);
+        bool maxedOut = IsBasicItemUpgradesMaxedOut(level + 2);
         animalManager.UpgradeAnimalLevel(animal, upgrade.SpeedBonus, maxedOut);
         inventoryManager.Consume(upgrade.Cost);
     }
@@ -230,7 +231,7 @@ public class UpgradeManager(InventoryManager inventoryManager,
         int level = treeManager.GetLevel(tree);
         bool fast = treeManager.IsFast(tree);
         var upgrade = GetAdvancedUpgrade(fast, level + 1);
-        bool maxedOut = IsBasicItemUpgradesMaxedOut(level + 1);
+        bool maxedOut = IsBasicItemUpgradesMaxedOut(level + 2);
         treeManager.UpgradeTreeLevel(tree, upgrade.SpeedBonus, maxedOut);
         inventoryManager.Consume(upgrade.Cost);
     }
@@ -253,7 +254,7 @@ public class UpgradeManager(InventoryManager inventoryManager,
         int level = cropManager.GetLevel(crop);
         bool fast = cropManager.IsFast(crop);
         var upgrade = GetAdvancedUpgrade(fast, level + 1);
-        bool maxedOut = IsBasicItemUpgradesMaxedOut(level + 1);
+        bool maxedOut = IsBasicItemUpgradesMaxedOut(level + 2);
         cropManager.UpdateCropLevel(crop, upgrade.SpeedBonus, maxedOut);
         inventoryManager.Consume(upgrade.Cost);
     }
@@ -275,7 +276,7 @@ public class UpgradeManager(InventoryManager inventoryManager,
         }
         int level = workshopManager.GetLevel(workshop);
         var upgrade = GetAdvancedUpgrade(EnumAdvancedUpgradeTrack.Workshop, level + 1);
-        bool maxedOut = IsWorkshopAtMaximumCapacity(workshop);
+        bool maxedOut = IsWorkshopUpgradesMaxedOut(workshop);
         var fins = _advancedUpgrades.Single(x => x.Category == EnumAdvancedUpgradeTrack.Workshop);
         if (fins.ExtraOutputChance is null)
         {

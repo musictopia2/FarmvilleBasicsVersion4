@@ -11,6 +11,7 @@ public class CropInstance(double currentMultiplier,
     public string? Crop { get; private set; } = null;
     public TimeSpan? GrowTime { get; private set; } = null;
     public double? AdvancedSpeedBonus { get ; private set; } = null;
+    public bool? MaxedBenefits { get; private set; } = null;
     public OutputAugmentationSnapshot? OutputPromise { get; private set; }
     public BasicList<ItemAmount> ExtraRewards { get; private set; } = [];
     private bool _needsSaving;
@@ -47,11 +48,18 @@ public class CropInstance(double currentMultiplier,
             {
                 return null;
             }
-            // If producing, use locked promise. If idle (UI preview), use current.
-            var m = _runMultiplier ?? _currentMultiplier;
-            TimeSpan duration = currentRecipe.Duration;
-            duration = duration - ReducedBy;
-            return duration.Apply(m);
+
+            var baseMult = _runMultiplier ?? _currentMultiplier;
+
+            // If you want instant only for “fast” crops with max benefits,
+            // CropInstance needs to know that. Easiest: compute it from recipe + a flag you store.
+            bool canInstant = currentRecipe.IsFast && (MaxedBenefits ?? false);
+
+            double bonusMult = AdvancedSpeedBonus.SpeedBonusToTimeMultiplier(canInstant);
+
+            TimeSpan duration = currentRecipe.Duration - ReducedBy;
+
+            return duration.Apply(baseMult * bonusMult, canInstant);
         }
     }
     public void Load(CropAutoResumeModel slot)
@@ -64,6 +72,7 @@ public class CropInstance(double currentMultiplier,
         _extrasResolved = slot.ExtrasResolved;
         OutputPromise = slot.OutputPromise;
         ExtraRewards = slot.ExtraRewards;
+        MaxedBenefits = slot.MaxedBenefits;
         AdvancedSpeedBonus = slot.AdvancedSpeedBonus;
         _runMultiplier = slot.RunMultiplier;
         // If something is/was planted, ensure a run multiplier exists
@@ -73,12 +82,14 @@ public class CropInstance(double currentMultiplier,
         }
         GrowTime = Crop is null ? null : GetDuration;
     }
-    public void Plant(string crop, CropRecipe recipe, TimeSpan reducedBy)
+    public void Plant(string crop, CropRecipe recipe, TimeSpan reducedBy, bool maxed, double? speedBonus)
     {
         State = EnumCropState.Growing;
         currentRecipe = recipe;
         ReducedBy = reducedBy;
+        MaxedBenefits = maxed;
         _runMultiplier = _currentMultiplier;
+        AdvancedSpeedBonus = speedBonus;
         GrowTime = GetDuration; //must send the recipe now.  can't trust the time sent anymore.
         Crop = crop;
         PlantedAt = DateTime.Now;

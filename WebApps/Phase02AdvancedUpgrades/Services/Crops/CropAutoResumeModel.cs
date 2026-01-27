@@ -13,4 +13,5 @@ public class CropAutoResumeModel
 
     public BasicList<ItemAmount> ExtraRewards { get; set; } = []; //when you are about to collect, show then.
     public double? AdvancedSpeedBonus { get; set; }
+    public bool? MaxedBenefits { get; set; }
 }

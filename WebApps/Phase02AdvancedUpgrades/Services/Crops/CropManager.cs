@@ -110,16 +110,21 @@ public class CropManager(InventoryManager inventory,
     public string GetAdjustedTimeForGivenCrop(string name)
     {
         CropRecipe currentRecipe = _recipes.Single(x => x.Item == name);
+
         TimeSpan reducedBy = timedBoostManager.GetReducedTime(name);
 
-        TimeSpan duration = currentRecipe.Duration;
-        duration = duration - reducedBy;
-        bool fast;
-        var temp = _allCropDefinitions.Single(x => x.Item == name);
-        fast = temp.MaxBenefits == true && currentRecipe.IsFast;
-        //eventually need to figure out the extra speed.
-        return duration.Apply(_offset, fast).GetTimeString;
+        var def = _allCropDefinitions.Single(x => x.Item == name);
 
+        bool canInstant = def.MaxBenefits == true && currentRecipe.IsFast;
+
+        double speedBonusMultiplier = def.AdvancedSpeedBonus.SpeedBonusToTimeMultiplier(canInstant);
+
+        // final multiplier: base profile multiplier * speed-bonus-as-multiplier
+        double m = _offset * speedBonusMultiplier;
+
+        TimeSpan duration = currentRecipe.Duration - reducedBy;
+
+        return duration.Apply(m, canInstant).GetTimeString;
     }
     public TimeSpan GetTimeForGivenCrop(string name) => _recipes.Single(x => x.Item == name).Duration;
     public bool CanPlant(Guid id, string item)
@@ -249,7 +254,16 @@ public class CropManager(InventoryManager inventory,
         {
             throw new CustomBasicException("Cannot grant crop items.  Should had called the CanGrantCropItems first");
         }
-        int granted = toUse * item.Amount;
+        bool maxed;
+
+        maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
+        int amount = item.Amount;
+        if (maxed)
+        {
+            amount++;
+        }
+
+        int granted = toUse * amount;
         var temp = timedBoostManager.GetActiveOutputAugmentationKeyForItem(item.Item);
         if (temp is not null)
         {
@@ -281,13 +295,15 @@ public class CropManager(InventoryManager inventory,
                 throw new CustomBasicException("Cannot plant.  Should had called the CanPlant first");
             }
             CropInstance crop = GetCrop(id);
-            if (inventory.GetInventoryCount(item) > 0)
+            CropDataModel extras = _allCropDefinitions.Single(x => x.Item == item);
+            if (inventory.GetInventoryCount(item) > 0 && extras.MaxBenefits == false)
             {
-                inventory.Consume(item, 1);
+                inventory.Consume(item, 1); //part of the benefit is not having to use any crops no matter what.
             }
             CropRecipe temp = _recipes.Single(x => x.Item == item);
             TimeSpan reducedBy = timedBoostManager.GetReducedTime(item);
-            crop.Plant(item, temp, reducedBy);
+            
+            crop.Plant(item, temp, reducedBy, extras.MaxBenefits, extras.AdvancedSpeedBonus);
             _needsSaving = true;
             // Deduct crop only if available; do not go negative. If Wheat == 0
             // and CanPlant allowed due to no growing fields, permit the plant without deduction.
@@ -305,13 +321,21 @@ public class CropManager(InventoryManager inventory,
             }
             BasicList<ItemAmount> bundle = [];
             // base
-            bundle.Add(new ItemAmount(crop.Crop, 2));
+
+            int amount;
+            amount = 2;
+            if (crop.MaxedBenefits!.Value == true)
+            {
+                amount++;
+            }
+
+            bundle.Add(new ItemAmount(crop.Crop, amount));
             // extras (already resolved on instance)
             if (crop.ExtraRewards is not null && crop.ExtraRewards.Count > 0)
             {
                 bundle.AddRange(crop.ExtraRewards);
             }
-
+            
             return inventory.CanAcceptRewards(bundle);
         }
     }
@@ -343,9 +367,13 @@ public class CropManager(InventoryManager inventory,
         {
             AddExtraRewards(crop.ExtraRewards.Single().Item, crop.ExtraRewards.Single().Amount);
         }
-        AddCrop(crop.Crop, 2);
+        int amount = 2;
+        if (crop.MaxedBenefits!.Value)
+        {
+            amount++;
+        }
+        AddCrop(crop.Crop, amount);
         crop.Clear();
-
     }
     private void AddCrop(string item, int amount)
     {
@@ -443,6 +471,7 @@ public class CropManager(InventoryManager inventory,
                 ExtraRewards = crop.ExtraRewards,
                 ExtrasResolved = crop.IsExtrasResolved,
                 OutputPromise = crop.OutputPromise,
+                MaxedBenefits = crop.MaxedBenefits,
                 AdvancedSpeedBonus = crop.AdvancedSpeedBonus
             }).ToBasicList();
             //has to figure out the other side (since you may unlock more slots).
