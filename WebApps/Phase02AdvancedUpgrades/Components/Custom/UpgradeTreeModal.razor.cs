@@ -34,7 +34,6 @@ public partial class UpgradeTreeModal(IToast toast)
         });
         base.OnInitialized();
     }
-    
     private string GetFaster(int level) => UpgradeManager.GetBasicPercent(level, _isFast);
     private bool CanUpgrade => UpgradeManager.CanUpgradeTreeLevel(Tree);
     private void Upgrade()

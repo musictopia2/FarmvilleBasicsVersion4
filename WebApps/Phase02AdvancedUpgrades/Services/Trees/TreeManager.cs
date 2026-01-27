@@ -1,4 +1,6 @@
-﻿namespace Phase02AdvancedUpgrades.Services.Trees;
+﻿using System.Xml.Linq;
+
+namespace Phase02AdvancedUpgrades.Services.Trees;
 public class TreeManager(InventoryManager inventory,
     IBaseBalanceProvider baseBalanceProvider,
     ItemRegistry itemRegistry,
@@ -14,6 +16,7 @@ public class TreeManager(InventoryManager inventory,
     private DateTime _lastSave = DateTime.MinValue;
     private readonly BasicList<TreeInstance> _trees = [];
     private bool _collectAll;
+    private double _offset;
     public event Action<ItemAmount>? OnAugmentedOutput;
     // Public read-only summaries for the UI
     public int GetLevel(TreeView tree)
@@ -28,7 +31,36 @@ public class TreeManager(InventoryManager inventory,
         var recipe = _recipes.Single(x => x.Item == tree.ItemName);
         return recipe.TierLevelRequired[levelDesired - 2];
     }
+    public string GetAdjustedTimeForGivenTree(TreeView tree)
+    {
+        CustomBasicException.ThrowIfNull(_treeCollecting);
 
+        TreeRecipe recipe = _recipes.Single(x => x.Item == tree.ItemName);
+        TreeInstance instance = GetTreeById(tree);
+
+        int batchSize = _treeCollecting.TreesCollectedAtTime;
+
+        // Timed-boost reduced-by applies to the next batch (same as your crop preview).
+        TimeSpan reducedBy = timedBoostManager.GetReducedTime(tree.ItemName);
+
+        bool canInstant = instance.MaxBenefits && recipe.IsFast;
+
+        double speedBonusMultiplier = instance.AdvancedSpeedBonus.SpeedBonusToTimeMultiplier(canInstant);
+
+        // Same composition rule as crops:
+        // final multiplier = profile offset * speed-bonus-as-time-multiplier
+        double m = _offset * speedBonusMultiplier;
+
+        // This must match TreeInstance's ProductionTimePerTreeAdjusted logic:
+        // per-tree adjusted time (already accounts for reducedBy + min-total rules).
+        TimeSpan perTreeAdjusted =
+            recipe.ProductionTimeForEach.ApplyWithMinTotalForBatch(m, batchSize, reducedBy, canInstant);
+
+        // TreeInstance treats the harvest as "batchSize trees produced" => total batch time.
+        TimeSpan totalBatch = TimeSpan.FromTicks(perTreeAdjusted.Ticks * batchSize);
+
+        return totalBatch.GetTimeString;
+    }
     public void UpgradeTreeLevel(TreeView tree, double extraSpeed, bool maxBenefits)
     {
         var instance = GetTreeById(tree);
@@ -222,6 +254,12 @@ public class TreeManager(InventoryManager inventory,
     {
         TreeInstance instance = GetTreeById(id);
         int amount = GetCollectAmount(instance);
+
+        if (instance.MaxBenefits)
+        {
+            amount *= 2;
+        }
+
         if (instance.OutputPromise is not null)
         {
             return inventory.CanAdd(instance.Name, amount * 2);
@@ -233,8 +271,11 @@ public class TreeManager(InventoryManager inventory,
         //int maxs;
         if (_collectAll)
         {
+            
             return instance.TreesReady;
+            
         }
+        
         return 1;
     }
     public void GrantUnlimitedTreeItems(GrantableItem item)
@@ -266,6 +307,16 @@ public class TreeManager(InventoryManager inventory,
         {
             return false;
         }
+        int amount;
+        amount = item.Amount;
+        bool maxed;
+
+        maxed = _trees.Any(x => x.MaxBenefits);
+        //maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
+        if (maxed)
+        {
+            amount *= 2;
+        }
         int granted = toUse * item.Amount;
 
         var temp = timedBoostManager.GetActiveOutputAugmentationKeyForItem(item.Item); //i think.
@@ -284,6 +335,17 @@ public class TreeManager(InventoryManager inventory,
         if (CanGrantTreeItems(item, toUse) == false)
         {
             throw new CustomBasicException("Unable to grant tree items.  Should had used CanGrantTreeItems first");
+        }
+
+        int amount;
+        amount = item.Amount;
+        bool maxed;
+
+        maxed = _trees.Any(x => x.MaxBenefits);
+        //maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
+        if (maxed)
+        {
+            amount *= 2;
         }
         int granted = toUse * item.Amount;
 
@@ -338,6 +400,10 @@ public class TreeManager(InventoryManager inventory,
             instance.CollectTree(reducedBy);
         });
         AddExtraReward(instance.Name, extras);
+        if (instance.MaxBenefits)
+        {
+            maxs *= 2;
+        }
         AddTreeToInventory(instance.Name, maxs);
     }
     private void AddExtraReward(string item, int amount)
@@ -375,11 +441,11 @@ public class TreeManager(InventoryManager inventory,
         _trees.Clear();
         _treeCollecting = context.TreesCollecting;
         BaseBalanceProfile profile = await baseBalanceProvider.GetBaseBalanceAsync(farm);
-        double offset = profile.TreeTimeMultiplier;
+        _offset = profile.TreeTimeMultiplier;
         foreach (var item in ours)
         {
             TreeRecipe recipe = _recipes.Single(x => x.TreeName == item.TreeName);
-            TreeInstance tree = new(recipe, _treeCollecting, offset, timedBoostManager, outputAugmentationManager);
+            TreeInstance tree = new(recipe, _treeCollecting, _offset, timedBoostManager, outputAugmentationManager);
             tree.Load(item);
             _trees.Add(tree);
         }

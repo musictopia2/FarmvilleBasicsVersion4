@@ -41,14 +41,18 @@ public class TreeInstance(
     {
         get
         {
-            var m = _runMultiplier ?? _currentMultiplier;
+            var baseM = _runMultiplier ?? _currentMultiplier;
 
-            
+            // same rule as crops: 0.15 => 15% faster => time multiplier 0.85
+            bool canInstant = MaxBenefits && tree.IsFast; // optional; only matters if you support instant trees
+            double bonusM = AdvancedSpeedBonus.SpeedBonusToTimeMultiplier(canInstant);
+
+            double m = baseM * bonusM;
 
             return ProductionTimePerTree.ApplyWithMinTotalForBatch(
                 m,
-                collecting.TreesCollectedAtTime, ReducedBy);
-            //return ProductionTimePerTree.Apply(m);
+                collecting.TreesCollectedAtTime,
+                ReducedBy);
         }
     }
     public TimeSpan BaseTime => ProductionTimePerTree;

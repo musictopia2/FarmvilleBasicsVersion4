@@ -6,6 +6,7 @@ public partial class TreeComponent(IToast toast)
     public TreeView Tree { get; set; }
     private int _ready;
     private bool _showpopup = false;
+    private bool _showUpgrades = false;
     private string _rentalTimeLeft = "";
     protected override void OnInitialized()
     {
@@ -21,6 +22,17 @@ public partial class TreeComponent(IToast toast)
         {
             _rentalTimeLeft = RentalManager.GetDurationString(Tree.TreeName);
         }
+    }
+
+    private void OpenUpgrades()
+    {
+        _showpopup = false;
+        _showUpgrades = true;
+    }
+
+    private void Upgraded()
+    {
+        _showUpgrades = false;
     }
 
     protected override Task OnTickAsync()

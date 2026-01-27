@@ -1,7 +1,7 @@
 ﻿@inherits FarmComponentBase
 
 
-@Tree.TreeName.GetWords: Level @_cropLevel
+@Tree.TreeName.GetWords: Level @_cropLevel Current Crafting Time:  @TreeManager.GetAdjustedTimeForGivenTree(Tree)
 <TabButtonContainer>
     <ObjectRepeater RenderList="_columns" Context="column">
         <TabPage>
@@ -63,7 +63,7 @@
                     else if (_cropLevel == _maxLevels && column.LevelDesired == _maxLevels)
                     {
                         <div>
-                            Fully upgraded!
+                            Fully upgraded!  Great Job!
                         </div>
                     }
                     else if (column.LevelDesired == _cropLevel + 1)

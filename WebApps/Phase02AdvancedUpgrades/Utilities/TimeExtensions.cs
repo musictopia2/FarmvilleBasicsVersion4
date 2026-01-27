@@ -51,7 +51,7 @@ public static class TimeExtensions
     }
     extension (TimeSpan time)
     {
-        public TimeSpan ApplyWithMinTotalForBatch(double multiplier, int batchSize, TimeSpan reducedBy)
+        public TimeSpan ApplyWithMinTotalForBatch(double multiplier, int batchSize, TimeSpan reducedBy, bool caninstant = false)
         {
             if (multiplier <= 0)
             {
@@ -87,6 +87,10 @@ public static class TimeExtensions
 
             // ----- Step 3: enforce minimum total time for the entire batch (pre-multiplier)
             long minTotalTicks = TimeSpan.FromSeconds(2).Ticks;
+            if (caninstant)
+            {
+                minTotalTicks = TimeSpan.FromSeconds(0).Ticks;
+            }
             if (batchAfterReductionTicks < minTotalTicks)
             {
                 batchAfterReductionTicks = minTotalTicks;

@@ -1,14 +1,7 @@
 ﻿@inherits TimedOnlyComponent
 
 
-<PopupViewport ShowHeaders="false"
-               @bind-Visible="_showUpgrades"
-               TapToClose="true">
-    <UpgradeTreeModal 
-        Tree="Tree"
-        OnUpgraded="Upgraded"
-        />
-</PopupViewport>
+
 <div class="text-primary">@ProduceText</div>
 <div>@ReadyText</div>
 @if (_advancedUpgrades)
@@ -16,7 +9,7 @@
     <div>
         Level @_currentLevel
     </div>
-    <SuccessButton OnClick="OpenUpgrades">
+    <SuccessButton OnClick="OnOpenUpgrades">
         Get Upgrades
     </SuccessButton>
 }

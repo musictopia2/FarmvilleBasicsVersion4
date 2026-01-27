@@ -13,9 +13,8 @@ public partial class UpgradeCropModal(IToast toast)
     int _cropLevel;
     bool _isFast;
     int _maxLevels;
-    protected override void OnParametersSet()
+    protected override void OnInitialized()
     {
-
         //do a loopup to get the details.
         //start with 2.
         _maxLevels = UpgradeManager.MaximumBasicLevels;
@@ -30,13 +29,14 @@ public partial class UpgradeCropModal(IToast toast)
             {
                 var costs = UpgradeManager.GetBasicItemsUpgradeCost(x);
                 UpgradeColumn column = new(x, CropManager.LevelRequiredForUpgrade(CropName, x), costs);
-                
+
                 _columns.Add(column);
             }
         });
 
-        base.OnParametersSet();
+        base.OnInitialized();
     }
+
     private string GetFaster(int level) => UpgradeManager.GetBasicPercent(level, _isFast);
     private bool CanUpgrade => UpgradeManager.CanUpgradeCropLevel(CropName);
     private void Upgrade()
