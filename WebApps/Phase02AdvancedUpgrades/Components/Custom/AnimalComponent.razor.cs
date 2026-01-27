@@ -6,8 +6,12 @@ public partial class AnimalComponent(IToast toast)
     [EditorRequired]
     public AnimalView Animal { get; set; } = default!;
 
+    [Parameter] public bool UpgradeMode { get; set; }
+    [Parameter] public EventCallback OnUpgraded { get; set; }
+
     private int _selectedIndex;
     private bool _showOptions;
+    private bool _showUpgrades;
     private AnimalProductionOption? _selectedOption;
     protected override void OnParametersSet()
     {
@@ -15,7 +19,11 @@ public partial class AnimalComponent(IToast toast)
         base.OnParametersSet();
     }
 
-    
+    private void Upgraded()
+    {
+        _showUpgrades = false;
+        OnUpgraded.InvokeAsync();
+    }
     
 
     private void EnsureSelectedOption()
@@ -56,6 +64,12 @@ public partial class AnimalComponent(IToast toast)
 
     private void CardClicked()
     {
+        if (UpgradeMode)
+        {
+            //do upgrade stuff instead.
+            _showUpgrades = true;
+            return;
+        }
         if (CanCollect)
         {
             //may need a toast for animals.
@@ -67,6 +81,7 @@ public partial class AnimalComponent(IToast toast)
             AnimalManager.Collect(Animal);
             return;
         }
+        
         if (State == EnumAnimalState.Producing)
         {
             _showProgress = true;

@@ -7,8 +7,26 @@
     return;
 }
 <div class="full-scrollable">
+    @if (_anyAdvancedUpgrades)
+    {
+        <div>
+            <PrimaryButton OnClick="ToggleUpgradeMode">
+                @(_upgradeMode ? "Done" : "Upgrades")
+            </PrimaryButton>
+            @if (_upgradeMode)
+            {
+                <span>
+                    Upgrade mode: tap an animal
+                </span>
+            }
+        </div>
+    }
+    
     <WrapLayout RenderList="_animals" ColumnWidth="60px" Context="animal">
-        <AnimalComponent @key="animal.Id" Animal="animal" />
+        <AnimalComponent @key="animal.Id" Animal="animal"
+            UpgradeMode=_upgradeMode
+            OnUpgraded="Upgraded"
+        />
     </WrapLayout>
 </div>
 

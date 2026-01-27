@@ -10,11 +10,23 @@
     DisableBackgroundClick=false
     Width="500px"
     Top="200px"
-                      Left="600px"
+    Left="600px"
                       
 >
     <AnimalChoiceModal Animal="Animal" OnOptionChosen="SelectOptionAndStart" />
 </PopupCustomPositions>
+
+<PopupViewport
+   @bind-Visible="_showUpgrades"
+   TapToClose="true"
+   ShowHeaders="false"
+>
+    <UpgradeAnimalModal 
+        Animal="Animal"
+        OnUpgraded="Upgraded"
+        />
+</PopupViewport>
+
 
 <BasicProgressModal @bind-Visible="_showProgress">
     <AnimalProgressModal Animal="Animal"

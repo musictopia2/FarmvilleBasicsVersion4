@@ -1,15 +1,14 @@
 namespace Phase02AdvancedUpgrades.Components.Custom;
-public partial class UpgradeTreeModal(IToast toast)
+public partial class UpgradeAnimalModal(IToast toast)
 {
     [Parameter]
     [EditorRequired]
-    public TreeView Tree { get; set; }
+    public AnimalView Animal { get; set; }
     [Parameter]
     public EventCallback OnUpgraded { get; set; }
-
     private readonly BasicList<UpgradeColumn> _columns = [];
     int _personalLevel;
-    int _treeLevel;
+    int _animalLevel;
     bool _isFast;
     int _maxLevels;
     protected override void OnInitialized()
@@ -17,17 +16,17 @@ public partial class UpgradeTreeModal(IToast toast)
         //do a loopup to get the details.
         //start with 2.
         _maxLevels = UpgradeManager.MaximumBasicLevels;
-        int currentLevel = UpgradeManager.TreeCurrentLevel(Tree);
+        int currentLevel = UpgradeManager.AnimalCurrentLevel(Animal);
         _personalLevel = ProgressionManager.CurrentLevel;
-        _treeLevel = TreeManager.GetLevel(Tree);
-        _isFast = TreeManager.IsFast(Tree);
+        _animalLevel = AnimalManager.GetLevel(Animal);
+        _isFast = AnimalManager.IsFast(Animal);
 
         _maxLevels.Times(x =>
         {
             if (x > 1)
             {
                 var costs = UpgradeManager.GetBasicItemsUpgradeCost(x);
-                UpgradeColumn column = new(x, TreeManager.LevelRequiredForUpgrade(Tree, x), costs);
+                UpgradeColumn column = new(x, AnimalManager.LevelRequiredForUpgrade(Animal, x), costs);
 
                 _columns.Add(column);
             }
@@ -35,7 +34,7 @@ public partial class UpgradeTreeModal(IToast toast)
         base.OnInitialized();
     }
     private string GetFaster(int level) => UpgradeManager.GetBasicPercent(level, _isFast);
-    private bool CanUpgrade => UpgradeManager.CanUpgradeTreeLevel(Tree);
+    private bool CanUpgrade => UpgradeManager.CanUpgradeAnimalLevel(Animal);
     private void Upgrade()
     {
         if (CanUpgrade == false)
@@ -43,7 +42,7 @@ public partial class UpgradeTreeModal(IToast toast)
             toast.ShowUserErrorToast("Unable to upgrade");
             return;
         }
-        UpgradeManager.UpgradeTreeLevel(Tree);
+        UpgradeManager.UpgradeAnimalLevel(Animal);
         OnUpgraded.InvokeAsync();
     }
 }

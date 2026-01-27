@@ -25,17 +25,21 @@
             <div class="d-flex align-items-center justify-content-between gap-3">
 
                 <!-- Requires -->
-                <div class="d-flex flex-column">
+                @if (Animal.MaxBenefits == false)
+                {
+                    <div class="d-flex flex-column">
 
-                    <ItemRequirementDisplay Name="@option.Required"
-                                            OnClicked="ClickedCropAsync"
-                                            Required="@needReq"
-                                            Have="@haveOut"
-                                            WidthPx="150" />
-                   
+                        <ItemRequirementDisplay Name="@option.Required"
+                                                OnClicked="ClickedCropAsync"
+                                                Required="@needReq"
+                                                Have="@haveOut"
+                                                WidthPx="150" />
 
 
-                </div>
+
+                    </div>
+                }
+                
 
                 <!-- Produces -->
                 <div class="d-flex flex-column align-items-center">

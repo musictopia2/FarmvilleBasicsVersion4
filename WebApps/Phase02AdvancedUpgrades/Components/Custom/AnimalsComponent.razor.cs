@@ -3,13 +3,24 @@ public partial class AnimalsComponent : IDisposable
 {
     private BasicList<AnimalView> _animals = [];
     private TimeSpan? _unlimitedSpeedSeedTime;
+    private bool _upgradeMode;
+    private bool _anyAdvancedUpgrades;
+    private void ToggleUpgradeMode()
+    {
+        _upgradeMode = !_upgradeMode;
+    }
     override protected void OnInitialized()
     {
         AnimalManager.OnAnimalsUpdated += Refresh;
         _unlimitedSpeedSeedTime = TimedBoostManager.GetUnlimitedSpeedSeedTimeLeft();
         TimedBoostManager.Tick += UpdateUnlimitedSpeedSeeds;
+        _anyAdvancedUpgrades = UpgradeManager.HasAdvancedUpgrades;
         UpdateAnimals();
 
+    }
+    private void Upgraded()
+    {
+        _upgradeMode = false;
     }
     private void UpdateAnimals()
     {

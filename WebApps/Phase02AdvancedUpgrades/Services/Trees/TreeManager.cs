@@ -317,7 +317,7 @@ public class TreeManager(InventoryManager inventory,
         {
             amount *= 2;
         }
-        int granted = toUse * item.Amount;
+        int granted = toUse * amount;
 
         var temp = timedBoostManager.GetActiveOutputAugmentationKeyForItem(item.Item); //i think.
         if (temp is null)

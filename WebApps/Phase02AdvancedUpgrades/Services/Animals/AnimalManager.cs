@@ -1,4 +1,5 @@
-﻿using Phase02AdvancedUpgrades.Services.Trees;
+﻿using Microsoft.AspNetCore.Routing;
+using Phase02AdvancedUpgrades.Services.Trees;
 
 namespace Phase02AdvancedUpgrades.Services.Animals;
 public class AnimalManager(InventoryManager inventory,
@@ -21,7 +22,32 @@ public class AnimalManager(InventoryManager inventory,
     private DateTime _lastSave = DateTime.MinValue;
     private readonly Lock _lock = new();
     private BasicList<AnimalRecipe> _recipes = [];
+    private double _offset;
+    public bool IsFast(AnimalView animal) => _recipes.Single(x => x.Animal == animal.Name).IsFast;
+    public int LevelRequiredForUpgrade(AnimalView animal, int levelDesired)
+    {
+        var recipe = _recipes.Single(x => x.Animal == animal.Name);
+        return recipe.TierLevelRequired[levelDesired - 2];
+    }
+    //only show for first time.
+    public string GetAdjustedTimeForGivenAnimal(AnimalView animal)
+    {
+        AnimalRecipe currentRecipe = _recipes.Single(x => x.Animal == animal.Name);
+        AnimalInstance instance = GetAnimalById(animal);
+        TimeSpan reducedBy = timedBoostManager.GetReducedTime(animal.Name);
 
+
+        bool canInstant = instance.MaxBenefits == true && instance.IsFast;
+
+        double speedBonusMultiplier = instance.AdvancedSpeedBonus.SpeedBonusToTimeMultiplier(canInstant);
+
+        // final multiplier: base profile multiplier * speed-bonus-as-multiplier
+        double m = _offset * speedBonusMultiplier;
+
+        TimeSpan duration = currentRecipe.Options.First().Duration - reducedBy;
+
+        return duration.Apply(m, canInstant).GetTimeString;
+    }
     public void ResetAllAnimalsToIdle()
     {
         lock (_lock)
@@ -37,19 +63,21 @@ public class AnimalManager(InventoryManager inventory,
         // optional
         OnAnimalsUpdated?.Invoke();
     }
-
     public BasicList<AnimalView> GetUnlockedAnimals
     {
         get
         {
             BasicList<AnimalView> output = [];
+
             _animals.ForConditionalItems(x => x.Unlocked && x.IsSuppressed == false, t =>
             {
                 AnimalView summary = new()
                 {
                     Id = t.Id,
                     Name = t.Name,
-                    IsRental = t.IsRental
+                    IsRental = t.IsRental,
+                    MaxBenefits = t.MaxBenefits,
+                    IsFast = t.IsFast
                 };
                 output.Add(summary);
             });
@@ -443,6 +471,9 @@ public class AnimalManager(InventoryManager inventory,
     }
     public bool CanGrantAnimalItems(AnimalGrantModel item, int toUse)
     {
+        bool maxed;
+
+        maxed = _animals.Any(x => x.MaxBenefits);
         if (toUse <= 0)
         {
             return false;
@@ -451,11 +482,25 @@ public class AnimalManager(InventoryManager inventory,
         {
             return false;
         }
-        if (inventory.Has(item.InputData.Item, item.InputData.Amount * toUse) == false)
+        if (maxed == false)
         {
-            return false;
+            if (inventory.Has(item.InputData.Item, item.InputData.Amount * toUse) == false)
+            {
+                return false;
+            }
         }
-        int granted = toUse * item.OutputData.Amount;
+        
+
+        int amount;
+        amount = item.OutputData.Amount;
+        
+        //maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
+        if (maxed)
+        {
+            amount++; //just one more.
+        }
+        int granted = toUse * amount;
+
         var temp = timedBoostManager.GetActiveOutputAugmentationKeyForItem(item.AnimalName);
         if (temp is null)
         {
@@ -474,7 +519,17 @@ public class AnimalManager(InventoryManager inventory,
         }
 
 
-        int granted = toUse * item.OutputData.Amount;
+        int amount;
+        amount = item.OutputData.Amount;
+        bool maxed;
+
+        maxed = _animals.Any(x => x.MaxBenefits);
+        //maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
+        if (maxed)
+        {
+            amount++; //just one more.
+        }
+        int granted = toUse * amount;
 
         inventory.Consume(item.InputData.Item, item.InputData.Amount * toUse);
 
@@ -591,7 +646,10 @@ public class AnimalManager(InventoryManager inventory,
     {
         AnimalInstance instance = GetAnimalById(animal);
         var list = instance.GetUnlockedProductionOptions().ToBasicList();
-
+        if (instance.IsFast && instance.MaxBenefits)
+        {
+            list = list.Take(1).ToBasicList(); //only one option now.
+        }
         var key = timedBoostManager.GetActiveOutputAugmentationKeyForItem(animal.Name);
         if (key is null)
         {
@@ -631,6 +689,14 @@ public class AnimalManager(InventoryManager inventory,
         {
             return false;
         }
+        if (instance.IsFast && selected > 0)
+        {
+            return false; //if you are doing the fast option, you cannot produce from anything else.
+        }
+        if (instance.MaxBenefits)
+        {
+            return true;
+        }
         int required = instance.RequiredCount(selected);
         int count = inventory.Get(instance.RequiredName(selected));
         return count >= required;
@@ -642,8 +708,11 @@ public class AnimalManager(InventoryManager inventory,
         {
             throw new CustomBasicException("Cannot produce animal.  Should had used CanProduce function");
         }
-        int required = instance.RequiredCount(selected);
-        inventory.Consume(instance.RequiredName(selected), required);
+        if (instance.MaxBenefits == false)
+        {
+            int required = instance.RequiredCount(selected);
+            inventory.Consume(instance.RequiredName(selected), required);
+        }
         string item = instance.ItemReceived(selected);
         TimeSpan reducedBy = timedBoostManager.GetReducedTime(item);
         instance.Produce(selected, reducedBy);
@@ -665,7 +734,13 @@ public class AnimalManager(InventoryManager inventory,
     private bool CanCollect(AnimalInstance instance)
     {
         int maxs = GetAmount(instance);
-
+        
+       
+        //maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
+        if (instance.MaxBenefits)
+        {
+            maxs++; //just one more.
+        }
         BasicList<ItemAmount> bundle = [];
 
         // base
@@ -676,7 +751,6 @@ public class AnimalManager(InventoryManager inventory,
         {
             bundle.AddRange(instance.ExtraRewards);
         }
-
         return inventory.CanAcceptRewards(bundle);
     }
     public bool CanCollect(AnimalView animal)
@@ -719,10 +793,21 @@ public class AnimalManager(InventoryManager inventory,
         {
             AddExtraRewards(animal.ExtraRewards.Single().Item, animal.ExtraRewards.Single().Amount);
         }
+
+
+        if (animal.OutputReady == 0 && animal.MaxBenefits)
+        {
+            maxs++; //you get one more at the end.
+        }
+
+
         // base
         AddAnimalToInventory(selectedName, maxs);
         // IMPORTANT: clear extras so you don't add them again next collect
         animal.Clear(); //needed a new method.  otherwise, it would had cleared and would never show extra rewards.
+
+
+
         if (wasUnlocked && animal.Unlocked == false)
         {
             OnAnimalsUpdated?.Invoke();
@@ -771,11 +856,11 @@ public class AnimalManager(InventoryManager inventory,
         var ours = await context.AnimalRepository.LoadAsync();
         _animals.Clear();
         BaseBalanceProfile profile = await baseBalanceProvider.GetBaseBalanceAsync(farm);
-        double offset = profile.AnimalTimeMultiplier;
+        _offset = profile.AnimalTimeMultiplier;
         foreach (var item in ours)
         {
             AnimalRecipe recipe = _recipes.Single(x => x.Animal == item.Name);
-            AnimalInstance animal = new(recipe, offset, timedBoostManager, outputAugmentationManager);
+            AnimalInstance animal = new(recipe, _offset, timedBoostManager, outputAugmentationManager);
 
             animal.Load(item);
             _animals.Add(animal);

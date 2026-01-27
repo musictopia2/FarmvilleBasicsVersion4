@@ -13,6 +13,7 @@ public class AnimalInstance(AnimalRecipe recipe, double currentMultiplier,
     public double? AdvancedSpeedBonus { get; set; } //has to set right away now.
     public int Level { get; set; } = 1;
     public bool MaxBenefits { get; set; }
+    public bool IsFast => recipe.IsFast;
     public BasicList<AnimalProductionOption> GetUnlockedProductionOptions()
         => recipe.Options.Take(ProductionOptionsAllowed).ToBasicList();
 
@@ -154,15 +155,16 @@ public class AnimalInstance(AnimalRecipe recipe, double currentMultiplier,
             return recipe.Options[_selected.Value].Output.Amount;
         }
     }
-
     public TimeSpan GetDuration(int selected, TimeSpan reducedBy)
     {
         var option = recipe.Options[selected];
         var duration = option.Duration - reducedBy;
         // If producing, use locked promise. If idle (UI preview), use current.
         var m = _runMultiplier ?? _currentMultiplier;
+        bool canInstant = recipe.IsFast && MaxBenefits == true;
 
-        return duration.Apply(m);
+        double bonusMult = AdvancedSpeedBonus.SpeedBonusToTimeMultiplier(canInstant);
+        return duration.Apply(m * bonusMult, canInstant);
     }
 
     public void Produce(int selected, TimeSpan reducedBy)
@@ -279,7 +281,7 @@ public class AnimalInstance(AnimalRecipe recipe, double currentMultiplier,
             throw new CustomBasicException("No selection");
         }
 
-        double totalChanceRaw = OutputPromise.Chance * (_selected.Value + 1);
+        //double totalChanceRaw = OutputPromise.Chance * (_selected.Value + 1);
         int multiplier = _selected.Value + 1;
         double chancePercent = OutputPromise.Chance * multiplier; // 0..100 (can be decimal)
         chancePercent = Math.Clamp(chancePercent, 0d, 100d);
