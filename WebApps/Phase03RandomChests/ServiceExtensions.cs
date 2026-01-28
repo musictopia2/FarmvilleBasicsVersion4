@@ -9,6 +9,7 @@ using Phase03RandomChests.DataAccess.Items;
 using Phase03RandomChests.DataAccess.OutputAugmentation;
 using Phase03RandomChests.DataAccess.Progression;
 using Phase03RandomChests.DataAccess.Quests; //not common enough.
+using Phase03RandomChests.DataAccess.RandomChests;
 using Phase03RandomChests.DataAccess.Rentals;
 using Phase03RandomChests.DataAccess.Scenarios;
 using Phase03RandomChests.DataAccess.Store;
@@ -51,6 +52,7 @@ public static class ServiceExtensions
                 .AddSingleton<ITimedBoostFactory, TimedBoostFactory>()
                 .AddSingleton<IOutputAugmentationFactory, OutputAugmentationFactory>()
                 .AddSingleton<IRentalFactory, RentalFactory>()
+                .AddSingleton<IRandomChestFactory, RandomChestFactory>()
                 .AddScoped<ReadyStatusService>()
                 .AddScoped<OverlayService>()
                 .AddScoped<FarmContext>()

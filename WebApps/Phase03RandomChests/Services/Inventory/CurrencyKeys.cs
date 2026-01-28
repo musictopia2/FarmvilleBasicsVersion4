@@ -9,4 +9,5 @@ public static class CurrencyKeys
     public const string FinishSingleWorksite = "FinishSingleWorksite";
     public const string FinishAllWorkshops = "FinishAllWorkshops";
     public const string FinishAllWorksites = "FinishAllWorksites";
+    public const string Chest = "Chest";
 }

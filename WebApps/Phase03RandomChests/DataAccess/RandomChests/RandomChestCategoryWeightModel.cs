@@ -1,4 +1,4 @@
-﻿namespace Phase20RandomChests.Models;
+﻿namespace Phase03RandomChests.DataAccess.RandomChests;
 //this is my starting point.
 public class RandomChestCategoryWeightModel
 {

@@ -36,6 +36,7 @@ public static class ImportCatalogOfferClass
         list.AddRange(ImportNoWorksiteSuppliesNeeded());
         list.AddRange(ImportSingleCompletionOffers());
         list.AddRange(ImportAllCompletionOffers());
+        list.AddRange(ImportRandomChests());
         if (farm.Theme == FarmThemeList.Country)
         {
             list.AddRange(ImportCountryUnlimitedItems());
@@ -58,6 +59,38 @@ public static class ImportCatalogOfferClass
             Offers = list
 
         };
+    }
+    private static BasicList<CatalogOfferModel> ImportRandomChests()
+    {
+        EnumCatalogCategory category = EnumCatalogCategory.Misc;
+        BasicList<CatalogOfferModel> output = [];
+        string key = CurrencyKeys.Chest;
+        int level = 5;
+        output.Add(new()
+        {
+            Category = category,
+            TargetName = key,
+            LevelRequired = level,
+            Quantity = 1,
+            Costs = FarmHelperClass.GetCoinOnlyDictionary(20)
+        });
+        output.Add(new()
+        {
+            Category = category,
+            TargetName = key,
+            LevelRequired = level,
+            Quantity = 10,
+            Costs = FarmHelperClass.GetCoinOnlyDictionary(100)
+        });
+        output.Add(new()
+        {
+            Category = category,
+            TargetName = key,
+            LevelRequired = level,
+            Quantity = 50,
+            Costs = FarmHelperClass.GetCoinOnlyDictionary(400)
+        });
+        return output;
     }
     private static BasicList<CatalogOfferModel> ImportNoWorksiteSuppliesNeeded()
     {

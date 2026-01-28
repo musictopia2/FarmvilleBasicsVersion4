@@ -41,3 +41,4 @@ global using Phase03RandomChests.Services.OutputAugmentation;
 global using Phase03RandomChests.Services.Rentals;
 global using Phase03RandomChests.Services.Scenarios;
 global using rs1 = Phase03RandomChests.Utilities.RandomUtilities;
+global using Phase03RandomChests.Services.RandomChests;

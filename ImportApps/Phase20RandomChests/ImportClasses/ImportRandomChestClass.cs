@@ -114,13 +114,15 @@ public static class ImportRandomChestClass
         {
             Key = RandomChestKeys.WorksiteNoSupplies,
             Weight = 6,
-            LevelRequired = 4
+            LevelRequired = 4,
+            Duration = TimeSpan.FromHours(6) //can be for longer since you were lucky.
         });
         output.Add(new()
         {
             Key = RandomChestKeys.UnlimitedSpeedSeed,
             Weight = 1,
-            LevelRequired = 4
+            LevelRequired = 4,
+            Duration = TimeSpan.FromMinutes(10) //even this can be for longer since you were lucky.
         });
         output.Add(new()
         {
@@ -210,7 +212,7 @@ public static class ImportRandomChestClass
         output.Add(new()
         {
             Category = RandomChestKeys.PowerPin,
-            TargetName = CurrencyKeys.PowerGloveWorkshop,
+            TargetName = CurrencyKeys.PowerGloveWorksite,
             ItemWeight = 2,
             LeveRequired = 3
         });

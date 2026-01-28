@@ -1,4 +1,5 @@
-﻿namespace Phase03RandomChests.Services.TimedBoosts;
+﻿
+namespace Phase03RandomChests.Services.TimedBoosts;
 public class TimedBoostManager
 {
     private TimedBoostProfileModel _profile = null!;
@@ -13,6 +14,31 @@ public class TimedBoostManager
        
         await SaveAsync();
         // reset cache when loading
+    }
+
+    public async Task GrantCreditAsync(RandomChestResultModel item)
+    {
+        if (item.Duration.HasValue == false)
+        {
+            throw new CustomBasicException("Must have duration for granting credit");
+        }
+        var existing = _profile.Credits.SingleOrDefault(x => x.BoostKey == item.TargetName && x.Duration == item.Duration);
+        if (existing is null)
+        {
+            _profile.Credits.Add(new TimedBoostCredit
+            {
+                BoostKey = item.TargetName,
+                Duration = item.Duration.Value,
+                Quantity = item.Quantity,
+                ReduceBy = item.ReduceBy,
+                OutputAugmentationKey = item.OutputAugmentationKey
+            });
+        }
+        else
+        {
+            existing.Quantity += item.Quantity;
+        }
+        await SaveAsync();
     }
 
 
