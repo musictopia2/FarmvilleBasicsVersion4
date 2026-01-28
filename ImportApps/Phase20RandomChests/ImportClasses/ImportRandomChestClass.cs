@@ -102,12 +102,12 @@ public static class ImportRandomChestClass
         output.Add(new()
         {
             Key = RandomChestKeys.Coin,
-            Weight = 10
+            Weight = 30
         });
         output.Add(new()
         {
             Key = RandomChestKeys.SpeedSeed,
-            Weight = 20,
+            Weight = 30,
             LevelRequired = 2
         });
         output.Add(new()
@@ -127,7 +127,7 @@ public static class ImportRandomChestClass
         output.Add(new()
         {
             Key = RandomChestKeys.PowerGlove,
-            Weight = 30,
+            Weight = 15,
             LevelRequired = 3
         });
         output.Add(new()
@@ -139,13 +139,13 @@ public static class ImportRandomChestClass
         output.Add(new()
         {
             Key = RandomChestKeys.FinishAll,
-            Weight = 10,
+            Weight = 5,
             LevelRequired = 4
         });
         output.Add(new()
         {
             Key = RandomChestKeys.PowerPin,
-            Weight = 15,
+            Weight = 20,
             LevelRequired = 11
         });
         return output;
@@ -161,20 +161,20 @@ public static class ImportRandomChestClass
         });
         output.Add(new()
         {
-            MinimumQuantity = 10,
-            MaximumQuantity = 20,
+            MinimumQuantity = 2,
+            MaximumQuantity = 4,
             TargetName = CurrencyKeys.SpeedSeed
         });
         output.Add(new()
         {
-            MinimumQuantity = 5,
-            MaximumQuantity = 10,
+            MinimumQuantity = 2,
+            MaximumQuantity = 5,
             TargetName = CurrencyKeys.PowerGloveWorkshop
         });
         output.Add(new()
         {
-            MinimumQuantity = 3,
-            MaximumQuantity = 5,
+            MinimumQuantity = 1,
+            MaximumQuantity = 3,
             TargetName = CurrencyKeys.PowerGloveWorksite
         });
         output.Add(new()
@@ -186,8 +186,8 @@ public static class ImportRandomChestClass
         //worksites only 1.
         output.Add(new()
         {
-            MinimumQuantity = 4,
-            MaximumQuantity = 8,
+            MinimumQuantity = 2,
+            MaximumQuantity = 4,
             TargetName = CurrencyKeys.FinishSingleWorkshop
         });
         output.Add(new()
@@ -204,14 +204,14 @@ public static class ImportRandomChestClass
         BasicList<RandomChestItemWeightModel> output = [];
         output.Add(new()
         {
-            Category = RandomChestKeys.PowerPin,
+            Category = RandomChestKeys.PowerGlove,
             TargetName = CurrencyKeys.PowerGloveWorkshop,
             ItemWeight = 5,
             LeveRequired = 3
         });
         output.Add(new()
         {
-            Category = RandomChestKeys.PowerPin,
+            Category = RandomChestKeys.PowerGlove,
             TargetName = CurrencyKeys.PowerGloveWorksite,
             ItemWeight = 2,
             LeveRequired = 3

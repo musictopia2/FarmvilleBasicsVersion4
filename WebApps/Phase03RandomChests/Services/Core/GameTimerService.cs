@@ -32,6 +32,7 @@ public class GameTimerService(IStartFarmRegistry farmRegistry,
             ITimedBoostFactory timedBoostFactory = sp.GetRequiredService<ITimedBoostFactory>();
             IOutputAugmentationFactory outputAugmentationFactory = sp.GetRequiredService<IOutputAugmentationFactory>();
             IRentalFactory rentalFactory = sp.GetRequiredService<IRentalFactory>();
+            IRandomChestFactory randomChestFactory = sp.GetRequiredService<IRandomChestFactory>();
             TimedBoostManager timedBoostManager = new();
             OutputAugmentationManager outputAugmentationManager = new();
             CropManager cropManager = new(inventory, baseBalanceProvider, itemRegistry, timedBoostManager, outputAugmentationManager);
@@ -53,18 +54,19 @@ public class GameTimerService(IStartFarmRegistry farmRegistry,
                 );
             QuestManager questManager = new(inventory, itemManager, progressionManager);
             ScenarioManager scenarioManager = new(inventory, cropManager, treeManager, animalManager, workshopManager, worksiteManager);
+            RandomChestManager randomChestManager = new(inventory, timedBoostManager);
             IGameTimer timer = new BasicGameState(
                 inventory, starts,
                 cropFactory, treeFactory, animalFactory, workshopFactory,
                 worksiteFactory, workerFactory, questFactory,
                 upgradeFactory, progressionFactory, catalogFactory, 
                 storeFactory, itemFactory, instantUnlimitedFactory, 
-                timedBoostFactory, outputAugmentationFactory, rentalFactory, scenarioFactory,
+                timedBoostFactory, outputAugmentationFactory, rentalFactory, scenarioFactory, randomChestFactory,
                 cropManager, treeManager, animalManager,
                 workshopManager, worksiteManager, questManager,
                 upgradeManager, progressionManager, catalogManager, 
                 storeManager, itemManager, instantUnlimitedManager, 
-                timedBoostManager, outputAugmentationManager, rentalManager, scenarioManager, farm
+                timedBoostManager, outputAugmentationManager, rentalManager, scenarioManager, randomChestManager, farm
                 );
             await gameRegistry.InitializeFarmAsync(timer, farm);
         }

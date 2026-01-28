@@ -30,7 +30,7 @@ public class TimedBoostManager
                 BoostKey = item.TargetName,
                 Duration = item.Duration.Value,
                 Quantity = item.Quantity,
-                ReduceBy = item.ReduceBy,
+                ReduceBy = item.ReducedBy,
                 OutputAugmentationKey = item.OutputAugmentationKey
             });
         }

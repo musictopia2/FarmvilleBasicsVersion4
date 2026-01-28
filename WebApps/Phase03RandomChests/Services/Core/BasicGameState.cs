@@ -20,6 +20,7 @@ public class BasicGameState : IGameTimer
     IOutputAugmentationFactory outputAugmentationFactory,
     IRentalFactory rentalFactory,
     IScenarioFactory scenarioFactory,
+    IRandomChestFactory randomChestFactory,
     CropManager cropManager,
     TreeManager treeManager,
     AnimalManager animalManager,
@@ -36,6 +37,7 @@ public class BasicGameState : IGameTimer
     OutputAugmentationManager outputAugmentationManager,
     RentalManager rentalManager,
     ScenarioManager scenarioManager,
+    RandomChestManager randomChestManager,
     FarmKey farm
 )
     {
@@ -58,6 +60,7 @@ public class BasicGameState : IGameTimer
         _outputAugmentationFactory = outputAugmentationFactory;
         _rentalFactory = rentalFactory;
         _scenarioFactory = scenarioFactory;
+        _randomChestFactory = randomChestFactory;
         _cropManager = cropManager;
         _treeManager = treeManager;
         _animalManager = animalManager;
@@ -74,6 +77,7 @@ public class BasicGameState : IGameTimer
         _outputAugmentationManager = outputAugmentationManager;
         _rentalManager = rentalManager;
         _scenarioManager = scenarioManager;
+        _randomChestManager = randomChestManager;
         _farm = farm;
         _container = new MainFarmContainer
         {
@@ -94,6 +98,7 @@ public class BasicGameState : IGameTimer
             OutputAugmentationManager = outputAugmentationManager,
             RentalManager = rentalManager,
             ScenarioManager = scenarioManager,
+            RandomChestManager = randomChestManager,
             FarmKey = farm
         };
     }
@@ -117,6 +122,7 @@ public class BasicGameState : IGameTimer
     private readonly IOutputAugmentationFactory _outputAugmentationFactory;
     private readonly IRentalFactory _rentalFactory;
     private readonly IScenarioFactory _scenarioFactory;
+    private readonly IRandomChestFactory _randomChestFactory;
     private readonly CropManager _cropManager;
     private readonly TreeManager _treeManager;
     private readonly AnimalManager _animalManager;
@@ -133,6 +139,7 @@ public class BasicGameState : IGameTimer
     private readonly OutputAugmentationManager _outputAugmentationManager;
     private readonly RentalManager _rentalManager;
     private readonly ScenarioManager _scenarioManager;
+    private readonly RandomChestManager _randomChestManager;
     private FarmKey _farm;
     FarmKey? IGameTimer.FarmKey => _farm;
     MainFarmContainer IGameTimer.FarmContainer
@@ -192,6 +199,8 @@ public class BasicGameState : IGameTimer
         await _rentalManager.SetRentalStyleContextAsync(rentalContext);
         ScenarioServicesContext scenarioContext = _scenarioFactory.GetScenarioServices(farm, _instantUnlimitedManager);
         await _scenarioManager.SetStyleContextAsync(scenarioContext, farm);
+        RandomChestServicesContext randomChestContext = _randomChestFactory.GetRandomChestServices(farm, _progressionManager);
+        _randomChestManager.SetRandomChestStyleContext(randomChestContext);
         _init = true;
     }
     async Task IGameTimer.TickAsync()

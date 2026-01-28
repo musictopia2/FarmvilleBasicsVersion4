@@ -15,7 +15,6 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     private NavigationBarContainer? _nav;
 
     private readonly OverlayInsets _overlays = new();
-
     private void VisibleChanged(bool visible)
     {
         quantityPickerService.UpdateVisibleStatus(visible);
@@ -37,6 +36,16 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
 
     private bool _showAllWorksites = false;
     private bool _showAllWorkshops = false;
+    private bool _showRandomChestRewards = false;
+    private void ShowRandomChestRewards()
+    {
+        if (InventoryManager.Has(CurrencyKeys.Chest, 1) == false)
+        {
+            toast.ShowUserErrorToast("You have no chests to open");
+            return;
+        }
+        _showRandomChestRewards = true;
+    }
 
     private async Task TransferCoinsAsync()
     {

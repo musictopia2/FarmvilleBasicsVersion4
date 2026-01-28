@@ -48,10 +48,10 @@ public class RandomChestManager(InventoryManager inventoryManager, TimedBoostMan
             .Where(x => x.TargetName is not null) // if you allow null, decide how you want to handle it
             .GroupBy(x => new RewardKey(
                 TargetName: x.TargetName!,
-                Source: x.Source,
+                //Source: x.Source,
                 OutputAugmentationKey: x.OutputAugmentationKey,
                 DurationTicks: x.Duration?.Ticks,
-                ReduceByTicks: x.ReduceBy?.Ticks
+                ReduceByTicks: x.ReducedBy?.Ticks
             ))
             .Select(g =>
             {
@@ -59,10 +59,10 @@ public class RandomChestManager(InventoryManager inventoryManager, TimedBoostMan
                 return new RandomChestResultModel
                 {
                     TargetName = first.TargetName,
-                    Source = first.Source,
+                    //Source = first.Source,
                     OutputAugmentationKey = first.OutputAugmentationKey,
                     Duration = first.Duration,
-                    ReduceBy = first.ReduceBy,
+                    ReducedBy = first.ReducedBy,
                     Quantity = g.Sum(x => x.Quantity)
                 };
             })
@@ -71,8 +71,6 @@ public class RandomChestManager(InventoryManager inventoryManager, TimedBoostMan
         // Optional: sort for nicer UI (category then name, etc.)
         grouped.Sort((a, b) =>
         {
-            int c = string.Compare(a.Source, b.Source, StringComparison.Ordinal);
-            if (c != 0) return c;
             return string.Compare(a.TargetName, b.TargetName, StringComparison.Ordinal);
         });
 
@@ -83,7 +81,6 @@ public class RandomChestManager(InventoryManager inventoryManager, TimedBoostMan
     // Use ticks to avoid TimeSpan equality edge cases and to keep it value-like.
     private readonly record struct RewardKey(
         string TargetName,
-        string? Source,
         string? OutputAugmentationKey,
         long? DurationTicks,
         long? ReduceByTicks

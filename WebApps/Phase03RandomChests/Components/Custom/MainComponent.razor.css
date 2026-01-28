@@ -60,3 +60,28 @@
     background: white;
     pointer-events: none;
 }
+
+.chest-icon-wrap {
+    position: relative;
+    display: inline-block; /* keeps it tight to the icon */
+    line-height: 0; /* avoids tiny baseline gaps */
+}
+
+.chest-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #d83a3a;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    pointer-events: none; /* important: badge won't block the button click */
+}

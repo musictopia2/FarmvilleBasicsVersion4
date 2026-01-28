@@ -105,7 +105,12 @@
                    @bind-Visible="_showActiveBoosts">
         <ActiveEffectsOverlay />
     </PopupViewport>
-
+    <PopupViewport ShowHeaders="true"
+                   HeaderTitle="Random Chests"
+                   TapToClose="true"
+                   @bind-Visible="_showRandomChestRewards">
+        <RandomChestRewardComponent />
+    </PopupViewport>
     <NavigationBarContainer @ref="_nav"
                             AlwaysShowBar=true
                             ShowBack="false"
@@ -182,6 +187,18 @@
             }
             <OverlayHost />
             <div class="boost-row">
+                <div class="chest-icon-wrap">
+                    <ImageButtonComponent Name="@CurrencyKeys.Chest" Height="100" OnClick="ShowRandomChestRewards" />
+                    @{
+                        int chestCount = InventoryManager.Get(CurrencyKeys.Chest);
+                    }
+                    @if (chestCount > 0)
+                    {
+                        <div class="chest-badge" aria-label="@($"{chestCount} chests")">
+                            @chestCount
+                        </div>
+                    }
+                </div>
                 <ImageButtonComponent OnClick="ShowSpeedSeeds" Name="@CurrencyKeys.SpeedSeed" Height="100" />
 
                 <!-- existing: activation -->

@@ -20,6 +20,6 @@ public class MainFarmContainer
     required public ItemManager ItemManager { get; set; }
     required public OutputAugmentationManager OutputAugmentationManager { get; set; }
     required public RentalManager RentalManager { get; set; }
-
+    required public RandomChestManager RandomChestManager { get; set; }
     //attempt to not require itemmanager here (since only the quest manager should require it.   if i am wrong, rethink).
 }

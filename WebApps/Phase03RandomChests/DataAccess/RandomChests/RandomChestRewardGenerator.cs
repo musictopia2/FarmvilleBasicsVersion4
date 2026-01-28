@@ -56,7 +56,7 @@ public class RandomChestRewardGenerator(RandomChestPlanDatabase db, ProgressionM
             Quantity = quantity,
             Duration = item.Duration,
             OutputAugmentationKey = item.OutputAugmentationKey,
-            ReduceBy = item.ReducedBy
+            ReducedBy = item.ReducedBy
         };
     
     private RandomChestCategoryWeightModel PickCategory()
