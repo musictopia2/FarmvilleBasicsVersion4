@@ -1,0 +1,29 @@
+﻿@inherits TimedOnlyComponent
+@if (_unlimitedSpeedSeedTime is not null)
+{
+    <UnlimitedSpeedSeedsGrantComponent 
+        TimeRemaining="_unlimitedSpeedSeedTime.Value"
+        Category="EnumItemCategory.Tree"
+        
+        />
+    
+    return;
+}
+<div class="full-scrollable">
+    <WrapLayout ColumnWidth="200px" RenderList="_trees" Context="tree">
+
+
+        <TreeComponent Tree="tree" />
+
+
+
+
+    </WrapLayout>
+</div>
+
+@code {
+    private RenderFragment BuildSideContent(string option) => @<div>
+        <ImageButtonComponent Name="@option" Height="100" />
+        <div style="font-size:1.5rem;">Have: @InventoryManager.Get(option)</div>
+    </div>;
+}

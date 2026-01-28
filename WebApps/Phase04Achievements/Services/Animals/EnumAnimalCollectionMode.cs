@@ -1,0 +1,7 @@
+﻿namespace Phase04Achievements.Services.Animals;
+public enum EnumAnimalCollectionMode
+{
+    OneAtTime,
+    AllAtOnce,
+    Automated
+}
