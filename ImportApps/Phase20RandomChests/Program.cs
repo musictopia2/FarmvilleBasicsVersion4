@@ -33,5 +33,6 @@ await ii1.ImportResetQuestsClass.ResetQuestsAsync();
 await ii1.ImportScenariosClass.ImportScenariosAsync(); //when resetting back to factory, will not reset this one (for the coin farm).
 await ii1.ImportRentalsClass.ImportRentalsAsync();
 await ii1.ImportAdvancedUpgradesClass.ImportUpgradesAsync();
+await ii1.ImportRandomChestClass.ImportRandomChestsAsync();
 //await ii1.ImportQuestInstancesClass.ImportQuestsAsync(); //iffy
 Console.WriteLine("Completed");
