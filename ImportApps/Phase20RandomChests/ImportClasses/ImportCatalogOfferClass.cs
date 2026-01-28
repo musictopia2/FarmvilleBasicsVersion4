@@ -72,7 +72,7 @@ public static class ImportCatalogOfferClass
             TargetName = key,
             LevelRequired = level,
             Quantity = 1,
-            Costs = FarmHelperClass.GetCoinOnlyDictionary(20)
+            Costs = FarmHelperClass.GetCoinOnlyDictionary(25)
         });
         output.Add(new()
         {
@@ -80,7 +80,7 @@ public static class ImportCatalogOfferClass
             TargetName = key,
             LevelRequired = level,
             Quantity = 10,
-            Costs = FarmHelperClass.GetCoinOnlyDictionary(100)
+            Costs = FarmHelperClass.GetCoinOnlyDictionary(150)
         });
         output.Add(new()
         {
@@ -88,7 +88,7 @@ public static class ImportCatalogOfferClass
             TargetName = key,
             LevelRequired = level,
             Quantity = 50,
-            Costs = FarmHelperClass.GetCoinOnlyDictionary(400)
+            Costs = FarmHelperClass.GetCoinOnlyDictionary(500)
         });
         return output;
     }

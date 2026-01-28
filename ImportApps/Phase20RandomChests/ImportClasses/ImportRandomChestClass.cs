@@ -155,8 +155,8 @@ public static class ImportRandomChestClass
         BasicList<RandomChestQuantityModel> output = [];
         output.Add(new()
         {
-            MinimumQuantity = 5,
-            MaximumQuantity = 20,
+            MinimumQuantity = 10,
+            MaximumQuantity = 45,
             TargetName = CurrencyKeys.Coin
         });
         output.Add(new()
