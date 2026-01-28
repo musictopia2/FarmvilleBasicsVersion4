@@ -1,6 +1,0 @@
-﻿namespace Phase18AlternativeFarms.DataAccess;
-public interface IFarmDocumentFactory<TDocument>
-    where TDocument : IFarmDocumentModel
-{
-    static abstract TDocument CreateEmpty(FarmKey farm);
-}
