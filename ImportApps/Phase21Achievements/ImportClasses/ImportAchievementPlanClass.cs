@@ -118,7 +118,7 @@ public static class ImportAchievementPlanClass
                 CoinIncrementAfterFirst = 1
             }
         });
-        
+       
         return output;
     }
 
@@ -438,6 +438,7 @@ public static class ImportAchievementPlanClass
         {
             Validate(item);
         }
+        ValidateNoDuplicates(output, farm);
         AchievementPlanDocument doc = new()
         {
             Farm = farm,
@@ -445,4 +446,31 @@ public static class ImportAchievementPlanClass
         };
         return doc;
     }
+
+
+    private static string GetUniquenessKey(AchievementPlanModel a)
+    {
+        return $"{a.CounterKey}|{a.SourceKey}|{a.ItemKey}|{a.OutputAugmentationKey}";
+    }
+    private static void ValidateNoDuplicates(BasicList<AchievementPlanModel> output, FarmKey farm)
+    {
+        var groups = output
+            .GroupBy(GetUniquenessKey)
+            .Where(g => g.Count() > 1)
+            .ToList();
+
+        if (groups.Count == 0)
+            return;
+
+        // Build a helpful error message showing which one duplicated
+        var msg = string.Join(Environment.NewLine, groups.Select(g =>
+        {
+            var sample = g.First();
+            return $"Duplicate achievement in farm '{farm}': " +
+                   $"CounterKey='{sample.CounterKey}', SourceKey='{sample.SourceKey}', ItemKey='{sample.ItemKey}', OutputAugmentationKey='{sample.OutputAugmentationKey}' (count={g.Count()})";
+        }));
+
+        throw new CustomBasicException(msg);
+    }
+
 }

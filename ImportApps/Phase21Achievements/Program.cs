@@ -35,5 +35,6 @@ await ii1.ImportRentalsClass.ImportRentalsAsync();
 await ii1.ImportAdvancedUpgradesClass.ImportUpgradesAsync();
 await ii1.ImportRandomChestClass.ImportRandomChestsAsync();
 await ii1.ImportAchievementPlanClass.ImportAchievementsAsync();
+await ii1.ImportAchievmentProfileClass.ImportAchievementsAsync();
 //await ii1.ImportQuestInstancesClass.ImportQuestsAsync(); //iffy
 Console.WriteLine("Completed");

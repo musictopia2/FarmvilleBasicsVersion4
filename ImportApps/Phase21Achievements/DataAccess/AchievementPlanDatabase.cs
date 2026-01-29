@@ -10,4 +10,9 @@ public class AchievementPlanDatabase() : ListDataAccess<AchievementPlanDocument>
     {
         await UpsertRecordsAsync(list);
     }
+    public async Task<BasicList<AchievementPlanModel>> GetPlanAsync(FarmKey farm)
+    {
+        var list = await GetDocumentsAsync();
+        return list.GetSingleDocument(farm).AchievementPlans;
+    }
 }
