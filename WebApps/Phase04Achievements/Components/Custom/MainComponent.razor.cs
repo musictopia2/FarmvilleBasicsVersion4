@@ -37,6 +37,12 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
     private bool _showAllWorksites = false;
     private bool _showAllWorkshops = false;
     private bool _showRandomChestRewards = false;
+    private bool _showAchievements = false;
+    private void ShowAchievements()
+    {
+        _showAchievements = true;
+    }
+
     private void ShowRandomChestRewards()
     {
         if (InventoryManager.Has(CurrencyKeys.Chest, 1) == false)

@@ -111,6 +111,12 @@
                    @bind-Visible="_showRandomChestRewards">
         <RandomChestRewardComponent />
     </PopupViewport>
+    <PopupViewport ShowHeaders="true"
+                   HeaderTitle="Achievements"
+                   TapToClose="true"
+                   @bind-Visible="_showAchievements">
+        <AchievementModal />
+    </PopupViewport>
     <NavigationBarContainer @ref="_nav"
                             AlwaysShowBar=true
                             ShowBack="false"
@@ -186,19 +192,30 @@
                 return;
             }
             <OverlayHost />
+            
+            <div class="settingsrow">
+                @if (this.IsMain)
+                {
+                    <ImageButtonComponent Name="Achievements" Height="100" OnClick="ShowAchievements" />
+                }
+            </div>
             <div class="boost-row">
-                <div class="chest-icon-wrap">
-                    <ImageButtonComponent Name="@CurrencyKeys.Chest" Height="100" OnClick="ShowRandomChestRewards" />
-                    @{
-                        int chestCount = InventoryManager.Get(CurrencyKeys.Chest);
-                    }
-                    @if (chestCount > 0)
-                    {
-                        <div class="chest-badge" aria-label="@($"{chestCount} chests")">
-                            @chestCount
-                        </div>
-                    }
-                </div>
+                @if (this.IsBaseline)
+                {
+                    <div class="chest-icon-wrap">
+                        <ImageButtonComponent Name="@CurrencyKeys.Chest" Height="100" OnClick="ShowRandomChestRewards" />
+                        @{
+                            int chestCount = InventoryManager.Get(CurrencyKeys.Chest);
+                        }
+                        @if (chestCount > 0)
+                        {
+                            <div class="chest-badge" aria-label="@($"{chestCount} chests")">
+                                @chestCount
+                            </div>
+                        }
+                    </div>
+                }
+                
                 <ImageButtonComponent OnClick="ShowSpeedSeeds" Name="@CurrencyKeys.SpeedSeed" Height="100" />
 
                 <!-- existing: activation -->

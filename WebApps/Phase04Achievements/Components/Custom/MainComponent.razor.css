@@ -1,4 +1,9 @@
 ﻿/* MainComponent.razor.css */
+
+.settingsrow{
+    height: 110px;
+}
+
 .indicator-row {
     display: grid;
     grid-template-columns: auto 1fr auto; /* coin | level (stretch) | bell */
