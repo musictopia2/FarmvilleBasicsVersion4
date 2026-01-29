@@ -35,7 +35,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [20, 40],
-                CoinIncrementAfterFirst = 20
+                CoinRewardAfterFirst = 20
             }
         });
         output.Add(new()
@@ -49,7 +49,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [20, 40],
-                CoinIncrementAfterFirst = 20
+                CoinRewardAfterFirst = 20
             }
         });
         output.Add(new()
@@ -70,7 +70,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [5, 8],
-                CoinIncrementAfterFirst = 9
+                CoinRewardAfterFirst = 9
             }
         });
         output.Add(new()
@@ -99,7 +99,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [5, 8],
-                CoinIncrementAfterFirst = 9
+                CoinRewardAfterFirst = 9
             }
         });
         output.Add(new()
@@ -114,7 +114,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [5, 8],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
         output.Add(new()
@@ -129,7 +129,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
        
@@ -185,7 +185,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
         output.Add(new()
@@ -200,7 +200,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
         output.Add(new()
@@ -222,7 +222,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
 
@@ -238,7 +238,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 3
+                CoinRewardAfterFirst = 3
             }
         });
         output.Add(new()
@@ -261,7 +261,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 3
+                CoinRewardAfterFirst = 3
             }
         });
         output.Add(new()
@@ -293,7 +293,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
 
@@ -321,7 +321,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
         output.Add(new()
@@ -336,7 +336,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
         output.Add(new()
@@ -358,7 +358,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
 
@@ -374,7 +374,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 3
+                CoinRewardAfterFirst = 3
             }
         });
         output.Add(new()
@@ -397,7 +397,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 3
+                CoinRewardAfterFirst = 3
             }
         });
         output.Add(new()
@@ -429,7 +429,7 @@ public static class ImportAchievementPlanClass
             RepeatRewardRules = new()
             {
                 FirstCoinRewards = [2, 4],
-                CoinIncrementAfterFirst = 1
+                CoinRewardAfterFirst = 1
             }
         });
         return output;

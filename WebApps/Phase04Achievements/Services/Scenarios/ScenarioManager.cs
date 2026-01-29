@@ -316,6 +316,7 @@ public class ScenarioManager(InventoryManager inventoryManager,
         if (needsToast)
         {
             toast.ShowSuccessToast("Received achievement for completing scenarios.  Check UI to see what was last completed and the rewards obtained");
+            await Task.Delay(2000); //so a person can see the toast.
         }
         nav.NavigateTo(main);
     }

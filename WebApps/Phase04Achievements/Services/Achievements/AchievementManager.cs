@@ -69,7 +69,7 @@ public class AchievementManager(InventoryManager inventoryManager,
         var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CompleteScenarios);
         if (plan is null)
         {
-            return true;
+            return false;
         }
         _profileInfo.ScenariosCompleted++;
         await _profileStorage.SaveAsync(_profileInfo);
@@ -90,28 +90,28 @@ public class AchievementManager(InventoryManager inventoryManager,
             {
                 throw new CustomBasicException("If there is a target, must have reward to go with it");
             }
-            if (achievement.Target.Value == currentCount)
-            {
-                return achievement.CoinReward.Value;
-            }
-            return 0;
+            return achievement.Target.Value == currentCount ? achievement.CoinReward.Value : 0;
         }
-        if (achievement.RepeatAchievementRules is null ||
-            achievement.RepeatRewardRules is null)
-            {
-                throw new CustomBasicException("Must have at least an award for this");
-            }
+
+        // REPEATABLE
+        if (achievement.RepeatAchievementRules is null || achievement.RepeatRewardRules is null)
+        {
+            throw new CustomBasicException("Repeatable achievement must have repeat rules and reward rules");
+        }
 
         var targets = achievement.RepeatAchievementRules.FirstTargets;
         var rewards = achievement.RepeatRewardRules.FirstCoinRewards;
 
-        // Safety: keep rules aligned
+        if (targets.Count == 0)
+        {
+            throw new CustomBasicException("Repeatable achievement must have at least one FirstTarget");
+        }
         if (targets.Count != rewards.Count)
         {
-            throw new CustomBasicException(
-                "Repeat targets and rewards must have same count");
+            throw new CustomBasicException("Repeat targets and rewards must have same count");
         }
-        // 1️⃣ Exact match against first explicit targets
+
+        // 1) Exact match against the explicit tiers
         for (int i = 0; i < targets.Count; i++)
         {
             if (currentCount == targets[i])
@@ -119,14 +119,18 @@ public class AchievementManager(InventoryManager inventoryManager,
                 return rewards[i];
             }
         }
-        // 2️⃣ After-first repeating tiers
-        //thinks its okay because was accounted for above.
-        int lastTarget = targets[^1];
-        int increment = achievement.RepeatAchievementRules.IncrementAfterFirst;
 
+        // 2) Exact match against repeating tiers AFTER the last explicit one
+        int lastTarget = targets[^1];
         if (currentCount <= lastTarget)
         {
-            return 0;
+            return 0; // (not an exact match for any first tier, and not beyond last tier)
+        }
+
+        int increment = achievement.RepeatAchievementRules.IncrementAfterFirst;
+        if (increment <= 0)
+        {
+            throw new CustomBasicException("IncrementAfterFirst must be > 0");
         }
 
         int delta = currentCount - lastTarget;
@@ -137,13 +141,35 @@ public class AchievementManager(InventoryManager inventoryManager,
             return 0;
         }
 
-        int tierIndex = (delta / increment) - 1;
+        // Fixed reward for all tiers after the first set
+        int fixedReward = achievement.RepeatRewardRules.CoinRewardAfterFirst
+            ?? rewards[^1];
 
-        int lastReward = rewards[^1];
-        int rewardIncrement =
-            achievement.RepeatRewardRules.CoinIncrementAfterFirst;
+        return fixedReward;
+    }
+    private static string GetPrimaryText(AchievementPlanModel plan)
+    {
+        return plan.CounterKey switch
+        {
+            AchievementCounterKeys.Level => "Reach level",
+            AchievementCounterKeys.CompleteScenarios => "Complete scenarios",
+            AchievementCounterKeys.CompleteOrders when
+                string.IsNullOrWhiteSpace(plan.ItemKey) == false
+                    => $"Complete {plan.ItemKey.GetWords} orders",
 
-        return lastReward + ((tierIndex + 1) * rewardIncrement);
-
+            AchievementCounterKeys.CompleteOrders
+                    => "Complete orders",
+            AchievementCounterKeys.SpendCoin => "Spend coins",
+            AchievementCounterKeys.CoinEarned => "Earn coins",
+            AchievementCounterKeys.UseTimedBoost when
+                string.IsNullOrWhiteSpace(plan.OutputAugmentationKey) == false
+                    => $"Use {plan.OutputAugmentationKey.GetWords} Power Pin",
+            AchievementCounterKeys.UseTimedBoost => $"Use timed boost {plan.SourceKey.GetWords}",
+            AchievementCounterKeys.UseConsumable => $"Use {plan.ItemKey.GetWords}",
+            AchievementCounterKeys.CollectFromAnimal => $"Collect from {plan.SourceKey.GetWords}",
+            AchievementCounterKeys.CraftFromWorkshops => $"Craft {plan.ItemKey.GetWords} from {plan.SourceKey.GetWords}",
+            AchievementCounterKeys.FindFromWorksites => $"Find {plan.ItemKey.GetWords} from {plan.SourceKey.GetWords}",
+            _ => plan.CounterKey.GetWords
+        };
     }
 }

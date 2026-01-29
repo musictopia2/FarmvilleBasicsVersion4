@@ -18,7 +18,7 @@ internal static class ImportScenariosClass
         {
             ScenarioProfileModel scenario = new()
             {
-                TimeBetween = TimeSpan.FromMinutes(1),
+                TimeBetween = TimeSpan.FromSeconds(10),
                 Status = EnumScenarioStatus.None,
                 Tasks = [],
                 LastCompleted = null,
