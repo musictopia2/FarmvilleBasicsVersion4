@@ -123,8 +123,14 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
         quantityPickerService.StateChanged = Changed;
         TimedBoostManager.Tick += Changed;
         ScenarioManager.OnUpdated += TryUpdateTasks;
+        AchievementManager.OnAchievementSuccessful += AchievementManager_OnAchievementSuccessful;
         service.Toast = toast;
         base.OnInitialized();
+    }
+
+    private void AchievementManager_OnAchievementSuccessful(string title, int reward)
+    {
+        toast.ShowSuccessToast($"You completed at least one achievement for {title}.   Coin reward was {reward}");
     }
 
     private void TryUpdateTasks()

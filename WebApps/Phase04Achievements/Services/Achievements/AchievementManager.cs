@@ -1,5 +1,6 @@
 ﻿namespace Phase04Achievements.Services.Achievements;
-public class AchievementManager(InventoryManager inventoryManager, 
+
+public class AchievementManager(InventoryManager inventoryManager,
     WorkshopManager workshopManager,
     WorksiteManager worksiteManager,
     ProgressionManager progressionManager,
@@ -42,7 +43,15 @@ public class AchievementManager(InventoryManager inventoryManager,
             int newcount = current + item.Amount;
             earned = CoinsFromSeveralAchievementTargets(plan, current, newcount);
             _profileInfo.CoinsEarned += item.Amount;
-            await ProcessSuccessfulAchievementAsync(plan, earned);
+            if (earned > 0)
+            {
+
+                await ProcessSuccessfulAchievementAsync(plan, earned);
+            }
+            else
+            {
+                await SaveProfileAsync();
+            }
             return;
         }
     }
@@ -55,6 +64,29 @@ public class AchievementManager(InventoryManager inventoryManager,
     }
     private async void ProcessInventoryConsumed(ItemAmount item)
     {
+        AchievementPlanModel? plan;
+        int earned = 0;
+        if (item.Item == CurrencyKeys.Coin)
+        {
+            plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.SpendCoin);
+            if (plan is null)
+            {
+                return;
+            }
+            int current = _profileInfo.CoinsSpent;
+            int newcount = current + item.Amount;
+            earned = CoinsFromSeveralAchievementTargets(plan, current, newcount);
+            _profileInfo.CoinsSpent += item.Amount;
+            if (earned > 0)
+            {
+                await ProcessSuccessfulAchievementAsync(plan, earned);
+            }
+            else
+            {
+                await SaveProfileAsync();
+            }
+            return;
+        }
 
     }
     private async void ProcessWorkshopQueAdded(string buildingName, string craftedItem)

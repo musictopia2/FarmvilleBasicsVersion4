@@ -29,12 +29,12 @@ public static class ImportAchievementPlanClass
             CounterKey = AchievementCounterKeys.SpendCoin,
             RepeatAchievementRules = new()
             {
-                FirstTargets = [500, 1200],
+                FirstTargets = [100, 300],
                 IncrementAfterFirst = 1000
             },
             RepeatRewardRules = new()
             {
-                FirstCoinRewards = [20, 40],
+                FirstCoinRewards = [10, 15],
                 CoinRewardAfterFirst = 20
             }
         });
