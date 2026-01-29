@@ -24,6 +24,16 @@ public static class FarmExtensions
             return output;
 
         }
+        public static BasicList<T> PopulateEmptyForCoop()
+        {
+            BasicList<T> output = [];
+            foreach (var farm in FarmHelperClass.GetAllCooperativeFarms())
+            {
+                output.Add(T.CreateEmpty(farm));
+            }
+            return output;
+
+        }
     }
 
 }
