@@ -1,5 +1,4 @@
 ﻿namespace Phase04Achievements.Services.Workshops;
-
 public class WorkshopManager(InventoryManager inventory,
     IBaseBalanceProvider baseBalanceProvider,
     ItemRegistry itemRegistry,
@@ -12,6 +11,7 @@ public class WorkshopManager(InventoryManager inventory,
     private readonly BasicList<WorkshopInstance> _workshops = [];
     private BasicList<WorkshopRecipe> _recipes = [];
     public event Action? OnWorkshopsUpdated;
+    public event Action<string, string>? OnWorkshopItemQued;
     private readonly Lock _lock = new();
     private bool _needsSaving;
     private DateTime _lastSave = DateTime.MinValue;
@@ -435,6 +435,7 @@ public class WorkshopManager(InventoryManager inventory,
             CraftingJobInstance job = new(recipe, _multiplier, reduced, workshop.AdvancedSpeedBonus, timedBoostManager, outputAugmentationManager);
 
             workshop.ReducedBy = reduced; //i think this too.
+            OnWorkshopItemQued?.Invoke(workshop.BuildingName, recipe.Item);
             workshop.Queue.Add(job);
             _needsSaving = true;
         }

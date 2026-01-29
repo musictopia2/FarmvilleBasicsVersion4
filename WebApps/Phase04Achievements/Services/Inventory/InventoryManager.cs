@@ -7,6 +7,8 @@ public class InventoryManager(FarmKey farm, IInventoryRepository persist,
     private readonly Dictionary<string, int> _items = [];
     private InventoryStorageProfileModel _inventoryProfileModel = null!;
     public event Action? InventoryChanged;
+    public event Action<ItemAmount>? InventoryAdded;
+    public event Action<ItemAmount>? InventoryConsumed;
     public void LoadStartingInventory(Dictionary<string, int> items, InventoryStorageProfileModel storage)
     {
         _inventoryProfileModel = storage;
@@ -113,11 +115,8 @@ public class InventoryManager(FarmKey farm, IInventoryRepository persist,
         }
         else
         {
-            throw new CustomBasicException("CanAdd Not Supported Yet");
+            throw new CustomBasicException("CanAdd Not Supported");
         }
-
-
-
         int currentSize = list.Sum(x => x.Amount);
         currentSize += amount;
         if (currentSize > limit)
@@ -126,13 +125,18 @@ public class InventoryManager(FarmKey farm, IInventoryRepository persist,
         }
         return true;
     }
-
     public void Add(string item, int amount)
     {
         if (amount <= 0)
         {
             return;
         }
+        ItemAmount temp = new()
+        {
+            Amount = amount,
+            Item = item,
+        };
+        InventoryAdded?.Invoke(temp);
         _items[item] = Get(item) + amount;
         UpdateInventory();
     }
@@ -141,10 +145,14 @@ public class InventoryManager(FarmKey farm, IInventoryRepository persist,
     {
         foreach (var item in rewards)
         {
-            _items[item.Key] += item.Value;
+            Add(item.Key, item.Value); //so everything goes in one place (because new event)
+            //_items[item.Key] += item.Value;
         }
         UpdateInventory();
     }
+
+
+
     private async void UpdateInventory()
     {
         await persist.SaveAsync(farm, _items);
@@ -160,6 +168,8 @@ public class InventoryManager(FarmKey farm, IInventoryRepository persist,
         {
             throw new InvalidOperationException("Not enough items");
         }
+        ItemAmount temp = new(item, amount);
+        InventoryConsumed?.Invoke(temp);
         _items[item] -= amount;
         UpdateInventory();
     }
@@ -171,6 +181,8 @@ public class InventoryManager(FarmKey farm, IInventoryRepository persist,
         }
         foreach (var req in requirements)
         {
+            ItemAmount item = new(req.Key, req.Value);
+            InventoryConsumed?.Invoke(item);
             _items[req.Key] -= req.Value;
         }
         UpdateInventory();

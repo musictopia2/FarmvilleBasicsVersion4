@@ -6,6 +6,10 @@ public class TimedBoostManager
     private ITimedBoostProfile _profileStore = null!;
     public event Action? Tick;             // “countdown changed” (UI refresh)
     private void NotifyTick() => Tick?.Invoke();
+
+
+    public event Action<string, string?>? OnUsedTimedBoost;
+
     public async Task SetTimedBoostStyleContextAsync(TimedBoostServicesContext context)
     {
         _profile = await context.TimedBoostProfile.LoadAsync();
@@ -118,6 +122,7 @@ public class TimedBoostManager
         {
             throw new CustomBasicException("Unable to activate boost.   should had called CanActivateBoost");
         }
+        OnUsedTimedBoost?.Invoke(credit.BoostKey, credit.OutputAugmentationKey);
         credit.Quantity--;
         if (credit.Quantity == 0)
         {

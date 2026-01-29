@@ -10,5 +10,5 @@ public static class AchievementCounterKeys
     public const string CollectFromAnimal = "CollectFromAnimal";
     public const string FindFromWorksites = "FindFromWorksites";
     public const string CraftFromWorkshops = "CraftFromWorkshop";
-    public const string CompleteOrders = "CompleteOrders"; //ai suggested just complete orders period.
+    public const string CompleteOrders = "CompleteOrders";
 }

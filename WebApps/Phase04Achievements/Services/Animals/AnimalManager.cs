@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Routing;
-using Phase04Achievements.Services.Trees;
-
-namespace Phase04Achievements.Services.Animals;
+﻿namespace Phase04Achievements.Services.Animals;
 public class AnimalManager(InventoryManager inventory,
     IBaseBalanceProvider baseBalanceProvider,
     ItemRegistry itemRegistry,
@@ -11,6 +8,7 @@ public class AnimalManager(InventoryManager inventory,
 {
     private readonly BasicList<AnimalInstance> _animals = [];
     public event Action? OnAnimalsUpdated;
+    public event Action<string>? OnAnimalCollected;
     public event Action<ItemAmount>? OnAugmentedOutput;
 
     private IAnimalRepository _animalRepository = null!;
@@ -119,7 +117,7 @@ public class AnimalManager(InventoryManager inventory,
         _needsSaving = true;
     }
     public Guid StartRental(StoreItemRowModel rental)
-    { 
+    {
         if (rental.Category != EnumCatalogCategory.Animal)
         {
             throw new CustomBasicException("Only animals can be rented");
@@ -174,7 +172,7 @@ public class AnimalManager(InventoryManager inventory,
     public void DoubleCheckActiveRental(Guid id)
     {
         AnimalInstance? animal = _animals.SingleOrDefault(x => x.Id == id);
-        if( animal is null)
+        if (animal is null)
         {
             return; //for now.
         }
@@ -190,7 +188,7 @@ public class AnimalManager(InventoryManager inventory,
         }
     }
 
-    
+
     public void UnlockAnimalPaidFor(StoreItemRowModel store)
     {
         if (store.Category != EnumCatalogCategory.Animal)
@@ -397,6 +395,9 @@ public class AnimalManager(InventoryManager inventory,
         //    throw new CustomBasicException("Unable to add because was full.  Should had ran the required functions first");
         //}
         //hopefully no problem with requiring security (?) since this is intended for the unlimited feature.
+        OnAnimalCollected?.Invoke(item.Source); //no matter how many you ask for, only counts as 1.   so if you have to do several times, has to manually be done.
+        //if i wanted automation, then via rest api.
+        //if i really wanted to abuse the api just for the reward, i can (but would be hard to create and maintain).   if i somehow don't have enough, would be in for a bad surprise
 
 
         var temp = timedBoostManager.GetActiveOutputAugmentationKeyForItem(item.Source);
@@ -425,7 +426,7 @@ public class AnimalManager(InventoryManager inventory,
         if (bonus > 0)
         {
             AddExtraRewards(fins.ExtraRewards.Single(), bonus);
-            
+
         }
         AddAnimalToInventory(item.Item, item.Amount);
     }
@@ -442,7 +443,7 @@ public class AnimalManager(InventoryManager inventory,
         inventory.Add(payLoad);
     }
 
-    
+
     private static BasicList<ItemAmount> BuildSpeedSeedRewardBundleWorstCase(
         AnimalGrantModel item,
         int granted,
@@ -489,11 +490,11 @@ public class AnimalManager(InventoryManager inventory,
                 return false;
             }
         }
-        
+
 
         int amount;
         amount = item.OutputData.Amount;
-        
+
         //maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
         if (maxed)
         {
@@ -517,7 +518,7 @@ public class AnimalManager(InventoryManager inventory,
         {
             throw new CustomBasicException("Cannot grant animal items.  Should had ran the CanGrantAnimalItems function first");
         }
-
+        OnAnimalCollected?.Invoke(item.AnimalName);
 
         int amount;
         amount = item.OutputData.Amount;
@@ -628,7 +629,7 @@ public class AnimalManager(InventoryManager inventory,
         return output;
     }
     public bool IsAnimalFast(AnimalView animal) => _recipes.Single(x => x.Animal == animal.Name).IsFast;
-    
+
     public int GetLevel(AnimalView animal)
     {
         AnimalInstance instance = GetAnimalById(animal);
@@ -734,8 +735,8 @@ public class AnimalManager(InventoryManager inventory,
     private bool CanCollect(AnimalInstance instance)
     {
         int maxs = GetAmount(instance);
-        
-       
+
+
         //maxed = _allCropDefinitions.Single(x => x.Item == item.Item).MaxBenefits;
         if (instance.MaxBenefits)
         {
@@ -787,7 +788,7 @@ public class AnimalManager(InventoryManager inventory,
 
         maxs.Times(_ => animal.Collect());
 
-        
+
 
         if (animal.ExtraRewards.Count > 0)
         {
@@ -806,7 +807,10 @@ public class AnimalManager(InventoryManager inventory,
         // IMPORTANT: clear extras so you don't add them again next collect
         animal.Clear(); //needed a new method.  otherwise, it would had cleared and would never show extra rewards.
 
-
+        if (animal.OutputReady == 0)
+        {
+            OnAnimalCollected?.Invoke(animal.Name);
+        }
 
         if (wasUnlocked && animal.Unlocked == false)
         {

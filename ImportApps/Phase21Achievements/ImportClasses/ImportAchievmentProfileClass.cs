@@ -64,7 +64,6 @@ public static class ImportAchievmentProfileClass
         {
             profile.TimedBoostProgress.Add(new()
             {
-                ItemKey = item.ItemKey,
                 OutputAugmentationKey = item.OutputAugmentationKey,
                 SourceKey = item.SourceKey
             });

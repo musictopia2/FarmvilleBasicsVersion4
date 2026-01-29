@@ -64,14 +64,14 @@ public static class ImportAchievementPlanClass
             CounterKey = AchievementCounterKeys.UseTimedBoost,
             CoinReward = 1,
             Target = 1,
-            ItemKey = BoostKeys.UnlimitedSpeedSeed
+            SourceKey = BoostKeys.UnlimitedSpeedSeed
         });
         output.Add(new()
         {
             CounterKey = AchievementCounterKeys.UseTimedBoost,
             CoinReward = 2,
             Target = 1,
-            ItemKey = BoostKeys.WorksiteNoSupplies
+            SourceKey = BoostKeys.WorksiteNoSupplies
         });
         output.Add(new()
         {
@@ -153,6 +153,7 @@ public static class ImportAchievementPlanClass
         output.Add(new()
         {
             CounterKey = AchievementCounterKeys.UseTimedBoost,
+            //SourceKey = CountryItemList.ApplePie,
             OutputAugmentationKey = CountryAugmentationKeys.ApplePieChanceExtraApplePie, //if you use any with this pin, then would work.
             CoinReward = 1,
             Target = 2
@@ -160,6 +161,7 @@ public static class ImportAchievementPlanClass
         output.Add(new()
         {
             CounterKey = AchievementCounterKeys.UseTimedBoost,
+            //SourceKey = CountryItemList.Wool,
             OutputAugmentationKey = CountryAugmentationKeys.SheepDoubleWoolGuaranteed, //if you use any with this pin, then would work.
             RepeatAchievementRules = new()
             {
@@ -460,7 +462,9 @@ public static class ImportAchievementPlanClass
             .ToList();
 
         if (groups.Count == 0)
+        {
             return;
+        }
 
         // Build a helpful error message showing which one duplicated
         var msg = string.Join(Environment.NewLine, groups.Select(g =>

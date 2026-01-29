@@ -17,6 +17,9 @@ public class WorksiteManager(
     private bool _needsSaving;
     private DateTime _lastSave = DateTime.MinValue;
     private readonly Lock _lock = new();
+
+    public event Action<string, ItemAmount>? OnRewardPickedUp;
+
     public BasicList<string> GetAllUnlockedWorkers()
     {
         return _workerStates.Where(x => x.Unlocked).Select(x => x.Name).ToBasicList();
@@ -62,7 +65,6 @@ public class WorksiteManager(
         CompleteActiveJobImmediately(location);
         inventory.Consume(CurrencyKeys.FinishSingleWorksite, 1);
     }
-
     public void CompleteAllJobsImmediately()
     {
         if (inventory.Has(CurrencyKeys.FinishAllWorksites, 1) == false)
@@ -284,6 +286,7 @@ public class WorksiteManager(
     {
         WorksiteInstance instance = GetWorksiteByLocation(location);
         instance.CollectSpecificReward(reward);
+        OnRewardPickedUp?.Invoke(location, reward);
         inventory.Add(reward.Item, reward.Amount);
         _needsSaving = true;
     }
@@ -293,6 +296,7 @@ public class WorksiteManager(
     {
         WorksiteInstance instance = GetWorksiteByLocation(location);
         ItemAmount reward = instance.GetFirstReward;
+        OnRewardPickedUp?.Invoke(instance.Location, reward);
         inventory.Add(reward.Item, reward.Amount);
         _needsSaving = true;
     }
@@ -301,6 +305,7 @@ public class WorksiteManager(
     {
         rewards.ForEach(reward =>
         {
+            OnRewardPickedUp?.Invoke(instance.Location, reward);
             inventory.Add(reward.Item, reward.Amount);
         });
         instance.CollectAllRewards();

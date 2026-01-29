@@ -1,4 +1,4 @@
-﻿namespace Phase21Achievements.Models;
+﻿namespace Phase04Achievements.Services.Achievements;
 public class TimedBoostProgress
 {
     public string? OutputAugmentationKey { get; set; }

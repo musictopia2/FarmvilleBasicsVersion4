@@ -17,10 +17,10 @@ public class ProgressionManager(InventoryManager inventoryManager,
     private BasicList<CatalogOfferModel> _workerOffers = null!;
     private BasicList<ItemUnlockRule> _workshopPlan = null!;
     private BasicList<CatalogOfferModel> _workshopOffers = null!;
-    
     private ProgressionProfileModel _currentProfile = null!;
     private IProgressionProfile _profileService = null!;
     public event Action? Changed;
+    public event Action<int>? OnIncreaseLevel; //return the new level.
     private void NotifyChanged() => Changed?.Invoke();
     public async Task SetProgressionStyleContextAsync(ProgressionServicesContext context,
         FarmKey farm)
@@ -88,6 +88,7 @@ public class ProgressionManager(InventoryManager inventoryManager,
         {
             RewardEndOfLevel();
             _currentProfile.Level++;
+            OnIncreaseLevel?.Invoke(_currentProfile.Level);
             await ProcessUnlocksAsync();
             await SaveAsync();
             return;
@@ -101,6 +102,7 @@ public class ProgressionManager(InventoryManager inventoryManager,
         }
         RewardEndOfLevel();
         _currentProfile.Level++;
+        OnIncreaseLevel?.Invoke(_currentProfile.Level);
         await ProcessUnlocksAsync();
         await SaveAsync();
     }
