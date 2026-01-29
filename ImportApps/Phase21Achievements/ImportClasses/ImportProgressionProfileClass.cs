@@ -12,7 +12,7 @@ public static class ImportProgressionProfileClass
             { 
                 Farm = farm,
                 PointsThisLevel = 0,
-                Level = 34 //so i can test current level with all possibilties
+                Level = 33 //so i can test current level with all possibilties
             }
             );
         }

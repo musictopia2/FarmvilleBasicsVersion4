@@ -403,4 +403,227 @@ public class AchievementManager(InventoryManager inventoryManager,
             _ => plan.CounterKey.GetWords
         };
     }
+
+
+    public BasicList<AchievementUiRow> GetCurrentAchievementsForUi()
+    {
+        BasicList<AchievementUiRow> output = [];
+
+        foreach (var plan in _plans)
+        {
+            int current = GetCurrentCount(plan);
+
+            // Non-repeatable
+            if (plan.Target is not null)
+            {
+                int target = plan.Target.Value;
+                if (current >= target)
+                {
+                    continue; // already completed, show on Completed tab instead
+                }
+
+                output.Add(new AchievementUiRow
+                {
+                    Title = GetPrimaryText(plan),
+                    Current = current,
+                    Target = target,
+                    CoinReward = plan.CoinReward ?? 0,
+                    IsRepeatable = false
+                });
+                continue;
+            }
+
+            // Repeatable
+            if (plan.RepeatAchievementRules is null || plan.RepeatRewardRules is null)
+            {
+                continue; // defensive - bad plan data
+            }
+
+            int nextTarget = GetNextRepeatTarget(plan, current, out int reward);
+            output.Add(new AchievementUiRow
+            {
+                Title = GetPrimaryText(plan),
+                Current = current,
+                Target = nextTarget,
+                CoinReward = reward,
+                IsRepeatable = true
+            });
+        }
+
+        // “Feels good” ordering: most complete first
+        return output
+            .OrderByDescending(x => x.Percent)
+            .ThenBy(x => x.Title)
+            .ToBasicList();
+    }
+
+    public BasicList<AchievementUiRow> GetCompletedAchievementsForUi()
+    {
+        BasicList<AchievementUiRow> output = [];
+
+        foreach (var plan in _plans)
+        {
+            int current = GetCurrentCount(plan);
+
+            // Non-repeatable completed
+            if (plan.Target is not null)
+            {
+                int target = plan.Target.Value;
+                if (current < target)
+                {
+                    continue;
+                }
+
+                output.Add(new AchievementUiRow
+                {
+                    Title = GetPrimaryText(plan),
+                    Current = current,
+                    Target = target,
+                    CoinReward = plan.CoinReward ?? 0,
+                    IsRepeatable = false
+                });
+                continue;
+            }
+
+            // Repeatable: show last completed tier only
+            if (plan.RepeatAchievementRules is null || plan.RepeatRewardRules is null)
+            {
+                continue;
+            }
+
+            if (TryGetLastRepeatTier(plan, current, out int lastTier, out int reward) == false)
+            {
+                continue; // none completed yet
+            }
+
+            output.Add(new AchievementUiRow
+            {
+                Title = GetPrimaryText(plan),
+                Current = current,
+                Target = lastTier,
+                CoinReward = reward,
+                IsRepeatable = true
+            });
+        }
+
+        return output
+            .OrderBy(x => x.Title)
+            .ToBasicList();
+    }
+
+    private int GetCurrentCount(AchievementPlanModel plan)
+    {
+        // Anything missing should just show as 0 in UI (don’t crash the modal)
+        return plan.CounterKey switch
+        {
+            AchievementCounterKeys.Level => progressionManager.CurrentLevel,
+            AchievementCounterKeys.CompleteScenarios => _profileInfo.ScenariosCompleted,
+            AchievementCounterKeys.CompleteOrders when string.IsNullOrWhiteSpace(plan.ItemKey)
+                => _profileInfo.OrdersCompleted,
+
+            AchievementCounterKeys.CompleteOrders
+                => _profileInfo.OrderItemProgress
+                    .SingleOrDefault(x => x.ItemName == plan.ItemKey)?.Count ?? 0,
+
+            AchievementCounterKeys.SpendCoin => _profileInfo.CoinsSpent,
+            AchievementCounterKeys.CoinEarned => _profileInfo.CoinsEarned,
+
+            AchievementCounterKeys.UseConsumable
+                => _profileInfo.Consumables
+                    .SingleOrDefault(x => x.Key == plan.ItemKey)?.Count ?? 0,
+
+            AchievementCounterKeys.CollectFromAnimal
+                => _profileInfo.AnimalCollectProgress
+                    .SingleOrDefault(x => x.Name == plan.SourceKey)?.Count ?? 0,
+
+            AchievementCounterKeys.CraftFromWorkshops
+                => _profileInfo.WorkshopQueued
+                    .SingleOrDefault(x => x.BuildingName == plan.SourceKey && x.ItemCrafted == plan.ItemKey)?.Count ?? 0,
+
+            AchievementCounterKeys.FindFromWorksites
+                => _profileInfo.WorksiteFoundProgress
+                    .SingleOrDefault(x => x.Location == plan.SourceKey && x.Item == plan.ItemKey)?.Count ?? 0,
+
+            AchievementCounterKeys.UseTimedBoost
+                => _profileInfo.TimedBoostProgress
+                    .SingleOrDefault(x => x.SourceKey == plan.SourceKey && x.OutputAugmentationKey == plan.OutputAugmentationKey)?.Count ?? 0,
+
+            _ => 0
+        };
+    }
+
+    private int GetNextRepeatTarget(AchievementPlanModel plan, int current, out int reward)
+    {
+        var targets = plan.RepeatAchievementRules!.FirstTargets;
+        var rewards = plan.RepeatRewardRules!.FirstCoinRewards;
+
+        // Next explicit tier
+        foreach (var t in targets)
+        {
+            if (current < t)
+            {
+                reward = rewards[targets.IndexOf(t)];
+                return t;
+            }
+        }
+
+        // After last explicit, repeat using increment
+        int lastTarget = targets[^1];
+        int increment = plan.RepeatAchievementRules.IncrementAfterFirst;
+        int fixedReward = plan.RepeatRewardRules.CoinRewardAfterFirst ?? rewards[^1];
+
+        int delta = Math.Max(0, current - lastTarget);
+        int k = (delta / increment) + 1;
+
+        reward = fixedReward;
+        return lastTarget + (k * increment);
+    }
+
+    private bool TryGetLastRepeatTier(AchievementPlanModel plan, int current, out int lastTier, out int reward)
+    {
+        var targets = plan.RepeatAchievementRules!.FirstTargets;
+        var rewards = plan.RepeatRewardRules!.FirstCoinRewards;
+
+        // If we haven't hit the first tier, nothing completed
+        if (current < targets[0])
+        {
+            lastTier = 0;
+            reward = 0;
+            return false;
+        }
+
+        // If within explicit list, last completed is greatest target <= current
+        int explicitLast = 0;
+        int explicitReward = 0;
+
+        for (int i = 0; i < targets.Count; i++)
+        {
+            if (targets[i] <= current)
+            {
+                explicitLast = targets[i];
+                explicitReward = rewards[i];
+            }
+        }
+
+        int lastExplicitTarget = targets[^1];
+        if (current <= lastExplicitTarget)
+        {
+            lastTier = explicitLast;
+            reward = explicitReward;
+            return true;
+        }
+
+        // Past explicit list: compute last repeating tier <= current
+        int increment = plan.RepeatAchievementRules.IncrementAfterFirst;
+        int fixedReward = plan.RepeatRewardRules.CoinRewardAfterFirst ?? rewards[^1];
+
+        int delta = current - lastExplicitTarget;
+        int k = delta / increment; // floor => last tier hit
+
+        lastTier = lastExplicitTarget + (k * increment);
+        reward = fixedReward;
+        return true;
+    }
+
+
 }
