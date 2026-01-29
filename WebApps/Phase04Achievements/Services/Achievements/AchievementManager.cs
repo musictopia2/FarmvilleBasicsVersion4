@@ -1,5 +1,4 @@
 ﻿namespace Phase04Achievements.Services.Achievements;
-
 public class AchievementManager(InventoryManager inventoryManager,
     WorkshopManager workshopManager,
     WorksiteManager worksiteManager,
@@ -43,17 +42,18 @@ public class AchievementManager(InventoryManager inventoryManager,
             int newcount = current + item.Amount;
             earned = CoinsFromSeveralAchievementTargets(plan, current, newcount);
             _profileInfo.CoinsEarned += item.Amount;
-            if (earned > 0)
-            {
-
-                await ProcessSuccessfulAchievementAsync(plan, earned);
-            }
-            else
-            {
-                await SaveProfileAsync();
-            }
+            await ProcessEndAsync(plan, earned);
             return;
         }
+        plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.UseConsumable && x.ItemKey == item.Item);
+        if (plan is null)
+        {
+            return;
+        }
+        var personal = _profileInfo.Consumables.Single(x => x.Key == item.Item);
+        personal.Count++;
+        earned = CoinsFromExactAchievementTarget(plan, personal.Count);
+        await ProcessEndAsync(plan, earned);
     }
     private async Task ProcessSuccessfulAchievementAsync(AchievementPlanModel plan, int earned)
     {
@@ -77,46 +77,103 @@ public class AchievementManager(InventoryManager inventoryManager,
             int newcount = current + item.Amount;
             earned = CoinsFromSeveralAchievementTargets(plan, current, newcount);
             _profileInfo.CoinsSpent += item.Amount;
-            if (earned > 0)
-            {
-                await ProcessSuccessfulAchievementAsync(plan, earned);
-            }
-            else
-            {
-                await SaveProfileAsync();
-            }
+            await ProcessEndAsync(plan, earned);
             return;
         }
-
     }
     private async void ProcessWorkshopQueAdded(string buildingName, string craftedItem)
     {
-
+        var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CraftFromWorkshops && x.SourceKey == buildingName && x.ItemKey == craftedItem);
+        if (plan is null)
+        {
+            return;
+        }
+        var personal = _profileInfo.WorkshopQueued.Single(x => x.BuildingName == buildingName && x.ItemCrafted == craftedItem);
+        personal.Count++;
+        int coins = CoinsEarnedFromAchievement(personal.Count);
+        await ProcessEndAsync(plan, coins);
     }
     private async void ProcessWorksiteRewards(string location, ItemAmount reward)
     {
-
+        var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.FindFromWorksites && x.SourceKey == location && x.ItemKey == reward.Item);
+        if (plan is null)
+        {
+            return;
+        }
+        var personal = _profileInfo.WorksiteFoundProgress.Single(x => x.Location == location && x.Item == reward.Item);
+        int olds = personal.Count;
+        personal.Count += reward.Amount;
+        int coins = CoinsFromSeveralAchievementTargets(plan, olds, personal.Count);
+        await ProcessEndAsync(plan, coins);
     }
     private async void ProcessLevelIncrease(int newLevel)
     {
-
+        var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.Level);
+        if (plan is null)
+        {
+            return;
+        }
+        int coins = CoinsFromExactAchievementTarget(plan, newLevel);
+        await ProcessEndAsync(plan, coins);
     }
-    private async void ProcessTimedBoost(string boostKey, string? OutputAugmentationKey)
+    private async void ProcessTimedBoost(string boostKey, string? outputAugmentationKey)
     {
-
+        var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.UseTimedBoost && x.SourceKey == boostKey && x.OutputAugmentationKey == outputAugmentationKey);
+        if (plan is null)
+        {
+            return;
+        }
+        var personal = _profileInfo.TimedBoostProgress.Single(x => x.SourceKey == boostKey && x.OutputAugmentationKey == outputAugmentationKey);
+        personal.Count++;
+        int coins = CoinsFromExactAchievementTarget(plan, personal.Count);
+        await ProcessEndAsync(plan, coins);
     }
     private async void ProcessAnimalCollected(string animalName)
     {
-
+        var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CollectFromAnimal && x.SourceKey == animalName);
+        if (plan is null)
+        {
+            return;
+        }
+        var personal = _profileInfo.AnimalCollectProgress.Single(x => x.Name == animalName);
+        personal.Count++;
+        int coins = CoinsFromExactAchievementTarget(plan, personal.Count);
+        await ProcessEndAsync(plan, coins);
     }
-
     private async void ProcessOrderCompleted(string item)
     {
-        //this can double count (because you complete one with an order if that matches) plus for completion of any order.
-
-
-
+        await ProcessBlankOrderAsync();//this can double count (because you complete one with an order if that matches) plus for completion of any order.
+        var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CompleteOrders && x.ItemKey == item);
+        if (plan is null)
+        {
+            return;
+        }
+        var personal = _profileInfo.OrderItemProgress.Single(x => x.ItemName == item);
+        personal.Count++;
+        int coins = CoinsFromExactAchievementTarget(plan, personal.Count);
+        await ProcessEndAsync(plan, coins);
     }
+    private async Task ProcessEndAsync(AchievementPlanModel plan, int coins)
+    {
+        if (coins == 0)
+        {
+            await SaveProfileAsync();
+            return;
+        }
+        await ProcessSuccessfulAchievementAsync(plan, coins);
+    }
+    private async Task ProcessBlankOrderAsync()
+    {
+        var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CompleteOrders && string.IsNullOrWhiteSpace(x.ItemKey));
+        if (plan is null)
+        {
+            return;
+        }
+        _profileInfo.OrdersCompleted++;
+        int coins = CoinsFromExactAchievementTarget(plan, _profileInfo.OrdersCompleted);
+        await ProcessEndAsync(plan, coins);
+    }
+
     //because this required a toast, had to do the scenario one even though i did not do the others yet.
     public async Task<int> ScenarioCompletedAsync()
     {
@@ -143,9 +200,7 @@ public class AchievementManager(InventoryManager inventoryManager,
     }
     public int CoinsEarnedFromAchievement(int amount)
     {
-
         //i cannot increment the coins earned here (because if i did, then would double count since the counting can still happen even if i was not on the farm).
-
         var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CoinEarned);
         if (plan is null)
         {
@@ -154,11 +209,6 @@ public class AchievementManager(InventoryManager inventoryManager,
         int current = _profileInfo.CoinsEarned;
         int newcount = current + amount;
         return CoinsFromSeveralAchievementTargets(plan, current, newcount);
-
-
-        // increment your "coins earned" counter by amount
-        // check achievement thresholds for that counter
-        // return true if an achievement tier was completed
     }
     private static int CoinsFromSeveralAchievementTargets(
         AchievementPlanModel achievement,
