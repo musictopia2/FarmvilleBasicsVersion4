@@ -11,6 +11,7 @@ public class AchievementManager(InventoryManager inventoryManager,
     private BasicList<AchievementPlanModel> _plans = [];
     private AchievementProfileModel _profileInfo = null!;
     private IAchievementProfile _profileStorage = null!;
+    public event Action<string, int>? OnAchievementSuccessful;
     public async Task SetAchievementStyleContextAsync(AchievementServicesContext context, FarmKey farm)
     {
         _plans = await context.AchievementPlanProvider.GetPlanAsync(farm);
@@ -27,7 +28,30 @@ public class AchievementManager(InventoryManager inventoryManager,
     }
     private async void ProcessInventoryAdded(ItemAmount item)
     {
-
+        AchievementPlanModel? plan;
+        int earned = 0;
+        if (item.Item == CurrencyKeys.Coin)
+        {
+            //this is coins earned.
+            plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CoinEarned);
+            if (plan is null)
+            {
+                return;
+            }
+            int current = _profileInfo.CoinsEarned;
+            int newcount = current + item.Amount;
+            earned = CoinsFromSeveralAchievementTargets(plan, current, newcount);
+            _profileInfo.CoinsEarned += item.Amount;
+            await ProcessSuccessfulAchievementAsync(plan, earned);
+            return;
+        }
+    }
+    private async Task ProcessSuccessfulAchievementAsync(AchievementPlanModel plan, int earned)
+    {
+        string title = GetPrimaryText(plan);
+        OnAchievementSuccessful?.Invoke(title, earned);
+        inventoryManager.AddCoin(earned);
+        await SaveProfileAsync();
     }
     private async void ProcessInventoryConsumed(ItemAmount item)
     {
@@ -62,25 +86,150 @@ public class AchievementManager(InventoryManager inventoryManager,
 
     }
     //because this required a toast, had to do the scenario one even though i did not do the others yet.
-    public async Task<bool> ScenarioCompletedAsync()
+    public async Task<int> ScenarioCompletedAsync()
     {
         //this would give credit for this achievement.
         //must at least do this one.
         var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CompleteScenarios);
         if (plan is null)
         {
-            return false;
+            return 0;
         }
         _profileInfo.ScenariosCompleted++;
-        await _profileStorage.SaveAsync(_profileInfo);
+        await SaveProfileAsync();
         int coins = CoinsFromExactAchievementTarget(plan, _profileInfo.ScenariosCompleted);
         if (coins > 0)
         {
             inventoryManager.AddCoin(coins);
-            return true;
+            return coins;
         }
-        return false;
+        return 0;
     }
+    private async Task SaveProfileAsync()
+    {
+        await _profileStorage.SaveAsync(_profileInfo);
+    }
+    public int CoinsEarnedFromAchievement(int amount)
+    {
+
+        //i cannot increment the coins earned here (because if i did, then would double count since the counting can still happen even if i was not on the farm).
+
+        var plan = _plans.SingleOrDefault(x => x.CounterKey == AchievementCounterKeys.CoinEarned);
+        if (plan is null)
+        {
+            return 0;
+        }
+        int current = _profileInfo.CoinsEarned;
+        int newcount = current + amount;
+        return CoinsFromSeveralAchievementTargets(plan, current, newcount);
+
+
+        // increment your "coins earned" counter by amount
+        // check achievement thresholds for that counter
+        // return true if an achievement tier was completed
+    }
+    private static int CoinsFromSeveralAchievementTargets(
+        AchievementPlanModel achievement,
+        int previousCount,
+        int currentCount)
+    {
+        if (currentCount <= previousCount)
+        {
+            return 0; // nothing new reached
+        }
+
+        // NON-REPEATABLE (single target)
+        if (achievement.Target is not null)
+        {
+            if (achievement.CoinReward.HasValue == false)
+            {
+                throw new CustomBasicException("If there is a target, must have reward to go with it");
+            }
+
+            int target = achievement.Target.Value;
+
+            // reward once if we crossed or landed on the target during this update
+            return (previousCount < target && target <= currentCount)
+                ? achievement.CoinReward.Value
+                : 0;
+        }
+
+        // REPEATABLE
+        if (achievement.RepeatAchievementRules is null || achievement.RepeatRewardRules is null)
+        {
+            throw new CustomBasicException("Repeatable achievement must have repeat rules and reward rules");
+        }
+
+        var targets = achievement.RepeatAchievementRules.FirstTargets;
+        var rewards = achievement.RepeatRewardRules.FirstCoinRewards;
+
+        if (targets.Count == 0)
+        {
+            throw new CustomBasicException("Repeatable achievement must have at least one FirstTarget");
+        }
+        if (targets.Count != rewards.Count)
+        {
+            throw new CustomBasicException("Repeat targets and rewards must have same count");
+        }
+
+        int total = 0;
+
+        // 1) Sum rewards for explicit tiers that were crossed
+        for (int i = 0; i < targets.Count; i++)
+        {
+            int t = targets[i];
+            if (previousCount < t && t <= currentCount)
+            {
+                total += rewards[i];
+            }
+        }
+
+        // 2) Sum rewards for repeating tiers AFTER the last explicit one
+        int lastTarget = targets[^1];
+
+        // If we never reach beyond lastTarget, we're done
+        if (currentCount <= lastTarget)
+        {
+            return total;
+        }
+
+        int increment = achievement.RepeatAchievementRules.IncrementAfterFirst;
+        if (increment <= 0)
+        {
+            throw new CustomBasicException("IncrementAfterFirst must be > 0");
+        }
+
+        int fixedReward = achievement.RepeatRewardRules.CoinRewardAfterFirst
+            ?? rewards[^1];
+
+        // We need to count tiers: lastTarget + k*increment
+        // where tier is in (previousCount, currentCount]
+        // Start k at the first tier > previousCount
+        int startK;
+        if (previousCount < lastTarget)
+        {
+            startK = 1; // first repeating tier is lastTarget + increment
+        }
+        else
+        {
+            int deltaPrev = previousCount - lastTarget;
+            // smallest k such that lastTarget + k*increment > previousCount
+            startK = (deltaPrev / increment) + 1;
+        }
+
+        int deltaCur = currentCount - lastTarget;
+        int endK = deltaCur / increment; // largest k such that tier <= currentCount
+
+        if (endK >= startK)
+        {
+            int count = endK - startK + 1;
+            total += count * fixedReward;
+        }
+
+        return total;
+    }
+
+
     private static int CoinsFromExactAchievementTarget(AchievementPlanModel achievement, int currentCount)
     {
         // NON-REPEATABLE

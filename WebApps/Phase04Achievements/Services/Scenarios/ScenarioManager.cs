@@ -312,12 +312,7 @@ public class ScenarioManager(InventoryManager inventoryManager,
         await UpdateAsync();
         int reward = _currentProfile.Rewards;
         FarmKey main = farm.AsMain; //still needs this so it can properly navigate to it.
-        bool needsToast = await transfer.AddCoinFromScenarioCompletionAsync(farm, reward);
-        if (needsToast)
-        {
-            toast.ShowSuccessToast("Received achievement for completing scenarios.  Check UI to see what was last completed and the rewards obtained");
-            await Task.Delay(2000); //so a person can see the toast.
-        }
+        await transfer.AddCoinFromScenarioCompletionAsync(farm, reward ,toast);
         nav.NavigateTo(main);
     }
 }

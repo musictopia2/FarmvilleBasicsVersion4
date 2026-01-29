@@ -48,7 +48,7 @@ public class FarmTransferService(GameRegistry gameRegistry)
         container.InventoryManager.Add(item);
         original.Consume(item);
     }
-    public async Task<bool> AddCoinFromScenarioCompletionAsync(FarmKey coinFarm, int amount)
+    public async Task AddCoinFromScenarioCompletionAsync(FarmKey coinFarm, int amount, IToast toast)
     {
         if (!coinFarm.IsCoin)
         {
@@ -58,11 +58,26 @@ public class FarmTransferService(GameRegistry gameRegistry)
         //this will not actually remove inventory because never put into inventory (if i do put into inventory, then would remove then).
         if (amount <= 0)
         {
-            return false;
+            return;
         }
         var temps = gameRegistry.GetFarm(other);
-        bool hadAchievment = await temps.AchievementManager.ScenarioCompletedAsync();
+        int firsts = await temps.AchievementManager.ScenarioCompletedAsync();
+        int earned = temps.AchievementManager.CoinsEarnedFromAchievement(amount + firsts);
+        bool neededToast = false;
+        if (earned > 0)
+        {
+            toast.ShowSuccessToast($"You earned at least one achievement for earnings coins.   You earned at least {earned} coins.");
+            neededToast = true;
+        }
+        if (firsts > 0)
+        {
+            toast.ShowSuccessToast($"You earned {firsts} from completing scenarios");
+            neededToast = true;
+        }
+        if (neededToast)
+        {
+            await Task.Delay(2000); //so you can see the toasts for 2 seconds.
+        }
         temps.InventoryManager.AddCoin(amount);
-        return hadAchievment;
     }
 }

@@ -55,8 +55,17 @@ public static class ImportAchievementPlanClass
         output.Add(new()
         {
             CounterKey = AchievementCounterKeys.CoinEarned,
-            CoinReward = 100,
-            Target = 1000,
+            //has to do as repeatable so i can test this.
+            RepeatAchievementRules = new()
+            {
+                FirstTargets = [200, 400],
+                IncrementAfterFirst = 1000
+            },
+            RepeatRewardRules = new()
+            {
+                FirstCoinRewards = [20, 40],
+                CoinRewardAfterFirst = 50
+            }
 
         });
         output.Add(new()
