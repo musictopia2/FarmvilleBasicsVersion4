@@ -46,31 +46,10 @@ public partial class MainComponent(NavigationManager nav, OverlayService service
         }
         _showRandomChestRewards = true;
     }
-
     private async Task TransferCoinsAsync()
     {
-        await ScenarioManager.ClaimRewardAsync(nav, Key, farmTransfer);
+        await ScenarioManager.ClaimRewardAsync(nav, Key, farmTransfer, toast);
     }
-
-    //leave it commented out until i prove my new system works.
-
-    //private async Task TransferCoinAsync()
-    //{
-    //    if (this.IsCoin == false)
-    //    {
-    //        return;
-    //    }
-    //    toast.ShowSuccessToast("Sending 1000 coins. Check to make sure its fine");
-    //    await Task.Delay(2000);
-    //    //for now, forced to do delay since the reload portion would make the toast go away.
-    //    //if i did not force reload, then quests gets hosed. (everything else appear okay).
-    //    FarmKey main = this.AsMain;
-    //    //figure out how to send to this farm.
-    //    transferService.AddCoinFromScenarioCompletion(Key, 1000);
-    //    nav.NavigateTo(main); //this will transfer back to the main.  if everything works, you will have the 1000 coins applied when you are on there.
-
-    //}
-
     private void ProcessAllWorksites(bool confirmed)
     {
         _showAllWorksites = false;

@@ -16,5 +16,6 @@ public abstract class FarmComponentBase : ComponentBase
     protected ItemManager ItemManager => Farm!.ItemManager;
     protected RentalManager RentalManager => Farm!.RentalManager;
     protected ScenarioManager ScenarioManager => Farm!.ScenarioManager;
+    protected AchievementManager AchievementManager => Farm!.AchievementManager;
     public FarmKey Key => Farm!.FarmKey;
 }

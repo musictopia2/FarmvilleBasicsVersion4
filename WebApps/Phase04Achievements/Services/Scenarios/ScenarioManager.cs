@@ -298,7 +298,7 @@ public class ScenarioManager(InventoryManager inventoryManager,
         worksiteManager.ResetAll();
     }
 
-    public async Task ClaimRewardAsync(NavigationManager nav, FarmKey farm, FarmTransferService transfer)
+    public async Task ClaimRewardAsync(NavigationManager nav, FarmKey farm, FarmTransferService transfer, IToast toast)
     {
         if (_currentProfile is null)
         {
@@ -310,19 +310,13 @@ public class ScenarioManager(InventoryManager inventoryManager,
         _currentProfile.Status = EnumScenarioStatus.Cooldown;
         ResetFarm();
         await UpdateAsync();
-
         int reward = _currentProfile.Rewards;
         FarmKey main = farm.AsMain; //still needs this so it can properly navigate to it.
-
-        
-
-        transfer.AddCoinFromScenarioCompletion(farm, reward);
+        bool needsToast = await transfer.AddCoinFromScenarioCompletionAsync(farm, reward);
+        if (needsToast)
+        {
+            toast.ShowSuccessToast("Received achievement for completing scenarios.  Check UI to see what was last completed and the rewards obtained");
+        }
         nav.NavigateTo(main);
-
     }
-
-    //not sure if we need tick or not (?)
-
-
-
 }

@@ -14,12 +14,12 @@ public class MainFarmContainer
     required public ProgressionManager ProgressionManager { get; set; }
     required public CatalogManager CatalogManager { get; set; }
     required public StoreManager StoreManager { get; set; }
-
     required public InstantUnlimitedManager InstantUnlimitedManager { get; set; }
     required public TimedBoostManager TimedBoostManager { get; set; }
     required public ItemManager ItemManager { get; set; }
     required public OutputAugmentationManager OutputAugmentationManager { get; set; }
     required public RentalManager RentalManager { get; set; }
     required public RandomChestManager RandomChestManager { get; set; }
+    required public AchievementManager AchievementManager { get; set; }
     //attempt to not require itemmanager here (since only the quest manager should require it.   if i am wrong, rethink).
 }

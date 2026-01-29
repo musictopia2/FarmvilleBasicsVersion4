@@ -15,4 +15,5 @@ public class AchievementProfileModel
 
     // Spend coin: only total spent
     public long TotalCoinsSpent { get; set; }
+    public int ScenariosCompleted { get; set; }
 }

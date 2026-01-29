@@ -42,3 +42,4 @@ global using Phase04Achievements.Services.Rentals;
 global using Phase04Achievements.Services.Scenarios;
 global using rs1 = Phase04Achievements.Utilities.RandomUtilities;
 global using Phase04Achievements.Services.RandomChests;
+global using Phase04Achievements.Services.Achievements;

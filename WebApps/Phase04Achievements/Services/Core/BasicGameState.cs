@@ -21,6 +21,7 @@ public class BasicGameState : IGameTimer
     IRentalFactory rentalFactory,
     IScenarioFactory scenarioFactory,
     IRandomChestFactory randomChestFactory,
+    IAchievementFactory achievementFactory,
     CropManager cropManager,
     TreeManager treeManager,
     AnimalManager animalManager,
@@ -38,6 +39,7 @@ public class BasicGameState : IGameTimer
     RentalManager rentalManager,
     ScenarioManager scenarioManager,
     RandomChestManager randomChestManager,
+    AchievementManager achievementManager,
     FarmKey farm
 )
     {
@@ -61,6 +63,7 @@ public class BasicGameState : IGameTimer
         _rentalFactory = rentalFactory;
         _scenarioFactory = scenarioFactory;
         _randomChestFactory = randomChestFactory;
+        _achievementFactory = achievementFactory;
         _cropManager = cropManager;
         _treeManager = treeManager;
         _animalManager = animalManager;
@@ -78,6 +81,7 @@ public class BasicGameState : IGameTimer
         _rentalManager = rentalManager;
         _scenarioManager = scenarioManager;
         _randomChestManager = randomChestManager;
+        _achievementManager = achievementManager;
         _farm = farm;
         _container = new MainFarmContainer
         {
@@ -99,6 +103,7 @@ public class BasicGameState : IGameTimer
             RentalManager = rentalManager,
             ScenarioManager = scenarioManager,
             RandomChestManager = randomChestManager,
+            AchievementManager = achievementManager,
             FarmKey = farm
         };
     }
@@ -123,6 +128,7 @@ public class BasicGameState : IGameTimer
     private readonly IRentalFactory _rentalFactory;
     private readonly IScenarioFactory _scenarioFactory;
     private readonly IRandomChestFactory _randomChestFactory;
+    private readonly IAchievementFactory _achievementFactory;
     private readonly CropManager _cropManager;
     private readonly TreeManager _treeManager;
     private readonly AnimalManager _animalManager;
@@ -140,6 +146,7 @@ public class BasicGameState : IGameTimer
     private readonly RentalManager _rentalManager;
     private readonly ScenarioManager _scenarioManager;
     private readonly RandomChestManager _randomChestManager;
+    private readonly AchievementManager _achievementManager;
     private FarmKey _farm;
     FarmKey? IGameTimer.FarmKey => _farm;
     MainFarmContainer IGameTimer.FarmContainer
@@ -201,6 +208,8 @@ public class BasicGameState : IGameTimer
         await _scenarioManager.SetStyleContextAsync(scenarioContext, farm);
         RandomChestServicesContext randomChestContext = _randomChestFactory.GetRandomChestServices(farm, _progressionManager);
         _randomChestManager.SetRandomChestStyleContext(randomChestContext);
+        AchievementServicesContext achievementContext = _achievementFactory.GetAchievementServices(farm);
+        await _achievementManager.SetAchievementStyleContextAsync(achievementContext, farm);
         _init = true;
     }
     async Task IGameTimer.TickAsync()

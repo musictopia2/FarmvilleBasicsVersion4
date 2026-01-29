@@ -1,4 +1,5 @@
 ﻿using Phase04Achievements.Components.Custom; //for now.
+using Phase04Achievements.DataAccess.Achievements;
 using Phase04Achievements.DataAccess.Animals;
 using Phase04Achievements.DataAccess.Balance;
 using Phase04Achievements.DataAccess.Catalog;
@@ -53,6 +54,7 @@ public static class ServiceExtensions
                 .AddSingleton<IOutputAugmentationFactory, OutputAugmentationFactory>()
                 .AddSingleton<IRentalFactory, RentalFactory>()
                 .AddSingleton<IRandomChestFactory, RandomChestFactory>()
+                .AddSingleton<IAchievementFactory, AchievementFactory>()
                 .AddScoped<ReadyStatusService>()
                 .AddScoped<OverlayService>()
                 .AddScoped<FarmContext>()
