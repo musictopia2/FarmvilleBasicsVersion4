@@ -11,4 +11,5 @@ public static class AchievementCounterKeys
     public const string FindFromWorksites = "FindFromWorksites";
     public const string CraftFromWorkshops = "CraftFromWorkshop";
     public const string CompleteOrders = "CompleteOrders";
+    public const string CompleteScenarios = "CompleteScenarios";
 }

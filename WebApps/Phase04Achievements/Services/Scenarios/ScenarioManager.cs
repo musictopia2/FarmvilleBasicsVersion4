@@ -313,6 +313,9 @@ public class ScenarioManager(InventoryManager inventoryManager,
 
         int reward = _currentProfile.Rewards;
         FarmKey main = farm.AsMain; //still needs this so it can properly navigate to it.
+
+        
+
         transfer.AddCoinFromScenarioCompletion(farm, reward);
         nav.NavigateTo(main);
 

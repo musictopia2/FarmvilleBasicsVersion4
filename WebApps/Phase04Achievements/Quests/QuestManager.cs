@@ -9,6 +9,7 @@ public class QuestManager(InventoryManager inventoryManager,
     private IQuestProfile _questProfile = null!;
     private IQuestGenerationService _questGenerationService = null!;
     private int _trackedSeq = 0;
+    public event Action<string>? OnOrderCompleted;
     public async Task SetStyleContextAsync(QuestServicesContext context)
     {
         _currentLevel = progressionManager.CurrentLevel;
@@ -320,7 +321,6 @@ public class QuestManager(InventoryManager inventoryManager,
             await SaveQuestsAsync();
         }
     }
-
     public BasicList<QuestInstanceModel> GetAllIncompleteQuests()
         => _quests.Where(x => x.Status == EnumQuestStatus.Active).ToBasicList();
     public bool CanCompleteQuest(QuestInstanceModel recipe) => inventoryManager.Has(recipe.ItemName, recipe.Required);
@@ -330,6 +330,7 @@ public class QuestManager(InventoryManager inventoryManager,
         {
             throw new CustomBasicException("Unable to complete quest.   Should had called CanCompleteQuest first");
         }
+        OnOrderCompleted?.Invoke(quest.ItemName);
         inventoryManager.Consume(quest.ItemName, quest.Required);
         quest.Status = EnumQuestStatus.Completed;
         quest.Tracked = false;
@@ -339,7 +340,6 @@ public class QuestManager(InventoryManager inventoryManager,
         _currentLevel = progressionManager.CurrentLevel; //just in case you leveled up.
         await FillQuestsAsync();
     }
-    
     public async Task SetTrackedAsync(QuestInstanceModel q, bool tracked, int maxTracked = 3)
     {
         if (q.Status == EnumQuestStatus.Completed)

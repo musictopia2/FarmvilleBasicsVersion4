@@ -4,7 +4,8 @@ public class AchievementManager(InventoryManager inventoryManager,
     WorksiteManager worksiteManager,
     ProgressionManager progressionManager,
     TimedBoostManager timedBoostManager,
-    AnimalManager animalManager
+    AnimalManager animalManager,
+    QuestManager questManager
     )
 {
     private BasicList<AchievementPlanModel> _plans = [];
@@ -19,37 +20,49 @@ public class AchievementManager(InventoryManager inventoryManager,
         progressionManager.OnIncreaseLevel += ProcessLevelIncrease;
         timedBoostManager.OnUsedTimedBoost += ProcessTimedBoost;
         animalManager.OnAnimalCollected += ProcessAnimalCollected;
+        questManager.OnOrderCompleted += ProcessOrderCompleted;
     }
-    private void ProcessInventoryAdded(ItemAmount item)
+    private async void ProcessInventoryAdded(ItemAmount item)
     {
 
     }
-    private void ProcessInventoryConsumed(ItemAmount item)
+    private async void ProcessInventoryConsumed(ItemAmount item)
     {
 
     }
-    private void ProcessWorkshopQueAdded(string buildingName, string craftedItem)
+    private async void ProcessWorkshopQueAdded(string buildingName, string craftedItem)
     {
 
     }
-    private void ProcessWorksiteRewards(string location, ItemAmount reward)
+    private async void ProcessWorksiteRewards(string location, ItemAmount reward)
     {
 
     }
-    private void ProcessLevelIncrease(int newLevel)
+    private async void ProcessLevelIncrease(int newLevel)
     {
 
     }
-    private void ProcessTimedBoost(string boostKey, string? OutputAugmentationKey)
+    private async void ProcessTimedBoost(string boostKey, string? OutputAugmentationKey)
     {
 
     }
-    private void ProcessAnimalCollected(string animalName)
+    private async void ProcessAnimalCollected(string animalName)
     {
 
     }
 
+    private async void ProcessOrderCompleted(string item)
+    {
+        //this can double count (because you complete one with an order if that matches) plus for completion of any order.
 
+
+
+    }
+
+    public async Task ScenarioCompleted()
+    {
+        //this would give credit for this achievement.
+    }
 
 
 }

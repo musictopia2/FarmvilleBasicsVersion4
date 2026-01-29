@@ -65,6 +65,7 @@ public class FarmTransferService(GameRegistry gameRegistry)
             return;
         }
         var temps = gameRegistry.GetFarm(other);
+        
         temps.InventoryManager.AddCoin(amount);
     }
 }

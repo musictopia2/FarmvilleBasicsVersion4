@@ -40,6 +40,20 @@ public static class ImportAchievementPlanClass
         });
         output.Add(new()
         {
+            CounterKey = AchievementCounterKeys.CompleteScenarios,
+            RepeatAchievementRules = new()
+            {
+                FirstTargets = [1, 2],
+                IncrementAfterFirst = 5
+            },
+            RepeatRewardRules = new()
+            {
+                FirstCoinRewards = [20, 40],
+                CoinIncrementAfterFirst = 20
+            }
+        });
+        output.Add(new()
+        {
             CounterKey = AchievementCounterKeys.CoinEarned,
             CoinReward = 100,
             Target = 1000,
