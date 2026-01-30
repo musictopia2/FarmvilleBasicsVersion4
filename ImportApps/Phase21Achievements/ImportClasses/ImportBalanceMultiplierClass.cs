@@ -12,7 +12,7 @@ public static class ImportBalanceMultiplierClass
 
         foreach (FarmKey key in firsts)
         {
-            var multiplier = key.IsBaseline ? 0.5 : 0.01;
+            var multiplier = key.IsBaseline ? 0.4 : 0.01;
             list.Add(CreateFarm(key, multiplier));
         }
 

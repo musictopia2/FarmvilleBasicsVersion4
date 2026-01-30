@@ -59,7 +59,7 @@ public static class ImportInventoryStockClass
             amounts.Add(rule.ItemName, 10);
             //amounts[rule.ItemName] = 10;
         });
-        amounts.Add(CurrencyKeys.Coin, 3000);
+        amounts.Add(CurrencyKeys.Coin, 200);
 
         amounts.Add(CurrencyKeys.SpeedSeed, 40); //to get you up until you are able to use them.
         amounts.Add(CurrencyKeys.PowerGloveWorkshop, 10);

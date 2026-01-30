@@ -1,0 +1,15 @@
+﻿<div class="boost-icon-wrap">
+    <img class="boost-icon-base"
+         src="@ImageUrl"
+         height="@ImageSize"
+         alt="@Name" />
+
+    @if (ReduceBy.HasValue)
+    {
+        <FastClockBadge Size="@IconSize" CssClass="boost-icon-badge" />
+    }
+    @if (IsAugmented)
+    {
+        <AugmentedOutputBadge Size="@IconSize" CssClass="boost-icon-badge" />
+    }
+</div>
